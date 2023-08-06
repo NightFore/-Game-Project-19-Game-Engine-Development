@@ -1,8 +1,8 @@
 import pygame
 from os import path
 
-MUSIC_FOLDER = path.join("data", "music")
-SOUND_FOLDER = path.join("data", "sound_effects")
+MUSIC_FOLDER = path.join("resources", "music")
+SOUND_FOLDER = path.join("resources", "sound_effects")
 
 class AudioManager:
     RESOURCE_MAPPING = {
@@ -160,8 +160,6 @@ class AudioManager:
         Stop the currently playing music.
         """
         pygame.mixer.music.stop()
-
-audio_manager = AudioManager()
 
 if __name__ == "__main__":
     from debug.debug_audio_manager import debug
