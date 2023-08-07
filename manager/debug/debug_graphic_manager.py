@@ -1,5 +1,9 @@
 import pygame
 from os import path
+from error_manager import (
+    ResourceNotFoundError, InvalidImageFormatError, ResourceLoadError,
+    handle_error,
+)
 
 def debug(graphic_manager):
     pygame.init()
@@ -16,13 +20,18 @@ def debug(graphic_manager):
     # Since absolute paths are provided, they ignore the GRAPHIC_FOLDER.
     images = {
         "single": {
+            "type": "image",
             "image": path.join(path.dirname(__file__), "debug_graphic_manager_single.png"),
             "scaled_size": (1, 1)
         },
         "sequence": {
-            "image_paths": [path.join(path.dirname(__file__), "debug_graphic_manager_sequence_1.png"),
-                            path.join(path.dirname(__file__), "debug_graphic_manager_sequence_2.png")],
-            "frame_duration": 200  # Milliseconds per frame
+            "type": "image_sequence",
+            "images": [
+                {"image": path.join(path.dirname(__file__), "debug_graphic_manager_sequence_1.png"), "scaled_size": (1, 1)},
+                {"image": path.join(path.dirname(__file__), "debug_graphic_manager_sequence_2.png"), "scaled_size": (1, 1)},
+                # Add more frames as needed
+            ],
+            "frame_duration": 200,
         }
     }
 
