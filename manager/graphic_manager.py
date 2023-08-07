@@ -4,7 +4,7 @@ import pygame
 import copy
 from os import path
 
-from error_manager import ResourceNotFoundError, InvalidImageFormatError, ResourceLoadError, handle_error
+from error_manager import ResourceNotFoundError, ResourceInvalidFormatError, ResourceLoadError, handle_error
 
 GRAPHIC_FOLDER = path.join("resources", "graphic")
 
@@ -117,18 +117,20 @@ class GraphicManager:
         try:
             image_path = path.join(GRAPHIC_FOLDER, data["image"])
             if not path.exists(image_path):
-                raise ResourceNotFoundError(data['image'], image_path)
+                handle_error(ResourceNotFoundError, "image", data['image'], image_path)
+                raise ResourceNotFoundError("image", data['image'], image_path)
             if not self.is_supported_image_format(image_path):
-                raise InvalidImageFormatError(data['image'])
+                handle_error(ResourceInvalidFormatError, "image", data['image'])
+                raise ResourceInvalidFormatError("image", data['image'])
 
             # Load the image and convert to alpha format
             image = pygame.image.load(image_path).convert_alpha()
             scaled_size = data.get("scaled_size", (image.get_width(), image.get_height()))
             self.graphics[name] = Graphic(image, scaled_size)
 
-        except (pygame.error, ResourceNotFoundError, InvalidImageFormatError) as e:
+        except (pygame.error, ResourceNotFoundError, ResourceInvalidFormatError) as e:
             self.graphics[name] = None
-            raise ResourceLoadError(data['image'], str(e))
+            handle_error(ResourceLoadError, "image", name, str(e))
 
     def load_image_sequence(self, name, data):
         """
@@ -143,9 +145,9 @@ class GraphicManager:
             for frame_data in data["images"]:
                 frame_path = path.join(GRAPHIC_FOLDER, frame_data["image"])
                 if not path.exists(frame_path):
-                    raise ResourceNotFoundError(frame_data['image'], frame_path)
+                    handle_error(ResourceNotFoundError, "image", frame_data['image'], frame_path)
                 if not self.is_supported_image_format(frame_path):
-                    raise InvalidImageFormatError(frame_data['image'])
+                    handle_error(ResourceInvalidFormatError, "image", frame_data['image'])
 
                 # Load the image and convert to alpha format
                 image = pygame.image.load(frame_path).convert_alpha()
@@ -155,9 +157,9 @@ class GraphicManager:
             frame_duration = data.get("frame_duration", 100)  # Default duration in milliseconds
             self.graphics[name] = Animation(images, frame_duration)
 
-        except (pygame.error, ResourceNotFoundError, InvalidImageFormatError) as e:
+        except (pygame.error, ResourceNotFoundError, ResourceInvalidFormatError) as e:
             self.graphics[name] = None
-            raise ResourceLoadError(name, str(e))
+            handle_error(ResourceLoadError, "image", name, str(e))
 
     def is_supported_image_format(self, image_path):
         """

@@ -1,9 +1,5 @@
 import pygame
 from os import path
-from error_manager import (
-    ResourceNotFoundError, InvalidImageFormatError, ResourceLoadError,
-    handle_error,
-)
 
 def debug(graphic_manager):
     pygame.init()
