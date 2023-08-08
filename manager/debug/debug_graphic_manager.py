@@ -1,3 +1,5 @@
+# debug_graphic_manager.py
+
 import pygame
 from os import path
 
@@ -17,14 +19,13 @@ def debug(graphic_manager):
     images = {
         "single": {
             "type": "image",
-            "image": path.join(path.dirname(__file__), "debug_graphic_manager_single.png"),
-            "scaled_size": (1, 1)
+            "filename": path.join(path.dirname(__file__), "debug_graphic_manager_single.png"),
         },
         "sequence": {
             "type": "image_sequence",
-            "images": [
-                {"image": path.join(path.dirname(__file__), "debug_graphic_manager_sequence_1.png"), "scaled_size": (1, 1)},
-                {"image": path.join(path.dirname(__file__), "debug_graphic_manager_sequence_2.png"), "scaled_size": (1, 1)},
+            "files": [
+                {"filename": path.join(path.dirname(__file__), "debug_graphic_manager_sequence_1.png")},
+                {"filename": path.join(path.dirname(__file__), "debug_graphic_manager_sequence_2.png")},
                 # Add more frames as needed
             ],
             "frame_duration": 200,

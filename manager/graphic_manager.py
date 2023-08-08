@@ -3,22 +3,22 @@
 import pygame
 import copy
 from os import path
+from resource_manager import load_resources, load_resource, validate_resource
 
-from error_manager import ResourceNotFoundError, ResourceInvalidFormatError, ResourceLoadError, handle_error
-
+# Path to the folders containing resources
 GRAPHIC_FOLDER = path.join("resources", "graphic")
 
 class Graphic:
-    def __init__(self, image, scaled_size):
+    def __init__(self, data, image):
         """
         Initialize a Graphic instance.
 
         Args:
+            data (dict): A dictionary containing image resource data.
             image (pygame.Surface): The image to be displayed.
-            scaled_size (tuple): The scaled size of the image (width, height).
         """
+        self.data = data
         self.image = image
-        self.scaled_size = scaled_size
 
     def update(self):
         """
@@ -37,16 +37,17 @@ class Graphic:
         surface.blit(self.image, position)
 
 class Animation:
-    def __init__(self, images, frame_duration):
+    def __init__(self, data, frames):
         """
         Initialize an Animation instance.
 
         Args:
-            images (list): A list of pygame.Surface objects representing animation frames.
-            frame_duration (int): The duration (in milliseconds) of each frame in the animation.
+            data (dict): A dictionary containing animation data.
+            frames (list): A list of pygame.Surface objects representing animation frames.
         """
-        self.images = images
-        self.frame_duration = frame_duration
+        self.data = data
+        self.frames = frames
+        self.frame_duration = data.get("frame_duration", 100)
         self.current_frame = 0
         self.time_elapsed = 0
 
@@ -60,7 +61,7 @@ class Animation:
         self.time_elapsed += dt
         if self.time_elapsed >= self.frame_duration:
             self.time_elapsed = 0
-            self.current_frame = (self.current_frame + 1) % len(self.images)
+            self.current_frame = (self.current_frame + 1) % len(self.frames)
 
     def draw(self, screen, position):
         """
@@ -70,42 +71,43 @@ class Animation:
             screen (pygame.Surface): The screen surface to draw on.
             position (tuple): The (x, y) position to draw the animation frame at.
         """
-        screen.blit(self.images[self.current_frame], position)
+        screen.blit(self.frames[self.current_frame], position)
 
 class GraphicManager:
     RESOURCE_MAPPING = {
-        "image": "load_image",
-        "image_sequence": "load_image_sequence",
+        "image": {
+            "folder": GRAPHIC_FOLDER,
+            "load": "load_image",
+            "format": {".png", ".jpg", ".jpeg", ".gif"}
+        },
+        "image_sequence": {
+            "folder": GRAPHIC_FOLDER,
+            "load": "load_image_sequence",
+            "format": {".png", ".jpg", ".jpeg", ".gif"}
+        },
     }
 
     def __init__(self):
         self.graphics = {}
 
     """
-    Loading
+    Resource Manager
         - load_resources
+        - load_resource
+    """
+    def load_resources(self, resources_dict):
+        """Load multiple resources from a dictionary."""
+        load_resources(self, resources_dict)
+
+    def load_resource(self, resource_name, resource_data):
+        """Load a resource based on its type using the appropriate loading method."""
+        load_resource(self, resource_name, resource_data)
+
+    """
+    Loading
         - load_image
         - load_image_sequence
     """
-    def load_resources(self, resources_dict):
-        """
-        Load multiple resources from a dictionary.
-
-        Args:
-            resources_dict (dict): A dictionary containing resource names as keys and data dictionaries as values.
-        """
-        for name, data in resources_dict.items():
-            resource_type = data.get("type")
-            if resource_type is not None:
-                load_method_name = self.RESOURCE_MAPPING.get(resource_type)
-                if load_method_name is not None:
-                    load_method = getattr(self, load_method_name)
-                    load_method(name, data)
-                else:
-                    raise ValueError("Invalid resource type")
-            else:
-                raise ValueError("Resource type not specified")
-
     def load_image(self, name, data):
         """
         Load a single image resource from its data.
@@ -114,23 +116,9 @@ class GraphicManager:
             name (str): The name of the image resource.
             data (dict): A dictionary containing image resource data.
         """
-        try:
-            image_path = path.join(GRAPHIC_FOLDER, data["image"])
-            if not path.exists(image_path):
-                handle_error(ResourceNotFoundError, "image", data['image'], image_path)
-                raise ResourceNotFoundError("image", data['image'], image_path)
-            if not self.is_supported_image_format(image_path):
-                handle_error(ResourceInvalidFormatError, "image", data['image'])
-                raise ResourceInvalidFormatError("image", data['image'])
-
-            # Load the image and convert to alpha format
-            image = pygame.image.load(image_path).convert_alpha()
-            scaled_size = data.get("scaled_size", (image.get_width(), image.get_height()))
-            self.graphics[name] = Graphic(image, scaled_size)
-
-        except (pygame.error, ResourceNotFoundError, ResourceInvalidFormatError) as e:
-            self.graphics[name] = None
-            handle_error(ResourceLoadError, "image", name, str(e))
+        image_path = data["file_path"]
+        image = pygame.image.load(image_path).convert_alpha()
+        self.graphics[name] = Graphic(data, image)
 
     def load_image_sequence(self, name, data):
         """
@@ -140,45 +128,11 @@ class GraphicManager:
             name (str): The name of the image sequence.
             data (dict): A dictionary containing image sequence data.
         """
-        try:
-            images = []
-            for frame_data in data["images"]:
-                frame_path = path.join(GRAPHIC_FOLDER, frame_data["image"])
-                if not path.exists(frame_path):
-                    handle_error(ResourceNotFoundError, "image", frame_data['image'], frame_path)
-                if not self.is_supported_image_format(frame_path):
-                    handle_error(ResourceInvalidFormatError, "image", frame_data['image'])
-
-                # Load the image and convert to alpha format
-                image = pygame.image.load(frame_path).convert_alpha()
-                scaled_size = frame_data.get("scaled_size", (image.get_width(), image.get_height()))
-                images.append(image)
-
-            frame_duration = data.get("frame_duration", 100)  # Default duration in milliseconds
-            self.graphics[name] = Animation(images, frame_duration)
-
-        except (pygame.error, ResourceNotFoundError, ResourceInvalidFormatError) as e:
-            self.graphics[name] = None
-            handle_error(ResourceLoadError, "image", name, str(e))
-
-    def is_supported_image_format(self, image_path):
-        """
-        Check if the image format of the specified image path is supported.
-
-        Args:
-            image_path (str): The path of the image file.
-
-        Returns:
-            bool: True if the image format is supported, False otherwise.
-        """
-        # List of supported image formats (extensions)
-        supported_formats = ['.png', '.jpg', '.jpeg', '.gif']
-
-        # Get the file extension of the image path and convert to lowercase
-        image_format = path.splitext(image_path)[-1].lower()
-
-        # Check if the image format is in the list of supported formats
-        return image_format in supported_formats
+        frames = []
+        for frame_path in data["file_paths"]:
+            frame = pygame.image.load(frame_path).convert_alpha()
+            frames.append(frame)
+        self.graphics[name] = Animation(data, frames)
 
     def create_graphic_instance(self, key):
         """
@@ -193,10 +147,10 @@ class GraphicManager:
         graphic_data = self.graphics.get(key, None)
         if graphic_data:
             if isinstance(graphic_data, Graphic):
-                return Graphic(graphic_data.image.copy(), graphic_data.scaled_size)
+                return Graphic(copy.deepcopy(graphic_data.data), graphic_data.image.copy())
             elif isinstance(graphic_data, Animation):
-                copied_images = [image.copy() for image in graphic_data.images]
-                return Animation(copied_images, graphic_data.frame_duration)
+                copied_images = [image.copy() for image in graphic_data.frames]
+                return Animation(copy.deepcopy(graphic_data.data), copied_images)
         return None
 
 if __name__ == "__main__":

@@ -1,3 +1,5 @@
+# debug_audio_manager.py
+
 import pygame
 from os import path
 
@@ -9,16 +11,22 @@ def debug(audio_manager):
     # and path.join combines it with the filenames to create absolute file paths.
     # Since absolute paths are provided, they ignore the MUSIC_FOLDER and SOUND_FOLDER.
     music = {
-        "debug_music": path.join(path.dirname(__file__), "debug_music.mp3"),
+        "debug_music": {
+            "type": "music",
+            "filename": path.join(path.dirname(__file__), "debug_music.mp3"),
+        },
     }
 
     sound_effects = {
-        "debug_sound": path.join(path.dirname(__file__), "debug_sound.wav"),
+        "debug_sound": {
+            "type": "sound_effect",
+            "filename": path.join(path.dirname(__file__), "debug_sound.wav"),
+        },
     }
 
     # Load the debug audios into the audio manager
-    audio_manager.load_resources(music, "music")
-    audio_manager.load_resources(sound_effects, "sound_effects")
+    audio_manager.load_resources(music)
+    audio_manager.load_resources(sound_effects)
 
     # Play some music and sound effects for testing
     audio_manager.play_music("debug_music")

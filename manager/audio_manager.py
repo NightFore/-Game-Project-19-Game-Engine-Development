@@ -2,14 +2,24 @@
 
 import pygame
 from os import path
+from resource_manager import load_resources, load_resource, validate_resource
 
+# Path to the folders containing resources
 MUSIC_FOLDER = path.join("resources", "music")
 SOUND_FOLDER = path.join("resources", "sound_effects")
 
 class AudioManager:
     RESOURCE_MAPPING = {
-        "sound_effects": "load_sound",
-        "music": "load_music",
+        "music": {
+            "folder": MUSIC_FOLDER,
+            "load": "load_music",
+            "format": {".mp3", ".ogg"}
+        },
+        "sound_effect": {
+            "folder": SOUND_FOLDER,
+            "load": "load_sound",
+            "format": {".wav"}
+        },
     }
 
     def __init__(self):
@@ -20,60 +30,49 @@ class AudioManager:
         self.current_music_name = None
 
     """
-    Loading
+    Resource Manager
         - load_resources
+        - load_resource
+    """
+    def load_resources(self, resources_dict):
+        """Load multiple resources from a dictionary."""
+        load_resources(self, resources_dict)
+
+    def load_resource(self, resource_name, resource_data):
+        """Load a resource based on its type using the appropriate loading method."""
+        load_resource(self, resource_name, resource_data)
+
+    """
+    Loading
         - load_music
         - load_sound
     """
-    def load_resources(self, resource_dict, resource_type):
+    def load_music(self, name, data):
         """
-        Load multiple resources of a given type from a dictionary.
-
-        Args:
-            resource_dict (dict): A dictionary containing resource names as keys and file paths as values.
-            resource_type (str): The type of resources being loaded ("sound_effects" or "music").
-        """
-        load_method_name = self.RESOURCE_MAPPING.get(resource_type)
-        if load_method_name is not None:
-            load_method = getattr(self, load_method_name)
-        else:
-            raise ValueError("Invalid resource type")
-
-        for name, filename in resource_dict.items():
-            load_method(name, filename)
-
-    def load_music(self, name, filename):
-        """
-        Load a piece of music from the specified file.
+        Load a piece of music from the specified data.
 
         Args:
             name (str): The name to assign to the loaded music.
-            filename (str): The filename of the music to load.
+            data (dict): A dictionary containing music data.
         """
-        file_path = path.join(MUSIC_FOLDER, filename)
-        try:
-            self.music[name] = file_path
-            pygame.mixer.music.load(file_path)
-        except pygame.error:
-            print(f"Error loading music: {filename}")
+        music_path = data["file_path"]
+        pygame.mixer.music.load(music_path)
+        self.music[name] = music_path
 
-    def load_sound(self, name, filename):
+    def load_sound(self, name, data):
         """
-        Load a sound effect from the specified file.
+        Load a sound effect from the specified data.
 
         Args:
             name (str): The name to assign to the loaded sound effect.
-            filename (str): The filename of the sound effect to load.
+            data (dict): A dictionary containing sound effect data.
         """
-        file_path = path.join(SOUND_FOLDER, filename)
-        try:
-            sound = pygame.mixer.Sound(file_path)
-            self.sound_effects[name] = sound
-        except pygame.error:
-            print(f"Error loading sound effect: {filename}")
+        sound_path = data["file_path"]
+        sound = pygame.mixer.Sound(sound_path)
+        self.sound_effects[name] = sound
 
     """
-    Play
+    Playback
         - play_music
         - play_sound_effect
     """
@@ -85,7 +84,10 @@ class AudioManager:
             name (str): The name of the music to play.
         """
         if name in self.music:
+            # Check if any music is currently playing
             current_music = pygame.mixer.music.get_busy()
+
+            # Get the name of the currently playing music if there is any, else set it to None
             current_name = self.current_music_name if current_music else None
 
             # Check if the requested music is different from the currently playing one
