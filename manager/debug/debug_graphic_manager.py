@@ -3,7 +3,7 @@
 import pygame
 from os import path
 
-def debug(graphic_manager):
+def debug_graphic_manager(graphic_manager):
     pygame.init()
 
     # Set up the display

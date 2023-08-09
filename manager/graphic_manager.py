@@ -8,71 +8,6 @@ from resource_manager import load_resources, load_resource, validate_resource
 # Path to the folders containing resources
 GRAPHIC_FOLDER = path.join("resources", "graphic")
 
-class Graphic:
-    def __init__(self, data, image):
-        """
-        Initialize a Graphic instance.
-
-        Args:
-            data (dict): A dictionary containing image resource data.
-            image (pygame.Surface): The image to be displayed.
-        """
-        self.data = data
-        self.image = image
-
-    def update(self):
-        """
-        Update the Graphic instance.
-        """
-        pass
-
-    def draw(self, surface, position):
-        """
-        Draw the graphic on a surface at the specified position.
-
-        Args:
-            surface (pygame.Surface): The surface to draw the graphic on.
-            position (tuple): The (x, y) position to draw the graphic at.
-        """
-        surface.blit(self.image, position)
-
-class Animation:
-    def __init__(self, data, frames):
-        """
-        Initialize an Animation instance.
-
-        Args:
-            data (dict): A dictionary containing animation data.
-            frames (list): A list of pygame.Surface objects representing animation frames.
-        """
-        self.data = data
-        self.frames = frames
-        self.frame_duration = data.get("frame_duration", 100)
-        self.current_frame = 0
-        self.time_elapsed = 0
-
-    def update(self, dt):
-        """
-        Update the Animation instance based on the elapsed time.
-
-        Args:
-            dt (int): The time (in milliseconds) since the last update.
-        """
-        self.time_elapsed += dt
-        if self.time_elapsed >= self.frame_duration:
-            self.time_elapsed = 0
-            self.current_frame = (self.current_frame + 1) % len(self.frames)
-
-    def draw(self, screen, position):
-        """
-        Draw the current frame of the animation on the screen at the specified position.
-
-        Args:
-            screen (pygame.Surface): The screen surface to draw on.
-            position (tuple): The (x, y) position to draw the animation frame at.
-        """
-        screen.blit(self.frames[self.current_frame], position)
-
 class GraphicManager:
     RESOURCE_MAPPING = {
         "image": {
@@ -153,11 +88,76 @@ class GraphicManager:
                 return Animation(copy.deepcopy(graphic_data.data), copied_images)
         return None
 
+class Graphic:
+    def __init__(self, data, image):
+        """
+        Initialize a Graphic instance.
+
+        Args:
+            data (dict): A dictionary containing image resource data.
+            image (pygame.Surface): The image to be displayed.
+        """
+        self.data = data
+        self.image = image
+
+    def update(self):
+        """
+        Update the Graphic instance.
+        """
+        pass
+
+    def draw(self, surface, position):
+        """
+        Draw the graphic on a surface at the specified position.
+
+        Args:
+            surface (pygame.Surface): The surface to draw the graphic on.
+            position (tuple): The (x, y) position to draw the graphic at.
+        """
+        surface.blit(self.image, position)
+
+class Animation:
+    def __init__(self, data, frames):
+        """
+        Initialize an Animation instance.
+
+        Args:
+            data (dict): A dictionary containing animation data.
+            frames (list): A list of pygame.Surface objects representing animation frames.
+        """
+        self.data = data
+        self.frames = frames
+        self.frame_duration = data.get("frame_duration", 100)
+        self.current_frame = 0
+        self.time_elapsed = 0
+
+    def update(self, dt):
+        """
+        Update the Animation instance based on the elapsed time.
+
+        Args:
+            dt (int): The time (in milliseconds) since the last update.
+        """
+        self.time_elapsed += dt
+        if self.time_elapsed >= self.frame_duration:
+            self.time_elapsed = 0
+            self.current_frame = (self.current_frame + 1) % len(self.frames)
+
+    def draw(self, screen, position):
+        """
+        Draw the current frame of the animation on the screen at the specified position.
+
+        Args:
+            screen (pygame.Surface): The screen surface to draw on.
+            position (tuple): The (x, y) position to draw the animation frame at.
+        """
+        screen.blit(self.frames[self.current_frame], position)
+
 if __name__ == "__main__":
-    from debug.debug_graphic_manager import debug
+    from debug.debug_graphic_manager import debug_graphic_manager
 
     # Create an instance of GraphicManager
     graphic_manager = GraphicManager()
 
     # Debug the GraphicManager by running the debug function
-    debug(graphic_manager)
+    debug_graphic_manager(graphic_manager)

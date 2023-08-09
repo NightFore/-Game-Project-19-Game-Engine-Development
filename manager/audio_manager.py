@@ -166,10 +166,10 @@ class AudioManager:
         pygame.mixer.music.stop()
 
 if __name__ == "__main__":
-    from debug.debug_audio_manager import debug
+    from debug.debug_audio_manager import debug_audio_manager
 
     # Create an instance of AudioManager
     audio_manager = AudioManager()
 
     # Debug the AudioManager by running the debug function
-    debug(audio_manager)
+    debug_audio_manager(audio_manager)

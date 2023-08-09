@@ -3,7 +3,7 @@
 import pygame
 from os import path
 
-def debug(audio_manager):
+def debug_audio_manager(audio_manager):
     pygame.init()
 
     # Load the debug music and sound effect using absolute file paths.
