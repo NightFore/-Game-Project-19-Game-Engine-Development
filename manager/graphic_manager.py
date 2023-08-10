@@ -153,6 +153,7 @@ class Animation:
         """
         screen.blit(self.frames[self.current_frame], position)
 
+# Debugging section
 if __name__ == "__main__":
     from debug.debug_graphic_manager import debug_graphic_manager
 

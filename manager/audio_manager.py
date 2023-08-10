@@ -165,6 +165,7 @@ class AudioManager:
         """
         pygame.mixer.music.stop()
 
+# Debugging section
 if __name__ == "__main__":
     from debug.debug_audio_manager import debug_audio_manager
 
