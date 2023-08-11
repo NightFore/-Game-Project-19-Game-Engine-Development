@@ -10,19 +10,6 @@ def debug_audio_manager(audio_manager):
     # path.dirname(__file__) gets the directory of the current script,
     # and path.join combines it with the filenames to create absolute file paths.
     # Since absolute paths are provided, they ignore the MUSIC_FOLDER and SOUND_FOLDER.
-    music = {
-        "debug_music": {
-            "type": "music",
-            "filename": path.join(path.dirname(__file__), "debug_music.mp3"),
-        },
-    }
-
-    sound_effects = {
-        "debug_sound": {
-            "type": "sound_effect",
-            "filename": path.join(path.dirname(__file__), "debug_sound.wav"),
-        },
-    }
 
     # Load the debug audios into the audio manager
     audio_manager.load_resources(music)

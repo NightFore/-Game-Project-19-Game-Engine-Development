@@ -3,16 +3,6 @@
 import pygame
 from manager.button_manager import ButtonManager
 
-DICT_BUTTONS = {
-    "MainMenuScene": [
-        {"name": "start", "position": (200, 150), "text": "Start"}
-    ],
-    "GameScene": [
-        {"name": "game_over", "position": (200, 150), "text": "Game Over"},
-        {"name": "click_me", "position": (200, 250), "text": "Click Me!"}
-    ]
-}
-
 class SceneManager:
     """
     SceneManager class manages the scenes and buttons of the game.
@@ -23,8 +13,18 @@ class SceneManager:
         Initialize the SceneManager.
         """
         self.scenes = {}
+        self.scene_params = None
         self.current_scene = None
         self.button_manager = ButtonManager()
+
+    def load_scene_params(self, params_dict):
+        """
+        Load scene parameters from a dictionary and store them.
+
+        Args:
+            params_dict (dict): A dictionary containing scene parameters.
+        """
+        self.scene_params = params_dict
 
     def add_scene(self, name, scene):
         """
@@ -49,6 +49,7 @@ class SceneManager:
                 self.current_scene.exit()
                 self.button_manager.clear_buttons()
             self.current_scene = self.scenes[name]
+            self.current_scene.set_scene_params(self.scene_params)
             self.current_scene.enter()
 
     def update(self, dt):
@@ -86,7 +87,17 @@ class SceneBase:
             scene_manager (SceneManager): The SceneManager instance.
         """
         self.scene_manager = scene_manager
+        self.scene_params = None
         self.button_manager = None
+
+    def set_scene_params(self, scene_params):
+        """
+        Set the scene parameters for the scene.
+
+        Args:
+            scene_params (dict): The dictionary of scene parameters.
+        """
+        self.scene_params = scene_params
 
     def set_button_manager(self, button_manager):
         """
@@ -99,19 +110,19 @@ class SceneBase:
 
     def create_buttons_from_dict(self, scene_name):
         """
-        Create buttons based on button information retrieved from the dictionary.
+        Create buttons based on button information retrieved from the scene_params.
 
         Args:
             scene_name (str): The name of the scene to retrieve button information for.
         """
-        # Retrieve button information from the dictionary based on the scene name
-        button_infos = DICT_BUTTONS.get(scene_name, [])
+        # Retrieve button information for the specific scene from the scene_params dictionary
+        scene_button_infos = self.scene_params.get(scene_name, {}).get("buttons", [])
 
         # Initialize an empty dictionary to store the created buttons
         self.buttons = {}
 
         # Iterate over each button information in the list
-        for button_info in button_infos:
+        for button_info in scene_button_infos:
             # Extract information for the button from the dictionary
             name = button_info["name"]
             position = button_info["position"]
@@ -152,69 +163,6 @@ class SceneBase:
             screen (pygame.Surface): The screen to draw on.
         """
         pass
-
-class MainMenuScene(SceneBase):
-    def __init__(self, scene_manager):
-        super().__init__(scene_manager)
-
-    def enter(self):
-        super().enter()
-
-    def exit(self):
-        super().exit()
-
-    def update(self, dt):
-        super().update(dt)
-
-        # Check if the "start" button is clicked
-        if self.buttons["start"].rect.collidepoint(pygame.mouse.get_pos()):
-            if pygame.mouse.get_pressed()[0]:
-                self.buttons["start"].clicked = True
-            else:
-                if self.buttons["start"].clicked:
-                    self.buttons["start"].clicked = False
-                    self.scene_manager.set_scene("game")
-
-    def draw(self, screen):
-        super().draw(screen)
-
-class GameScene(SceneBase):
-    def __init__(self, scene_manager):
-        super().__init__(scene_manager)
-
-    def enter(self):
-        super().enter()
-
-    def exit(self):
-        super().exit()
-
-    def update(self, dt):
-        super().update(dt)
-
-        # Check if the "game_over" button is clicked
-        if self.buttons["game_over"].rect.collidepoint(pygame.mouse.get_pos()):
-            if pygame.mouse.get_pressed()[0]:
-                self.buttons["game_over"].clicked = True
-            else:
-                if self.buttons["game_over"].clicked:
-                    self.buttons["game_over"].clicked = False
-                    self.scene_manager.set_scene("main_menu")
-
-        # Check if the "click_me" button is clicked
-        if self.buttons["click_me"].rect.collidepoint(pygame.mouse.get_pos()):
-            if pygame.mouse.get_pressed()[0]:
-                self.buttons["click_me"].clicked = True
-            else:
-                if self.buttons["click_me"].clicked:
-                    self.buttons["click_me"].clicked = False
-                    print("Hello World")
-
-        # Reset button states
-        for button in self.buttons.values():
-            button.clicked = False
-
-    def draw(self, screen):
-        super().draw(screen)
 
 # Debugging section
 if __name__ == "__main__":

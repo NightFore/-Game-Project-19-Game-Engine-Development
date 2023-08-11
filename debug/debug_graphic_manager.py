@@ -16,21 +16,6 @@ def debug_graphic_manager(graphic_manager):
     # path.dirname(__file__) gets the directory of the current script,
     # and path.join combines it with the filenames to create absolute file paths.
     # Since absolute paths are provided, they ignore the GRAPHIC_FOLDER.
-    images = {
-        "single": {
-            "type": "image",
-            "filename": path.join(path.dirname(__file__), "debug_graphic_manager_single.png"),
-        },
-        "sequence": {
-            "type": "image_sequence",
-            "files": [
-                {"filename": path.join(path.dirname(__file__), "debug_graphic_manager_sequence_1.png")},
-                {"filename": path.join(path.dirname(__file__), "debug_graphic_manager_sequence_2.png")},
-                # Add more frames as needed
-            ],
-            "frame_duration": 200,
-        }
-    }
 
     # Load the debug images into the graphic manager
     graphic_manager.load_resources(images)

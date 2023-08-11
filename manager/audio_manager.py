@@ -4,19 +4,15 @@ import pygame
 from os import path
 from handler.resource_handler import load_resources, load_resource, validate_resource
 
-# Path to the folders containing resources
-MUSIC_FOLDER = path.join("resources", "music")
-SOUND_FOLDER = path.join("resources", "sound_effects")
-
 class AudioManager:
     RESOURCE_MAPPING = {
         "music": {
-            "folder": MUSIC_FOLDER,
+            "folder": None,
             "load": "load_music",
             "format": {".mp3", ".ogg"}
         },
         "sound_effect": {
-            "folder": SOUND_FOLDER,
+            "folder": None,
             "load": "load_sound",
             "format": {".wav"}
         },
@@ -28,12 +24,19 @@ class AudioManager:
         self.music = {}
         self.loop = -1
         self.current_music_name = None
+        self.music_folder = None
+        self.sound_folder = None
 
     """
     Resource Manager
+        - set_resource_mapping
         - load_resources
         - load_resource
     """
+    def set_resource_mapping(self, music_folder, sound_folder):
+        self.RESOURCE_MAPPING["music"]["folder"] = music_folder
+        self.RESOURCE_MAPPING["sound_effect"]["folder"] = sound_folder
+
     def load_resources(self, resources_dict):
         """Load multiple resources from a dictionary."""
         load_resources(self, resources_dict)

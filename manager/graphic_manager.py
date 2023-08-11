@@ -5,18 +5,15 @@ import copy
 from os import path
 from handler.resource_handler import load_resources, load_resource, validate_resource
 
-# Path to the folders containing resources
-GRAPHIC_FOLDER = path.join("resources", "graphic")
-
 class GraphicManager:
     RESOURCE_MAPPING = {
         "image": {
-            "folder": GRAPHIC_FOLDER,
+            "folder": None,
             "load": "load_image",
             "format": {".png", ".jpg", ".jpeg", ".gif"}
         },
         "image_sequence": {
-            "folder": GRAPHIC_FOLDER,
+            "folder": None,
             "load": "load_image_sequence",
             "format": {".png", ".jpg", ".jpeg", ".gif"}
         },
@@ -27,9 +24,14 @@ class GraphicManager:
 
     """
     Resource Manager
+        - set_resource_mapping
         - load_resources
         - load_resource
     """
+    def set_resource_mapping(self, graphic_folder):
+        for resource_type in self.RESOURCE_MAPPING:
+            self.RESOURCE_MAPPING[resource_type]["folder"] = graphic_folder
+
     def load_resources(self, resources_dict):
         """Load multiple resources from a dictionary."""
         load_resources(self, resources_dict)

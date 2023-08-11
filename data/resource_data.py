@@ -1,6 +1,18 @@
 from os import path
 
 """
+Folder paths
+"""
+GAME_FOLDER = path.dirname(__file__)
+RESOURCES_FOLDER = path.join(GAME_FOLDER, "resources")
+FONT_FOLDER = path.join(RESOURCES_FOLDER, "font")
+GRAPHIC_FOLDER = path.join(RESOURCES_FOLDER, "graphic")
+MUSIC_FOLDER = path.join(RESOURCES_FOLDER, "music")
+SOUND_FOLDER = path.join(RESOURCES_FOLDER, "sound")
+
+
+
+"""
 Dictionary
     - DICT_MUSIC
     - DICT_SOUND_EFFECTS
