@@ -3,7 +3,7 @@
 import pygame
 import copy
 from os import path
-from resource_manager import load_resources, load_resource, validate_resource
+from handler.resource_handler import load_resources, load_resource, validate_resource
 
 # Path to the folders containing resources
 GRAPHIC_FOLDER = path.join("resources", "graphic")

@@ -1,7 +1,7 @@
 # scene_manager.py
 
 import pygame
-from button_manager import ButtonManager
+from manager.button_manager import ButtonManager
 
 DICT_BUTTONS = {
     "MainMenuScene": [

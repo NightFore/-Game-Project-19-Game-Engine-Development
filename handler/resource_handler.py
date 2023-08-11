@@ -1,7 +1,7 @@
 # resource_manager.py
 
 from os import path
-from error_manager import ResourceNotFoundError, ResourceInvalidFormatError, handle_error
+from handler.error_handler import ResourceNotFoundError, ResourceInvalidFormatError, handle_error
 
 """
 Resource Loading
