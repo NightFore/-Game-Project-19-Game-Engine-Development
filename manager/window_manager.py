@@ -21,11 +21,9 @@ class WindowManager(pygame.Surface):
         # Window Resizing
         self.resize = True
 
-        # Zoom Settings
-        self.is_zoom = False
-
-        # Fullscreen Settings
+        # Window Mode Settings
         self.is_fullscreen = False
+        self.is_zoom = False
 
         # Scaling Factors
         self.factor_w = 1
@@ -79,17 +77,14 @@ class WindowManager(pygame.Surface):
         # Returns the instance of the created window.
         return self
 
-
-
-
-    def create_game_window(self, size):
+    def create_game_window(self, size, flags=FLAGS):
         """
         Create the game window with the specified size.
 
         Args:
             size (tuple): Size of the window.
         """
-        self.screen = pygame.display.set_mode(size)
+        self.screen = pygame.display.set_mode(size, flags)
 
     def get_resolution(self, ss, gs):
         """
@@ -118,39 +113,48 @@ class WindowManager(pygame.Surface):
             screen_scaled = self.screen.get_size()
         return int(screen_scaled[0]), int(screen_scaled[1])
 
-    def set_fullscreen(self):
+    def toggle_fullscreen(self):
         """
         Toggle between fullscreen and windowed mode.
         """
         if not self.is_fullscreen:
             # Switch to fullscreen mode
+            self.is_fullscreen = True
+            self.is_zoom = False
             self.screen_gap = 0, 0
             self.screen_scaled = self.screen_size
-            self.is_zoom = False
             self.screen = pygame.display.set_mode(self.screen_size, FULLSCREEN)
             self.factor_w = 1
             self.factor_h = 1
-            self.is_fullscreen = True
         else:
             # Switch to windowed mode
-            self.resize = True
             self.is_fullscreen = False
+            self.window_resize()
 
-    def set_zoom(self):
+    def toggle_zoom(self, enable_zoom=None):
         """
-        Toggle between zoom and original size mode.
+        Toggle between zoom and original size mode, or set the zoom mode based on the enable_zoom argument.
+
+        Args:
+            enable_zoom (bool or None): True to enable zoom, False to disable, None to toggle.
         """
-        if not self.is_zoom:
-            # Switch to zoom mode
-            self.screen_gap = int((self.screen_info.current_w - self.screen_scaled[0]) / 2), self.screen_gap[1]
-            self.screen_scaled = self.screen_size
-            self.is_fullscreen = False
-            self.is_zoom = True
+        if enable_zoom is None:
+            # Toggle the zoom mode
+            self.is_zoom = not self.is_zoom
         else:
-            # Switch to original size mode
+            # Set the zoom mode based on the enable_zoom argument
+            self.is_zoom = enable_zoom
+
+        if self.is_zoom:
+            screen_info = pygame.display.Info()
+            ss = screen_info.current_w, screen_info.current_h
+            self.screen_scaled = self.get_resolution(ss, self.screen_size)
+            self.screen_gap = int((self.screen_info.current_w - self.screen_scaled[0]) / 2), self.screen_gap[1]
+            self.is_fullscreen = False
+        else:
             self.screen_gap = 0, 0
             self.screen_scaled = self.screen_size
-            self.is_zoom = False
+        self.window_resize()
 
     def update(self):
         """
@@ -168,27 +172,37 @@ class WindowManager(pygame.Surface):
                 ss = [event.w, event.h]
                 self.resize = not (self.is_zoom and (ss[0] == self.screen_info.current_w or ss[0] == self.screen_scaled[0]))
 
+        if ss[0] != self.screen_scaled[0] and ss[1] != self.screen_scaled[1]:
+            self.resize = True
+
+        screen_info = pygame.display.Info()
+
+        print((screen_info.current_w, screen_info.current_h), self.screen_scaled, ss, [self.screen.get_width(), self.screen.get_height()])
         # Resize
         if self.resize:
             self.screen_scaled = self.get_resolution(ss, self.screen_size)
 
-            # Detect Zoom
-            if ss[0] + self.screen_gap[0] == self.screen_info.current_w:
-                self.set_zoom()
-            elif self.is_zoom:
-                self.set_zoom()
+            # Detect zoom
+            if ss[0] + self.screen_gap[0] == self.screen_info.current_w or self.is_zoom:
+                self.toggle_zoom()
+            else:
+                self.window_resize()
 
-            # Calculate screen dimensions
-            screen_w = self.screen_scaled[0] + self.screen_gap[0] * 2
-            screen_h = self.screen_scaled[1] + self.screen_gap[1] * 2
+    def window_resize(self):
+        # Reset resize flag
+        self.resize = False
 
-            # Calculate scaling factors
-            self.factor_w = self.screen_scaled[0] / self.get_width()
-            self.factor_h = self.screen_scaled[1] / self.get_height()
+        # Calculate screen dimensions
+        screen_w = self.screen_scaled[0] + self.screen_gap[0] * 2
+        screen_h = self.screen_scaled[1] + self.screen_gap[1] * 2
 
-            # Update the game window size
-            self.create_game_window((screen_w, screen_h))
-            self.resize = False
+        # Calculate scaling factors
+        self.factor_w = self.screen_scaled[0] / self.get_width()
+        self.factor_h = self.screen_scaled[1] / self.get_height()
+
+        # Update the game window size
+        self.create_game_window((screen_w, screen_h))
+
 
     def draw(self):
         """
@@ -197,3 +211,28 @@ class WindowManager(pygame.Surface):
         # Add game to screen with the scaled size and gap required.
         self.screen.blit(pygame.transform.scale(self, self.screen_scaled), self.screen_gap)
         pygame.display.flip()
+
+
+
+"""
+Unused (Zoom related)
+"""
+# import ctypes
+# from ctypes import wintypes
+
+# def get_taskbar_height():
+#     taskbar_hwnd = ctypes.windll.user32.FindWindowW(u"Shell_TrayWnd", None)
+#     rect = wintypes.RECT()
+#     ctypes.windll.user32.GetWindowRect(taskbar_hwnd, ctypes.byref(rect))
+#     return rect.bottom - rect.top
+
+# def get_window_title_bar_size():
+#     title_bar_height = ctypes.windll.user32.GetSystemMetrics(4)  # SM_CYCAPTION
+#     border_height = ctypes.windll.user32.GetSystemMetrics(6)  # SM_CYSIZEFRAME
+#     unknown_offset = -1
+#     return title_bar_height + border_height + unknown_offset
+
+# def get_total_window_height():
+#     window_height = get_window_title_bar_size()
+#     taskbar_height = get_taskbar_height()
+#     return window_height + taskbar_height

@@ -1,3 +1,6 @@
+import pygame
+from manager.scene_manager import SceneBase
+
 class GameScene(SceneBase):
     def __init__(self, scene_manager):
         super().__init__(scene_manager)
@@ -18,7 +21,7 @@ class GameScene(SceneBase):
             else:
                 if self.buttons["game_over"].clicked:
                     self.buttons["game_over"].clicked = False
-                    self.scene_manager.set_scene("main_menu")
+                    self.scene_manager.set_scene("MainMenuScene")
 
         # Check if the "click_me" button is clicked
         if self.buttons["click_me"].rect.collidepoint(pygame.mouse.get_pos()):

@@ -1,6 +1,10 @@
 # scene_manager.py
 
 import pygame
+import os
+import inspect
+import importlib
+
 from manager.button_manager import ButtonManager
 
 class SceneManager:
@@ -13,18 +17,43 @@ class SceneManager:
         Initialize the SceneManager.
         """
         self.scenes = {}
-        self.scene_params = None
+        self.scenes_params = None
         self.current_scene = None
         self.button_manager = ButtonManager()
 
-    def load_scene_params(self, params_dict):
+    def load_scenes_params(self, params_dict):
         """
         Load scene parameters from a dictionary and store them.
 
         Args:
             params_dict (dict): A dictionary containing scene parameters.
         """
-        self.scene_params = params_dict
+        self.scenes_params = params_dict
+
+    def load_scenes_from_directory(self, directory):
+        """
+        Load scenes from Python files in the specified directory and add them to the SceneManager.
+
+        Args:
+            directory (str): The directory containing the scene Python files.
+        """
+        # Iterate over the files in the specified directory
+        for filename in os.listdir(directory):
+            # Check if the file is a Python file and not an __init__.py file
+            if filename.endswith(".py") and filename != "__init__.py":
+                # Get the module name without the file extension
+                module_name = os.path.splitext(filename)[0]
+
+                # Import the module dynamically
+                module = importlib.import_module(f"{directory}.{module_name}")
+
+                # Iterate over the objects in the imported module
+                for name, obj in inspect.getmembers(module):
+                    # Check if the object is a class and a subclass of SceneBase (excluding SceneBase itself)
+                    if inspect.isclass(obj) and issubclass(obj, SceneBase) and obj != SceneBase:
+                        # Create an instance of the scene class and add it to the SceneManager
+                        scene_instance = obj(self)
+                        self.add_scene(name, scene_instance)
 
     def add_scene(self, name, scene):
         """
@@ -49,7 +78,7 @@ class SceneManager:
                 self.current_scene.exit()
                 self.button_manager.clear_buttons()
             self.current_scene = self.scenes[name]
-            self.current_scene.set_scene_params(self.scene_params)
+            self.current_scene.set_scene_params(self.scenes_params)
             self.current_scene.enter()
 
     def update(self, dt):
@@ -163,17 +192,3 @@ class SceneBase:
             screen (pygame.Surface): The screen to draw on.
         """
         pass
-
-# Debugging section
-if __name__ == "__main__":
-    from debug.debug_scene_manager import debug_scene_manager
-
-    # Create an instance of SceneManager
-    scene_manager = SceneManager()
-
-    # Create instances of scenes
-    main_menu_scene = MainMenuScene(scene_manager)
-    game_scene = GameScene(scene_manager)
-
-    # Debug the SceneManager by running the debug function
-    debug_scene_manager(scene_manager, main_menu_scene, game_scene)

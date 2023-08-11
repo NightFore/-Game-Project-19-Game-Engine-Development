@@ -20,6 +20,7 @@ class Game:
         pygame.mixer.pre_init(44100, -16, 2, 2048)
         pygame.mixer.init()
         pygame.init()
+        pygame.font.init()
         random.seed()
         self.playing = True
         self.paused = False
@@ -34,6 +35,7 @@ class Game:
         - load_folders
         - load_managers
         - load_resource_mapping
+        - load_scene_instances
         - load_window_instance
         - load_constants
         - load_resources
@@ -45,11 +47,13 @@ class Game:
         self.load_folders()
         self.load_managers()
         self.load_resource_mapping()
+        self.load_scene_instances()
         self.load_window_instance()
         self.load_constants()
-        self.load_resources()
 
-        if self.debug_mode:
+        if not self.debug_mode:
+            self.load_resources()
+        else:
             self.load_debug_resources()
 
     def load_folders(self):
@@ -71,13 +75,17 @@ class Game:
         self.audio_manager.set_resource_mapping(self.music_folder, self.sound_folder)
         self.graphic_manager.set_resource_mapping(self.graphic_folder)
 
+    def load_scene_instances(self):
+        self.scene_manager.load_scenes_from_directory("scenes")
+        self.scene_manager.load_scenes_params(DEBUG_DICT_SCENE)
+        self.scene_manager.set_scene("MainMenuScene")
+
     def load_window_instance(self):
         self.project_title = PROJECT_TITLE
         self.screen_size = self.screen_width, self.screen_height = SCREEN_SIZE
         self.FPS = FPS
         self.first_screen = FIRST_SCREEN
         self.gameDisplay = self.window_manager.create_window_instance(self.screen_size, self, self.project_title, self.FPS, self.first_screen)
-
 
     def load_constants(self):
         pass
@@ -88,7 +96,6 @@ class Game:
     def load_debug_resources(self):
         self.audio_manager.load_resources(DEBUG_DICT_AUDIO)
         self.graphic_manager.load_resources(DEBUG_DICT_GRAPHIC)
-        self.scene_manager.load_scene_params(DEBUG_DICT_SCENE)
 
 
 
@@ -97,7 +104,14 @@ class Game:
         - new
     """
     def new(self):
+        self.test = 60
+        if self.debug_mode:
+            self.debug_mode_test()
+
+    def debug_mode_test(self):
         pass
+
+
 
     """
     Game Loop
@@ -107,7 +121,6 @@ class Game:
         - draw
         - quit_game
     """
-
     def run(self):
         while self.playing:
             for event in pygame.event.get():
@@ -128,10 +141,14 @@ class Game:
         self.event = pygame.event.get()
 
     def update(self):
+        self.scene_manager.update(self.dt)
         self.gameDisplay.update()
 
+
     def draw(self):
+        self.gameDisplay.fill((30, 30, 30))
         pygame.draw.rect(self.gameDisplay, (255, 0, 0), (100, 100, 200, 150))
+        self.scene_manager.draw(self.gameDisplay)
         self.gameDisplay.draw()
 
     def quit_game(self):
