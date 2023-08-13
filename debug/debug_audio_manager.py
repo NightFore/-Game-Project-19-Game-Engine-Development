@@ -14,10 +14,11 @@ def debug_audio_manager(audio_manager):
     audio_manager.set_music_loop(-1)
 
     # Pause and resume music
+    pygame.time.wait(1000)
     audio_manager.pause_music()
-    pygame.time.wait(2000)
+    pygame.time.wait(1000)
     audio_manager.unpause_music()
 
     # Stop music
-    pygame.time.wait(5000)
+    pygame.time.wait(2500)
     audio_manager.stop_music()

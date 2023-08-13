@@ -1,7 +1,6 @@
 PROJECT_TITLE = "[Game Project 19] Game Engine Development"
 SCREEN_SIZE = (1280, 720)
 FPS = 60
-FIRST_SCREEN = False
 
 # Colors
 BLACK = 0, 0, 0

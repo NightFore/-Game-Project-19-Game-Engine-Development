@@ -12,7 +12,7 @@ This project aims to develop a comprehensive game engine with various managers t
 ## Managers
 - AudioManager: Audio resources, music, and sound effects management.
 - GraphicManager: Graphical elements and sprites handling.
-- SceneManager: Game scenes and interfaces management.
+- 	Manager: Game scenes and interfaces management.
 - WindowManager: Display settings, window, and scaling management.
 - ButtonManager: User interface buttons and interactions handling.
 
@@ -25,13 +25,14 @@ project/
 │   └── resource_data.py
 ├── debug/
 │   ├── debug_audio_manager.py
-│   ├── debug_audio_music.mp3
-│   ├── debug_audio_sound.wav
 │   ├── debug_graphic_manager.py
-│   ├── debug_graphic_manager_sequence_1.png
-│   ├── debug_graphic_manager_sequence_2.png
-│   ├── debug_graphic_manager_single.png
-│   └── debug_scene_manager.py
+│   ├── debug_scene_manager.py
+│   └── debug_resources/
+│   	├── debug_audio_music.mp3
+│   	├── debug_audio_sound.wav
+│   	├── debug_graphic_manager_sequence_1.png
+│   	├── debug_graphic_manager_sequence_2.png
+│   	└── debug_graphic_manager_single.png
 ├── handler/
 │   ├── error_handler.py
 │   └── resource_handler.py
@@ -51,7 +52,7 @@ project/
     ├── __init__.py
     ├── main_menu_scene.py
     └── game_scene.py
-	
+
 ## Controls
 N/A
 
