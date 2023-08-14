@@ -12,7 +12,7 @@ This project aims to develop a comprehensive game engine with various managers t
 ## Managers
 - AudioManager: Audio resources, music, and sound effects management.
 - GraphicManager: Graphical elements and sprites handling.
-- 	Manager: Game scenes and interfaces management.
+- SceneManager: Game scenes and interfaces management.
 - WindowManager: Display settings, window, and scaling management.
 - ButtonManager: User interface buttons and interactions handling.
 

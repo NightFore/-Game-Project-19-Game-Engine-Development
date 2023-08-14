@@ -1,4 +1,6 @@
 import pygame
+from pygame.locals import *
+
 import random
 from os import path
 
@@ -10,9 +12,8 @@ from manager.window_manager import WindowManager
 from data.constant_data import PROJECT_TITLE, SCREEN_SIZE, FPS
 from data.resource_data import DICT_MUSIC, DICT_SOUND_EFFECTS
 
-from debug.debug_audio_manager import debug_audio_manager
-from debug.debug_graphic_manager import debug_graphic_manager
-from debug.debug_scene_manager import debug_scene_manager
+from debug.debug_audio_manager import DebugAudioManager
+from debug.debug_graphic_manager import DebugGraphicManager
 from debug.debug_data import DEBUG_DICT_AUDIO, DEBUG_DICT_GRAPHIC, DEBUG_DICT_SCENE
 
 class Game:
@@ -29,6 +30,8 @@ class Game:
         self.playing = True
         self.paused = False
         self.debug_mode = True
+        self.debug_updates = []
+        self.debug_draws = []
         self.load()
         self.new()
         self.start_game()
@@ -64,6 +67,7 @@ class Game:
         else:
             self.load_debug_resource_mapping()
             self.load_debug_resources()
+            self.load_debug_managers()
 
     def load_folders(self):
         self.game_folder = path.dirname(__file__)
@@ -118,6 +122,15 @@ class Game:
         self.audio_manager.load_resources(DEBUG_DICT_AUDIO)
         self.graphic_manager.load_resources(DEBUG_DICT_GRAPHIC)
 
+    def load_debug_managers(self):
+        debug_managers = [
+            DebugAudioManager(self.audio_manager),
+            DebugGraphicManager(self.graphic_manager, self.window_manager)
+        ]
+
+        for debug_manager in debug_managers:
+            self.debug_updates.append(debug_manager.update)
+            self.debug_draws.append(debug_manager.draw)
 
 
     """
@@ -141,11 +154,6 @@ class Game:
     def start_game(self):
         self.scene_manager.set_scene("MainMenuScene")
 
-        if self.debug_mode:
-            # debug_audio_manager(self.audio_manager)
-            debug_graphic_manager(self.graphic_manager, self.window_manager)
-
-
     def run(self):
         while self.playing:
             self.dt = self.clock.tick(self.FPS) / 1000
@@ -159,16 +167,33 @@ class Game:
         """Click: None, Left, Middle, Right, Scroll Up, Scroll Down"""
         self.click = [None, False, False, False, False, False]
 
-        """Events"""
+        """Handle Events"""
         self.event = pygame.event.get()
         for event in self.event:
+            # Handle window resizing event
             if event.type == VIDEORESIZE:
                 self.gameDisplay.resize()
+
+            # Check for keyboard shortcuts
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.quit_game()
+                elif event.key == pygame.K_F4:
+                    self.window_manager.update_display_mode(toggle_zoom=True)
+                elif event.key == pygame.K_F11:
+                    self.window_manager.update_display_mode(toggle_fullscreen=True)
+
+            # Handle quit event
             if event.type == pygame.QUIT:
                 self.quit_game()
 
     def update(self):
         self.scene_manager.update(self.dt)
+
+        if self.debug_mode:
+            for debug_update_func in self.debug_updates:
+                debug_update_func()
+
         self.gameDisplay.update(self.clock.get_fps())
 
 
@@ -176,6 +201,11 @@ class Game:
         self.gameDisplay.fill((30, 30, 30))
         pygame.draw.rect(self.gameDisplay, (255, 0, 0), (100, 100, 200, 150))
         self.scene_manager.draw(self.gameDisplay)
+
+        if self.debug_mode:
+            for debug_draw_func in self.debug_draws:
+                debug_draw_func()
+
         self.gameDisplay.draw()
 
     def quit_game(self):
