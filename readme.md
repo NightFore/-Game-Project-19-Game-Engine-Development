@@ -17,6 +17,7 @@ This project aims to develop a comprehensive game engine with various managers t
 - ButtonManager: User interface buttons and interactions handling.
 
 ## Project Tree
+```
 project/
 ├── main.py
 ├── readme.md
@@ -26,7 +27,6 @@ project/
 ├── debug/
 │   ├── debug_audio_manager.py
 │   ├── debug_graphic_manager.py
-│   ├── debug_scene_manager.py
 │   └── debug_resources/
 │   	├── debug_audio_music.mp3
 │   	├── debug_audio_sound.wav
@@ -52,6 +52,7 @@ project/
     ├── __init__.py
     ├── main_menu_scene.py
     └── game_scene.py
+```
 
 ## Controls
 N/A
