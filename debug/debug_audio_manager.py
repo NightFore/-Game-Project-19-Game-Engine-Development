@@ -26,18 +26,5 @@ class DebugAudioManager:
                 self.audio_manager.play_music("debug_music")
                 self.audio_manager.play_sound_effect("debug_sound")
 
-            # Pause music
-            elif self.wait_timer == 60:
-                self.audio_manager.pause_music()
-
-            # Resume music
-            elif self.wait_timer == 120:
-                self.audio_manager.unpause_music()
-
-            # Stop music
-            elif self.wait_timer == 180:
-                self.audio_manager.stop_music()
-                self.state = "done"
-
     def draw(self):
         pass

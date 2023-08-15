@@ -20,12 +20,17 @@ class AudioManager:
 
     def __init__(self):
         pygame.mixer.init()
-        self.sound_effects = {}
-        self.music = {}
-        self.loop = -1
-        self.current_music_name = None
         self.music_folder = None
         self.sound_folder = None
+        self.music = {}
+        self.sound_effects = {}
+        self.init_manager()
+
+    def init_manager(self):
+        pygame.mixer.quit()
+        pygame.mixer.init()
+        self.loop = -1
+        self.current_music_name = None
 
     """
     Resource Manager

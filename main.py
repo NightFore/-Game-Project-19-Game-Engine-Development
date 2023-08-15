@@ -10,7 +10,7 @@ from manager.graphic_manager import GraphicManager
 from manager.scene_manager import SceneManager
 from manager.window_manager import WindowManager
 from data.constant_data import PROJECT_TITLE, SCREEN_SIZE, FPS
-from data.resource_data import DICT_MUSIC, DICT_SOUND_EFFECTS
+from data.resource_data import DICT_AUDIO, DICT_GRAPHIC, DICT_SCENE
 
 from debug.debug_audio_manager import DebugAudioManager
 from debug.debug_graphic_manager import DebugGraphicManager
@@ -22,7 +22,6 @@ class Game:
     """
     def __init__(self):
         pygame.mixer.pre_init(44100, -16, 2, 2048)
-        pygame.mixer.init()
         pygame.init()
         pygame.font.init()
         random.seed()
@@ -32,114 +31,96 @@ class Game:
         self.debug_mode = True
         self.debug_updates = []
         self.debug_draws = []
-        self.load()
-        self.new()
+        self.init_game()
+        self.load_game()
         self.start_game()
 
+    def init_game(self):
+        self.init_folders()
+        self.init_managers()
+        self.init_resource_mapping()
+        self.init_scene_instances()
+        self.init_display()
 
-
-    """
-    Loading
-        - load_folders
-        - load_managers
-        - load_resource_mapping
-        - load_scene_instances
-        - load_window_instance
-        - load_constants
-        - load_resources
-        
-    Debug
-        - load_debug_resources
-    """
-    def load(self):
-        self.load_folders()
-
-        # Managers
-        self.load_managers()
-        self.load_scene_instances()
-        self.load_window_instance()
-
-        # Resources & Data
-        self.load_constants()
-        if not self.debug_mode:
-            self.load_resource_mapping()
-            self.load_resources()
-        else:
-            self.load_debug_resource_mapping()
-            self.load_debug_resources()
-            self.load_debug_managers()
-
-    def load_folders(self):
+    def init_folders(self):
         self.game_folder = path.dirname(__file__)
-        self.resources_folder = path.join(self.game_folder, "resources")
-        self.font_folder = path.join(self.resources_folder, "font")
-        self.graphic_folder = path.join(self.resources_folder, "graphic")
-        self.music_folder = path.join(self.resources_folder, "music")
-        self.sound_folder = path.join(self.resources_folder, "sound")
 
-        # Debug
-        self.debug_folder = path.join(self.game_folder, "debug")
-        self.debug_resources_folder = path.join(self.debug_folder, "debug_resources")
+        if not self.debug_mode:
+            self.resources_folder = path.join(self.game_folder, "resources")
+            self.font_folder = path.join(self.resources_folder, "font")
+            self.graphic_folder = path.join(self.resources_folder, "graphic")
+            self.music_folder = path.join(self.resources_folder, "music")
+            self.sound_folder = path.join(self.resources_folder, "sound")
+        else:
+            self.debug_folder = path.join(self.game_folder, "debug")
+            self.font_folder = path.join(self.debug_folder, "debug_resources")
+            self.graphic_folder = path.join(self.debug_folder, "debug_resources")
+            self.music_folder = path.join(self.debug_folder, "debug_resources")
+            self.sound_folder = path.join(self.debug_folder, "debug_resources")
 
-    # -------------------- #
-
-    def load_managers(self):
+    def init_managers(self):
         self.audio_manager = AudioManager()
         self.button_manager = ButtonManager()
         self.graphic_manager = GraphicManager()
         self.scene_manager = SceneManager()
         self.window_manager = WindowManager()
 
-    def load_scene_instances(self):
-        self.scene_manager.load_scenes_from_directory("scenes")
-        self.scene_manager.load_scenes_params(DEBUG_DICT_SCENE)
+    def init_resource_mapping(self):
+        self.audio_manager.set_resource_mapping(self.music_folder, self.sound_folder)
+        self.graphic_manager.set_resource_mapping(self.graphic_folder)
 
-    def load_window_instance(self):
+    def init_scene_instances(self):
+        self.scene_manager.load_scenes_from_directory("scenes")
+
+    def init_display(self):
         self.project_title = PROJECT_TITLE
         self.screen_size = self.screen_width, self.screen_height = SCREEN_SIZE
         self.FPS = FPS
         self.gameDisplay = self.window_manager.create_window_instance(self.project_title, self.screen_size)
 
-    # -------------------- #
 
-    def load_constants(self):
-        pass
 
-    def load_resource_mapping(self):
-        self.audio_manager.set_resource_mapping(self.music_folder, self.sound_folder)
-        self.graphic_manager.set_resource_mapping(self.graphic_folder)
+    """
+    Loading
+    """
+    def load_game(self):
+        if not self.debug_mode:
+            self.load_resources()
+        else:
+            self.load_debug_resources()
 
     def load_resources(self):
-        pass
-
-    # -------------------- #
-
-    def load_debug_resource_mapping(self):
-        self.audio_manager.set_resource_mapping(self.debug_resources_folder, self.debug_resources_folder)
-        self.graphic_manager.set_resource_mapping(self.debug_resources_folder)
+        self.audio_manager.load_resources(DICT_AUDIO)
+        self.graphic_manager.load_resources(DICT_GRAPHIC)
+        self.scene_manager.load_scenes_params(DICT_SCENE)
 
     def load_debug_resources(self):
         self.audio_manager.load_resources(DEBUG_DICT_AUDIO)
         self.graphic_manager.load_resources(DEBUG_DICT_GRAPHIC)
+        self.scene_manager.load_scenes_params(DEBUG_DICT_SCENE)
 
-    def load_debug_managers(self):
-        debug_managers = [
-            DebugAudioManager(self.audio_manager),
-            DebugGraphicManager(self.graphic_manager, self.window_manager)
-        ]
-
-        for debug_manager in debug_managers:
-            self.debug_updates.append(debug_manager.update)
-            self.debug_draws.append(debug_manager.draw)
 
 
     """
-    New
-        - new
+    Startup
     """
-    def new(self):
-        pass
+    def start_game(self):
+        self.start_managers()
+        self.start_debug_mode()
+        self.scene_manager.set_scene("MainMenuScene")
 
+    def start_managers(self):
+        self.audio_manager.init_manager()
+
+    def start_debug_mode(self):
+        if self.debug_mode:
+            debug_managers = [
+                DebugAudioManager(self.audio_manager),
+                DebugGraphicManager(self.graphic_manager, self.window_manager)]
+
+            for debug_manager in debug_managers:
+                self.debug_updates.append(debug_manager.update)
+                self.debug_draws.append(debug_manager.draw)
 
 
     """
@@ -151,9 +132,6 @@ class Game:
         - draw
         - quit_game
     """
-    def start_game(self):
-        self.scene_manager.set_scene("MainMenuScene")
-
     def run(self):
         while self.playing:
             self.dt = self.clock.tick(self.FPS) / 1000
@@ -180,6 +158,8 @@ class Game:
                     self.quit_game()
                 elif event.key == pygame.K_F4:
                     self.window_manager.update_display_mode(toggle_zoom=True)
+                elif event.key == pygame.K_F5:
+                    self.start_game()
                 elif event.key == pygame.K_F11:
                     self.window_manager.update_display_mode(toggle_fullscreen=True)
 
