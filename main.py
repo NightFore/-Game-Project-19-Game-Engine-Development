@@ -29,14 +29,13 @@ class Game:
         self.playing = True
         self.paused = False
         self.debug_mode = True
-        self.debug_updates = []
-        self.debug_draws = []
         self.init_game()
         self.load_game()
         self.start_game()
 
     def init_game(self):
         self.init_folders()
+        self.init_dict()
         self.init_managers()
         self.init_resource_mapping()
         self.init_scene_instances()
@@ -57,6 +56,16 @@ class Game:
             self.graphic_folder = path.join(self.debug_folder, "debug_resources")
             self.music_folder = path.join(self.debug_folder, "debug_resources")
             self.sound_folder = path.join(self.debug_folder, "debug_resources")
+
+    def init_dict(self):
+        if not self.debug_mode:
+            self.audio_dict = DICT_AUDIO
+            self.graphic_dict = DICT_GRAPHIC
+            self.scene_dict = DICT_SCENE
+        else:
+            self.audio_dict = DEBUG_DICT_AUDIO
+            self.graphic_dict = DEBUG_DICT_GRAPHIC
+            self.scene_dict = DEBUG_DICT_SCENE
 
     def init_managers(self):
         self.audio_manager = AudioManager()
@@ -84,20 +93,12 @@ class Game:
     Loading
     """
     def load_game(self):
-        if not self.debug_mode:
-            self.load_resources()
-        else:
-            self.load_debug_resources()
+        self.load_resources()
 
     def load_resources(self):
-        self.audio_manager.load_resources(DICT_AUDIO)
-        self.graphic_manager.load_resources(DICT_GRAPHIC)
-        self.scene_manager.load_scenes_params(DICT_SCENE)
-
-    def load_debug_resources(self):
-        self.audio_manager.load_resources(DEBUG_DICT_AUDIO)
-        self.graphic_manager.load_resources(DEBUG_DICT_GRAPHIC)
-        self.scene_manager.load_scenes_params(DEBUG_DICT_SCENE)
+        self.audio_manager.load_resources(self.audio_dict)
+        self.graphic_manager.load_resources(self.graphic_dict)
+        self.scene_manager.load_scenes_params(self.scene_dict)
 
 
 
@@ -107,12 +108,15 @@ class Game:
     def start_game(self):
         self.start_managers()
         self.start_debug_mode()
-        self.scene_manager.set_scene("MainMenuScene")
 
     def start_managers(self):
         self.audio_manager.init_manager()
+        self.scene_manager.set_scene("MainMenuScene")
 
     def start_debug_mode(self):
+        self.debug_updates = []
+        self.debug_draws = []
+
         if self.debug_mode:
             debug_managers = [
                 DebugAudioManager(self.audio_manager),
