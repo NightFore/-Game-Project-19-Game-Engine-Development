@@ -9,11 +9,11 @@ class DebugAudioManager:
         # Timer to track waiting intervals
         self.wait_timer = 0
 
-        # Initial state is to play music and sound effects
+        # Initial state is to play music and sounds
         self.state = "play"
 
         # Set volume and loop
-        self.audio_manager.set_sound_effect_volume(0.5)
+        self.audio_manager.set_sound_volume(0.5)
         self.audio_manager.set_music_volume(0.3)
         self.audio_manager.set_music_loop(-1)
 
@@ -21,10 +21,10 @@ class DebugAudioManager:
         # Update the wait timer and change state accordingly
         self.wait_timer += 1
         if self.state == "play":
-            # Play music and sound effect
+            # Play music and sound
             if self.wait_timer == 1:
                 self.audio_manager.play_music("debug_music")
-                self.audio_manager.play_sound_effect("debug_sound")
+                self.audio_manager.play_sound("debug_sound")
 
     def draw(self):
         pass

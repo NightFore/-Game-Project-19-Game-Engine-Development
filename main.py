@@ -7,10 +7,13 @@ from os import path
 from manager.audio_manager import AudioManager
 from manager.button_manager import ButtonManager
 from manager.graphic_manager import GraphicManager
+from manager.resource_manager import ResourceManager
 from manager.scene_manager import SceneManager
+from manager.font_manager import FontManager
 from manager.window_manager import WindowManager
+
 from data.constant_data import PROJECT_TITLE, SCREEN_SIZE, FPS
-from data.resource_data import DICT_AUDIO, DICT_GRAPHIC, DICT_SCENE
+from data.resource_data import DICT_AUDIO, DICT_FONT, DICT_GRAPHIC, DICT_SCENE
 
 from debug.debug_audio_manager import DebugAudioManager
 from debug.debug_graphic_manager import DebugGraphicManager
@@ -23,8 +26,8 @@ class Game:
     def __init__(self):
         pygame.mixer.pre_init(44100, -16, 2, 2048)
         pygame.init()
-        pygame.font.init()
         random.seed()
+        self.total_play_time = 0
         self.clock = pygame.time.Clock()
         self.playing = True
         self.paused = False
@@ -37,9 +40,6 @@ class Game:
         self.init_folders()
         self.init_dict()
         self.init_managers()
-        self.init_resource_mapping()
-        self.init_scene_instances()
-        self.init_display()
 
     def init_folders(self):
         self.game_folder = path.dirname(__file__)
@@ -57,9 +57,18 @@ class Game:
             self.music_folder = path.join(self.debug_folder, "debug_resources")
             self.sound_folder = path.join(self.debug_folder, "debug_resources")
 
+        self.resource_type_folders = {
+            "music": self.music_folder,
+            "sound": self.sound_folder,
+            "image": self.graphic_folder,
+            "image_sequence": self.graphic_folder,
+            "font": self.font_folder,
+        }
+
     def init_dict(self):
         if not self.debug_mode:
             self.audio_dict = DICT_AUDIO
+            self.font_dict = DICT_FONT
             self.graphic_dict = DICT_GRAPHIC
             self.scene_dict = DICT_SCENE
         else:
@@ -71,21 +80,10 @@ class Game:
         self.audio_manager = AudioManager()
         self.button_manager = ButtonManager()
         self.graphic_manager = GraphicManager()
+        self.resource_manager = ResourceManager()
         self.scene_manager = SceneManager()
+        self.font_manager = FontManager()
         self.window_manager = WindowManager()
-
-    def init_resource_mapping(self):
-        self.audio_manager.set_resource_mapping(self.music_folder, self.sound_folder)
-        self.graphic_manager.set_resource_mapping(self.graphic_folder)
-
-    def init_scene_instances(self):
-        self.scene_manager.load_scenes_from_directory("scenes")
-
-    def init_display(self):
-        self.project_title = PROJECT_TITLE
-        self.screen_size = self.screen_width, self.screen_height = SCREEN_SIZE
-        self.FPS = FPS
-        self.gameDisplay = self.window_manager.create_window_instance(self.project_title, self.screen_size)
 
 
 
@@ -93,11 +91,31 @@ class Game:
     Loading
     """
     def load_game(self):
+        self.load_display()
         self.load_resources()
+        self.load_scenes()
+
+    def load_display(self):
+        """
+        Initialize game display settings.
+        """
+        self.project_title = PROJECT_TITLE
+        self.screen_size = self.screen_width, self.screen_height = SCREEN_SIZE
+        self.FPS = FPS
+        self.gameDisplay = self.window_manager.create_window_instance(self.project_title, self.screen_size)
 
     def load_resources(self):
-        self.audio_manager.load_resources(self.audio_dict)
-        self.graphic_manager.load_resources(self.graphic_dict)
+        # ResourceManager
+        self.resource_manager.set_resource_folders(self.resource_type_folders)
+        self.resource_manager.load_resources(self.audio_dict)
+        self.resource_manager.load_resources(self.graphic_dict)
+
+        # Dependent Managers
+        self.audio_manager.load_resources_from_manager(self.resource_manager)
+        self.graphic_manager.load_resources_from_manager(self.resource_manager)
+
+    def load_scenes(self):
+        self.scene_manager.load_scenes_from_directory("scenes")
         self.scene_manager.load_scenes_params(self.scene_dict)
 
 
@@ -110,7 +128,6 @@ class Game:
         self.start_debug_mode()
 
     def start_managers(self):
-        self.audio_manager.init_manager()
         self.scene_manager.set_scene("MainMenuScene")
 
     def start_debug_mode(self):
@@ -126,6 +143,17 @@ class Game:
                 self.debug_updates.append(debug_manager.update)
                 self.debug_draws.append(debug_manager.draw)
 
+    """
+    Update
+        - calculate_total_play_time
+    """
+    def calculate_total_play_time(self):
+        # Calculate the elapsed time since the last frame update
+        elapsed_time = self.dt
+
+        # Add the elapsed time to the total play time
+        self.total_play_time += elapsed_time
+
 
     """
     Game Loop
@@ -140,8 +168,7 @@ class Game:
         while self.playing:
             self.dt = self.clock.tick(self.FPS) / 1000
             self.events()
-            if not self.paused:
-                self.update()
+            self.update()
             self.draw()
         self.quit_game()
 
@@ -172,13 +199,21 @@ class Game:
                 self.quit_game()
 
     def update(self):
-        self.scene_manager.update(self.dt)
+        # Check if the game is not paused before performing updates
+        if not self.paused:
+            # Update game time if the game is not paused
+            self.calculate_total_play_time()
 
-        if self.debug_mode:
-            for debug_update_func in self.debug_updates:
-                debug_update_func()
+            # Update the scene manager with the time elapsed since the last update
+            self.scene_manager.update(self.dt)
 
-        self.gameDisplay.update(self.clock.get_fps())
+            # Debug: If debug mode is enabled, perform debug operations
+            if self.debug_mode:
+                for debug_update_func in self.debug_updates:
+                    debug_update_func()
+
+            # Update the display with the current frames per second (FPS)
+            self.gameDisplay.update(self.clock.get_fps())
 
 
     def draw(self):
@@ -194,6 +229,7 @@ class Game:
 
     def quit_game(self):
         # pygame.image.save(self.gameDisplay, "screenshot.png")
+        print(f"Total game time: {self.total_play_time:.3f} seconds")
         pygame.quit()
         quit()
 

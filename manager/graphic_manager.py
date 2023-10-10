@@ -1,166 +1,237 @@
 # graphic_manager.py
 
 import pygame
-import copy
-from os import path
-from handler.resource_handler import load_resources, load_resource, validate_resource
 
 class GraphicManager:
-    RESOURCE_MAPPING = {
-        "image": {
-            "folder": None,
-            "load": "load_image",
-            "format": {".png", ".jpg", ".jpeg", ".gif"}
-        },
-        "image_sequence": {
-            "folder": None,
-            "load": "load_image_sequence",
-            "format": {".png", ".jpg", ".jpeg", ".gif"}
-        },
-    }
+    """
+    GraphicManager handles graphic resources and their instances in the game.
 
+    Attributes:
+        images (dict): A dictionary containing loaded image resources.
+        image_sequences (dict): A dictionary containing loaded image sequence resources.
+        interfaces (dict): A dictionary containing loaded interface resources.
+        graphics (dict): A dictionary containing instances of graphic resources.
+
+    Example:
+        First, define a ResourceManager and load graphic resources into it.
+        Then, create an GraphicManager, load graphic resources from the ResourceManager, and create instance:
+
+        graphic_manager = GraphicManager()
+        graphic_manager.load_resources_from_manager(resource_manager)
+
+        In your game loop, update and draw the graphics using the GraphicManager.
+
+        while running:
+            # Update graphic instances
+            graphic_manager.update()
+
+            # Draw graphic instances on the screen
+            graphic_manager.draw(screen)
+
+    Dependencies:
+        ResourceManager: A separate ResourceManager instance is required to load graphic resources.
+
+    Methods:
+        - init_manager: Initialize the GraphicManager.
+        - load_resources_from_manager(resource_manager): Load graphic resources from a ResourceManager.
+        - create_graphics: Create instances for loaded graphic resources.
+        - update: Update the logic of graphic instances.
+        - draw(screen): Draw graphic instances on the screen.
+    """
     def __init__(self):
+        # Initialize dictionaries to store resource data
+        self.images = {}
+        self.image_sequences = {}
+        self.interfaces = {}
+
+        # Dictionary to store graphic instances
         self.graphics = {}
 
     """
-    Resource Manager
-        - set_resource_mapping
-        - load_resources
-        - load_resource
+    Resources
+        - load_resources_from_manager
+        - create_graphics
     """
-    def set_resource_mapping(self, graphic_folder):
-        for resource_type in self.RESOURCE_MAPPING:
-            self.RESOURCE_MAPPING[resource_type]["folder"] = graphic_folder
-
-    def load_resources(self, resources_dict):
-        """Load multiple resources from a dictionary."""
-        load_resources(self, resources_dict)
-
-    def load_resource(self, resource_name, resource_data):
-        """Load a resource based on its type using the appropriate loading method."""
-        load_resource(self, resource_name, resource_data)
-
-    """
-    Loading
-        - load_image
-        - load_image_sequence
-    """
-    def load_image(self, name, data):
+    def load_resources_from_manager(self, resource_manager):
         """
-        Load a single image resource from its data.
+        Load graphic resources from a ResourceManager.
 
         Args:
-            name (str): The name of the image resource.
-            data (dict): A dictionary containing image resource data.
-        """
-        image_path = data["file_path"]
-        image = pygame.image.load(image_path).convert_alpha()
-        self.graphics[name] = Graphic(data, image)
+            resource_manager (ResourceManager): The ResourceManager containing loaded resources.
 
-    def load_image_sequence(self, name, data):
+        Raises:
+            ValueError: If conflicting names are found between loaded resources and existing graphics.
         """
-        Load an image sequence as an animation.
+        # Check for conflicting names among all graphic resources
+        all_resource_names = set(self.images.keys()) | set(self.image_sequences.keys()) | set(self.interfaces.keys())
+        loaded_resource_names = set(resource_manager.image_resources.keys()) | set(resource_manager.image_sequence_resources.keys()) | set(resource_manager.interface_resources.keys())
 
-        Args:
-            name (str): The name of the image sequence.
-            data (dict): A dictionary containing image sequence data.
-        """
-        frames = []
-        for frame_path in data["file_paths"]:
-            frame = pygame.image.load(frame_path).convert_alpha()
-            frames.append(frame)
-        self.graphics[name] = Animation(data, frames)
+        # Check for conflicting names between loaded resources and existing graphics
+        conflicting_names = all_resource_names & loaded_resource_names
+        if conflicting_names:
+            raise ValueError(f"Conflicting names found between loaded resources and existing graphics: {conflicting_names}")
 
-    def create_graphic_instance(self, key):
-        """
-        Create an instance of a graphic or animation.
+        # Merge loaded resources into the graphic manager
+        self.images.update(resource_manager.image_resources)
+        self.image_sequences.update(resource_manager.image_sequence_resources)
+        self.interfaces.update(resource_manager.interface_resources)
 
-        Args:
-            key (str): The key of the graphic to create an instance of.
+        # Create instances for the merged resources
+        self.create_graphics()
 
-        Returns:
-            Graphic or Animation: An instance of the graphic or animation.
+    def create_graphics(self):
         """
-        graphic_data = self.graphics.get(key, None)
-        if graphic_data:
-            if isinstance(graphic_data, Graphic):
-                return Graphic(copy.deepcopy(graphic_data.data), graphic_data.image.copy())
-            elif isinstance(graphic_data, Animation):
-                copied_images = [image.copy() for image in graphic_data.frames]
-                return Animation(copy.deepcopy(graphic_data.data), copied_images)
-        return None
+        Create instances for loaded resources.
+        """
+        # Create instances for images
+        for name, data in self.images.items():
+            image = data["image"]
+            self.graphics[name] = ImageGraphic(name, image)
 
-class Graphic:
-    def __init__(self, data, image):
-        """
-        Initialize a Graphic instance.
+        # Create instances for image sequences
+        for name, data in self.image_sequences.items():
+            frames = data["frames"]
+            frame_duration = data["frame_duration"]
+            self.graphics[name] = ImageSequenceGraphic(name, frames, frame_duration)
 
-        Args:
-            data (dict): A dictionary containing image resource data.
-            image (pygame.Surface): The image to be displayed.
-        """
-        self.data = data
-        self.image = image
-
-    def update(self):
-        """
-        Update the Graphic instance.
-        """
-        pass
-
-    def draw(self, surface, position):
-        """
-        Draw the graphic on a surface at the specified position.
-
-        Args:
-            surface (pygame.Surface): The surface to draw the graphic on.
-            position (tuple): The (x, y) position to draw the graphic at.
-        """
-        surface.blit(self.image, position)
-
-class Animation:
-    def __init__(self, data, frames):
-        """
-        Initialize an Animation instance.
-
-        Args:
-            data (dict): A dictionary containing animation data.
-            frames (list): A list of pygame.Surface objects representing animation frames.
-        """
-        self.data = data
-        self.frames = frames
-        self.frame_duration = data.get("frame_duration", 100)
-        self.current_frame = 0
-        self.time_elapsed = 0
+        # Create instances for interfaces
+        for name, data in self.interfaces.items():
+            color_data = data["color"]
+            rect = data["rect"]
+            hit_rect = data["hit_rect"]
+            border_data = data["border"]
+            self.graphics[name] = InterfaceGraphic(name, color_data, border_data, rect, hit_rect)
 
     def update(self, dt):
         """
-        Update the Animation instance based on the elapsed time.
+        Update the logic of graphic instances.
 
         Args:
-            dt (int): The time (in milliseconds) since the last update.
+            dt (int): The time elapsed since the last update (in milliseconds).
         """
-        self.time_elapsed += dt
-        if self.time_elapsed >= self.frame_duration:
-            self.time_elapsed = 0
+        for graphic in self.graphics.values():
+            graphic.update(dt)
+
+    def draw(self, screen):
+        """
+        Draw graphic instances on the screen.
+
+        Args:
+            screen (pygame.Surface): The screen surface to draw on.
+        """
+        for graphic in self.graphics.values():
+            graphic.draw(screen)
+
+class ImageGraphic:
+    def __init__(self, name, image):
+        """
+        Initialize an ImageGraphic instance.
+
+        Args:
+            name (str): The name of the graphic.
+            image (pygame.Surface): The image to be displayed.
+        """
+        self.name = name
+        self.image = image
+
+    def update(self, *args, **kwargs):
+        """
+        Update method for ImageGraphic (not used).
+        """
+        pass
+
+    def draw(self, screen, position):
+        """
+        Draw the ImageGraphic on the screen at the specified position.
+
+        Args:
+            screen (pygame.Surface): The screen surface to draw on.
+            position (tuple): The (x, y) position to draw the image.
+        """
+        screen.blit(self.image, position)
+
+class ImageSequenceGraphic:
+    def __init__(self, name, frames, frame_duration):
+        """
+        Initialize an ImageSequenceGraphic instance.
+
+        Args:
+            name (str): The name of the graphic.
+            frames (list): A list of pygame.Surface frames for the animation.
+            frame_duration (int): The duration (in milliseconds) of each frame.
+        """
+        self.name = name
+        self.frames = frames
+        self.frame_duration = frame_duration
+        self.current_frame = 0
+        self.frame_elapsed = 0
+
+    def update(self, dt):
+        """
+        Update the animation frame based on elapsed time.
+
+        Args:
+            dt (int): The time elapsed since the last update (in milliseconds).
+        """
+        self.frame_elapsed += dt
+        if self.frame_elapsed >= self.frame_duration:
+            self.frame_elapsed = 0
             self.current_frame = (self.current_frame + 1) % len(self.frames)
 
     def draw(self, screen, position):
         """
-        Draw the current frame of the animation on the screen at the specified position.
+        Draw the current frame of the ImageSequenceGraphic on the screen at the specified position.
 
         Args:
             screen (pygame.Surface): The screen surface to draw on.
-            position (tuple): The (x, y) position to draw the animation frame at.
+            position (tuple): The (x, y) position to draw the frame.
         """
         screen.blit(self.frames[self.current_frame], position)
 
-# Debugging section
-if __name__ == "__main__":
-    from debug.debug_graphic_manager import debug_graphic_manager
+class InterfaceGraphic:
+    def __init__(self, name, color_data, border_data, rect, hit_rect):
+        """
+        Initialize an InterfaceGraphic instance.
 
-    # Create an instance of GraphicManager
-    graphic_manager = GraphicManager()
+        Args:
+            name (str): The name of the graphic.
+            color_data (dict): A dictionary containing color attributes, e.g., {"default": (0, 0, 0), "border": (255, 255, 255)}.
+            border_data (dict): A dictionary containing border attributes, e.g., {"width": 2, "height": 2}.
+            rect (pygame.Rect): The bounding rectangle of the graphic.
+            hit_rect (pygame.Rect): The collision detection rectangle.
+        """
+        self.name = name
+        self.default_color = color_data.get("default", (0, 0, 0))
+        self.border_color = color_data.get("border", (255, 255, 255))
+        self.border_width = border_data.get("width", 0)
+        self.border_height = border_data.get("height", 0)
+        self.rect = rect
+        self.hit_rect = hit_rect
 
-    # Debug the GraphicManager by running the debug function
-    debug_graphic_manager(graphic_manager)
+    def check_collision(self, other_rect):
+        """
+        Check if the interface graphic collides with another rectangle.
+
+        Args:
+            other_rect (pygame.Rect): The other rectangle for collision detection.
+
+        Returns:
+            bool: True if there is a collision, False otherwise.
+        """
+        return self.hit_rect.colliderect(other_rect)
+
+    def update(self, *args, **kwargs):
+        """
+        Update method for InterfaceGraphic (not used).
+        """
+        pass
+
+    def draw(self, screen):
+        """
+        Draw the filled rectangle with a border on the screen.
+
+        Args:
+            screen (pygame.Surface): The screen surface to draw on.
+        """
+        pygame.draw.rect(screen, self.default_color, self.rect)
+        pygame.draw.rect(screen, self.border_color, self.rect, self.border_width)

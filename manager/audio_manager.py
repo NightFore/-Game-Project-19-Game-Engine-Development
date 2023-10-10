@@ -1,88 +1,84 @@
 # audio_manager.py
 
 import pygame
-from os import path
-from handler.resource_handler import load_resources, load_resource, validate_resource
 
 class AudioManager:
-    RESOURCE_MAPPING = {
-        "music": {
-            "folder": None,
-            "load": "load_music",
-            "format": {".mp3", ".ogg"}
-        },
-        "sound_effect": {
-            "folder": None,
-            "load": "load_sound",
-            "format": {".wav"}
-        },
-    }
+    """
+    AudioManager handles music and sound effects in the game.
 
+    Attributes:
+        loop (int): The number of repetitions for music (-1 for looping indefinitely, 0 for no looping).
+        current_music_name (str): The name of the currently playing music.
+        musics (dict): A dictionary containing loaded music tracks.
+        sounds (dict): A dictionary containing loaded sound effects.
+        sound_volume (float): The volume level for all loaded sound effects (ranging from 0.0 to 1.0).
+        music_volume (float): The volume level for the currently playing music (ranging from 0.0 to 1.0).
+
+    Example:
+        First, define a ResourceManager and load audio resources into it.
+        Then, create an AudioManager, load audio resources from the ResourceManager, and play background music.
+
+        audio_manager = AudioManager()
+        audio_manager.load_resources_from_manager(resource_manager)
+        audio_manager.play_music("background_music")
+
+    Dependencies:
+        - ResourceManager: A separate ResourceManager instance is required to load audio resources.
+
+    Methods:
+        - init_manager: Initialize the AudioManager.
+        - load_resources_from_manager(resource_manager): Load music and sound resources from a ResourceManager.
+        - play_music(music_name): Play a music track by name.
+        - play_sound(sound_name): Play a sound effect by name.
+        - set_sound_volume(volume): Set the volume for all loaded sound effects.
+        - set_music_volume(volume): Set the volume for the currently playing music.
+        - set_music_loop(loop): Set the loop behavior for playing music.
+        - pause_music(): Pause the currently playing music.
+        - resume_music(): Resume the paused music.
+        - stop_music(): Stop playing the current music.
+    """
     def __init__(self):
-        pygame.mixer.init()
-        self.music_folder = None
-        self.sound_folder = None
-        self.music = {}
-        self.sound_effects = {}
-        self.init_manager()
-
-    def init_manager(self):
         pygame.mixer.quit()
         pygame.mixer.init()
-        self.loop = -1
+        self.musics = {}
+        self.sounds = {}
         self.current_music_name = None
+        self.music_volume = 1.0
+        self.sound_volume = 1.0
+        self.loop = -1
 
     """
-    Resource Manager
-        - set_resource_mapping
-        - load_resources
-        - load_resource
+    Resources
+        - load_resources_from_manager    
     """
-    def set_resource_mapping(self, music_folder, sound_folder):
-        self.RESOURCE_MAPPING["music"]["folder"] = music_folder
-        self.RESOURCE_MAPPING["sound_effect"]["folder"] = sound_folder
-
-    def load_resources(self, resources_dict):
-        """Load multiple resources from a dictionary."""
-        load_resources(self, resources_dict)
-
-    def load_resource(self, resource_name, resource_data):
-        """Load a resource based on its type using the appropriate loading method."""
-        load_resource(self, resource_name, resource_data)
-
-    """
-    Loading
-        - load_music
-        - load_sound
-    """
-    def load_music(self, name, data):
+    def load_resources_from_manager(self, resource_manager):
         """
-        Load a piece of music from the specified data.
+        Load music and sound resources from a ResourceManager.
 
         Args:
-            name (str): The name to assign to the loaded music.
-            data (dict): A dictionary containing music data.
+            resource_manager (ResourceManager): The ResourceManager containing loaded resources.
         """
-        music_path = data["file_path"]
-        pygame.mixer.music.load(music_path)
-        self.music[name] = music_path
+        # Create a temporary dictionary to track already loaded resources
+        loaded_resources = {}
 
-    def load_sound(self, name, data):
-        """
-        Load a sound effect from the specified data.
+        # Add existing resources to the temporary dictionary
+        loaded_resources.update(self.musics)
+        loaded_resources.update(self.sounds)
 
-        Args:
-            name (str): The name to assign to the loaded sound effect.
-            data (dict): A dictionary containing sound effect data.
-        """
-        sound_path = data["file_path"]
-        sound = pygame.mixer.Sound(sound_path)
-        self.sound_effects[name] = sound
+        # Iterate through the resources in the ResourceManager
+        for resource_name, resource in resource_manager.music_resources.items():
+            # Check if the resource has not been loaded already to avoid duplicates
+            if resource_name not in loaded_resources:
+                self.musics[resource_name] = resource
+
+        for resource_name, resource in resource_manager.sound_resources.items():
+            if resource_name not in loaded_resources:
+                self.sounds[resource_name] = resource
 
     """
     Playback
         - play_music
-        - play_sound_effect
+        - play_sound
     """
     def play_music(self, name):
         """
@@ -90,8 +86,12 @@ class AudioManager:
 
         Args:
             name (str): The name of the music to play.
+
+        Raises:
+            ValueError: If the specified 'name' is not found in the AudioManager's music collection.
         """
-        if name in self.music:
+        print(self.musics, self.sounds)
+        if name in self.musics:
             # Check if any music is currently playing
             current_music = pygame.mixer.music.get_busy()
 
@@ -101,44 +101,66 @@ class AudioManager:
             # Check if the requested music is different from the currently playing one
             if current_name != name:
                 # Load and play the new track
-                pygame.mixer.music.load(self.music[name])
+                pygame.mixer.music.load(self.musics[name])
                 pygame.mixer.music.play(self.loop)
                 self.current_music_name = name
+        else:
+            raise ValueError(f"Music '{name}' does not exist in the AudioManager's music collection.")
 
-    def play_sound_effect(self, name):
+    def play_sound(self, name):
         """
         Play the sound effect associated with the given name.
 
         Args:
             name (str): The name of the sound effect to play.
+
+        Raises:
+            ValueError: If the specified 'name' is not found in the AudioManager's sound collection.
         """
-        if name in self.sound_effects:
-            self.sound_effects[name].play()
+        if name in self.sounds:
+            self.sounds[name].play()
+        else:
+            raise ValueError(f"Sound '{name}' does not exist in the AudioManager's sound collection.")
 
     """
     Settings
-        - set_sound_effect_volume
         - set_music_volume
+        - set_sound_volume
         - set_music_loop
     """
-    def set_sound_effect_volume(self, volume):
-        """
-        Set the volume for all loaded sound effects.
-
-        Args:
-            volume (float): The volume to set (ranging from 0.0 to 1.0).
-        """
-        for sound in self.sound_effects.values():
-            sound.set_volume(volume)
-
     def set_music_volume(self, volume):
         """
         Set the volume for the currently playing music.
 
         Args:
-            volume (float): The volume to set (ranging from 0.0 to 1.0).
+            volume (float or int): The volume to set (ranging from 0.0 to 1.0).
+
+        Raises:
+            ValueError: If the volume is not a float or int, or if it's not within the valid range [0.0, 1.0].
         """
-        pygame.mixer.music.set_volume(volume)
+        if (isinstance(volume, int) or isinstance(volume, float)) and not(0 <= volume <= 1):
+            raise ValueError("Volume must be a float or int between 0.0 and 1.0")
+
+        self.music_volume = volume
+        pygame.mixer.music.set_volume(self.music_volume)
+
+    def set_sound_volume(self, volume):
+        """
+        Set the volume for all loaded sound effects.
+
+        Args:
+            volume (float or int): The volume to set (ranging from 0.0 to 1.0).
+
+        Raises:
+            ValueError: If the volume is not a float or int, or if it's not within the valid range [0.0, 1.0].
+        """
+        print(volume, isinstance(volume, int), isinstance(volume, float), 0 <= volume <= 1, (isinstance(volume, int) or isinstance(volume, float)) and 0 <= volume <= 1)
+        if (isinstance(volume, int) or isinstance(volume, float)) and not(0 <= volume <= 1):
+            raise ValueError("Volume must be a int or float between 0.0 and 1.0")
+
+        self.sound_volume = volume
+        for sound in self.sounds.values():
+            sound.set_volume(self.sound_volume)
 
     def set_music_loop(self, loop):
         """
@@ -147,7 +169,10 @@ class AudioManager:
         Args:
             loop (int): The number of repetitions. -1 for looping indefinitely, 0 for no looping.
         """
-        self.loop = loop
+        if not isinstance(loop, int) or (loop != -1 and loop != 0):
+            raise ValueError("The 'loop' argument must be an integer (-1 for looping indefinitely, 0 for no looping).")
+        else:
+            self.loop = loop
 
     """
     Controls
@@ -155,30 +180,23 @@ class AudioManager:
         - unpause_music
         - stop_music
     """
-    def pause_music(self):
+    @staticmethod
+    def pause_music():
         """
         Pause the currently playing music.
         """
         pygame.mixer.music.pause()
 
-    def unpause_music(self):
+    @staticmethod
+    def unpause_music():
         """
         Unpause the currently paused music.
         """
         pygame.mixer.music.unpause()
 
-    def stop_music(self):
+    @staticmethod
+    def stop_music():
         """
         Stop the currently playing music.
         """
         pygame.mixer.music.stop()
-
-# Debugging section
-if __name__ == "__main__":
-    from debug.debug_audio_manager import debug_audio_manager
-
-    # Create an instance of AudioManager
-    audio_manager = AudioManager()
-
-    # Debug the AudioManager by running the debug function
-    debug_audio_manager(audio_manager)
