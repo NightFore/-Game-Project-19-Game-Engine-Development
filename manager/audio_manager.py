@@ -66,12 +66,12 @@ class AudioManager:
         loaded_resources.update(self.sounds)
 
         # Iterate through the resources in the ResourceManager
-        for resource_name, resource in resource_manager.music_resources.items():
+        for resource_name, resource in resource_manager.resources["music"].items():
             # Check if the resource has not been loaded already to avoid duplicates
             if resource_name not in loaded_resources:
                 self.musics[resource_name] = resource
 
-        for resource_name, resource in resource_manager.sound_resources.items():
+        for resource_name, resource in resource_manager.resources["sound"].items():
             if resource_name not in loaded_resources:
                 self.sounds[resource_name] = resource
 

@@ -64,7 +64,7 @@ class GraphicManager:
         """
         # Check for conflicting names among all graphic resources
         all_resource_names = set(self.images.keys()) | set(self.image_sequences.keys()) | set(self.interfaces.keys())
-        loaded_resource_names = set(resource_manager.image_resources.keys()) | set(resource_manager.image_sequence_resources.keys()) | set(resource_manager.interface_resources.keys())
+        loaded_resource_names = set(resource_manager.resources["image"].keys()) | set(resource_manager.resources["image_sequence"].keys()) | set(resource_manager.resources["interface"].keys())
 
         # Check for conflicting names between loaded resources and existing graphics
         conflicting_names = all_resource_names & loaded_resource_names
@@ -72,9 +72,9 @@ class GraphicManager:
             raise ValueError(f"Conflicting names found between loaded resources and existing graphics: {conflicting_names}")
 
         # Merge loaded resources into the graphic manager
-        self.images.update(resource_manager.image_resources)
-        self.image_sequences.update(resource_manager.image_sequence_resources)
-        self.interfaces.update(resource_manager.interface_resources)
+        self.images.update(resource_manager.resources["image"])
+        self.image_sequences.update(resource_manager.resources["image_sequence"])
+        self.interfaces.update(resource_manager.resources["interface"])
 
         # Create instances for the merged resources
         self.create_graphics()

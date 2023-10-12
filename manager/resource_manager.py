@@ -2,22 +2,13 @@ import pygame
 from os import path
 from handler.error_handler import validate_files, validate_file
 
-DEFAULT_FONT_SIZE = 24
-
 class ResourceManager:
     """
     ResourceManager manages the loading and storage of various game resources such as graphics, audio, fonts, and more.
 
     Attributes:
         RESOURCE_MAPPING (dict): A dictionary mapping resource types to their respective loading methods and formats.
-        music_resources (dict): A dictionary containing loaded music resources.
-        sound_resources (dict): A dictionary containing loaded sound effect resources.
-        button_resources (dict): A dictionary containing loaded button resources.
-        font_resources (dict): A dictionary containing loaded font resources.
-        image_resources (dict): A dictionary containing loaded image resources.
-        image_sequence_resources (dict): A dictionary containing loaded image sequence (animation) resources.
-        interface_resources (dict): A dictionary containing loaded interface (rectangular) resources.
-        collision_resources (dict): A dictionary containing loaded collision resources.
+        resources (dict): A unified dictionary to store resources of different types.
 
     Example:
         # First, create instances of ResourceManager, AudioManager, GraphicManager, and OtherManager
@@ -40,11 +31,6 @@ class ResourceManager:
         graphic_manager.load_resources_from_manager(resource_manager)
         other_manager.load_resources_from_manager(resource_manager)
 
-        # Access loaded resources through AudioManager, GraphicManager, and OtherManager
-        music = audio_manager.get_music("background_music")
-        image = graphic_manager.get_image("player_image")
-        other_resource = other_manager.get_resource("other_resource")
-
     Methods:
         - init_manager: Initialize the ResourceManager
         - set_resource_folders(resource_folders): Set resource folders for specific resource types.
@@ -52,9 +38,9 @@ class ResourceManager:
         Data Loading Methods:
             - load_resources(resources_dict): Load multiple resources from a dictionary.
             - load_resource(resource_name, resource_data): Load a resource based on its type using the appropriate loading method.
-            - load_multiple_resources(resource_name, resource_data, resource_folder, resource_type, supported_formats): Load multiple resources from data.
-            - load_single_resource(resource_name, resource_data, resource_folder, resource_type, supported_formats): Load a single resource from data.
-            - load_rect_resource(resource_name, resource_data): Load an interface rectangle resource from data.
+            - load_files(resource_name, resource_data, resource_folder, resource_type, supported_formats): Load multiple resources from data.
+            - load_file(resource_name, resource_data, resource_folder, resource_type, supported_formats): Load a single resource from data.
+            - load_rect(resource_name, resource_data): Load an interface rectangle resource from data.
 
         Resource Loading Methods:
             - load_music(name, data): Load a music resource.
@@ -63,109 +49,56 @@ class ResourceManager:
             - load_image(name, data): Load a single image resource.
             - load_image_sequence(name, data): Load an image sequence as an animation.
             - load_interface(name, data): Load an interface rectangle.
-
-    Note:
-        You should customize the RESOURCE_MAPPING dictionary to define resource types, loading methods, and supported formats.
     """
     RESOURCE_MAPPING = {
+        # Note: Make sure to initialize the 'folder' values using 'set_resource_folders'.
         "music": {
-            "load_data": "load_single_resource",
-            "load_instance": "load_music",
-            "folder": "TBD",  # Source folder for music resources (to be determined).
-            "format": {".mp3", ".wav", ".ogg"}
+            "load_type": "load_file",
+            "load_data": "load_music",
+            "format": {".mp3", ".wav", ".ogg"},
+            "folder": None
         },
         "sound": {
-            "load_data": "load_single_resource",
-            "load_instance": "load_sound",
-            "folder": "TBD",  # Source folder for sound effect resources (to be determined).
-            "format": {".mp3", ".wav", ".ogg"}
-        },
-        "image": {
-            "load_data": "load_single_resource",
-            "load_instance": "load_image",
-            "folder": "TBD",  # Source folder for image resources (to be determined).
-            "format": {".png", ".jpg", ".jpeg", ".gif"}
-        },
-        "image_sequence": {
-            "load_data": "load_multiple_resources",
-            "load_instance": "load_image_sequence",
-            "folder": "TBD",  # Source folder for image sequence resources (to be determined).
-            "format": {".png", ".jpg", ".jpeg", ".gif"}
+            "load_type": "load_file",
+            "load_data": "load_sound",
+            "format": {".mp3", ".wav", ".ogg"},
+            "folder": None
         },
         "font": {
-            "load_data": "load_single_resource",
-            "load_instance": "load_font",
-            "folder": "TBD",  # Source folder for font resources (to be determined).
-            "format": {".ttf"}
+            "load_type": "load_file",
+            "load_data": "load_font",
+            "format": {".ttf"},
+            "folder": None
+        },
+        "image": {
+            "load_type": "load_file",
+            "load_data": "load_image",
+            "format": {".png", ".jpg", ".jpeg", ".gif"},
+            "folder": None
+        },
+        "image_sequence": {
+            "load_type": "load_files",
+            "load_data": "load_image_sequence",
+            "format": {".png", ".jpg", ".jpeg", ".gif"},
+            "folder": None,
         },
         "interface": {
-            "load_data": "load_rect_resource",
-            "load_instance": "load_interface",
+            "load_type": "load_rect",
+            "load_data": "load_interface",
         },
         "button": {
-            "load_data": "load_rect_resource",
-            "load_instance": "load_button",
+            "load_type": "load_rect",
+            "load_data": "load_button",
         },
     }
 
     def __init__(self):
-        self.init_manager()
-
-    def init_manager(self):
-        """
-        Initialize the ResourceManager when it is created or after a game restart.
-        """
-        # AudioManager
-        self.music_resources = {}
-        self.sound_resources = {}
-
-        # ButtonManager
-        self.button_resources = {}
-
-        # FontManager
-        self.font_resources = {}
-
-        # GraphicManager
-        self.image_resources = {}
-        self.image_sequence_resources = {}
-        self.interface_resources = {}
-        self.button_resources = {}
-        self.collision_resources = {}
-
-    def set_resource_folders(self, resource_folders):
-        """
-        Set resource folders for specific resource types.
-
-        Args:
-            resource_folders (dict): A dictionary specifying resource folders for specific resource types.
-
-        Raises:
-            ValueError: If the specified resource type is invalid.
-
-        Example:
-            Define resource folders for different resource types and associate them with the ResourceManager.
-
-            resource_manager = ResourceManager()
-            folders = {
-                "music": "music_folder",
-                "image": "image_folder",
-                "sound": "sound_folder",
-            }
-            resource_manager.set_resource_folders(folders)
-        """
-        for resource_type, folder in resource_folders.items():
-            if resource_type in self.RESOURCE_MAPPING:
-                self.RESOURCE_MAPPING[resource_type]["folder"] = folder
-            else:
-                raise ValueError(f"Invalid resource type '{resource_type}'.")
+        self.resources = {resource_type: {} for resource_type in self.RESOURCE_MAPPING}
 
     """
-    Data Loading
+    Resource Data Acquisition
         - load_resources
         - load_resource
-        - load_multiple_resources
-        - load_single_resource
-        - load_rect_resource
     """
     def load_resources(self, resources_dict):
         """Load multiple resources from a dictionary.
@@ -178,62 +111,84 @@ class ResourceManager:
 
     def load_resource(self, resource_name, resource_data):
         """
-        Load a resource based on its type using the appropriate loading method.
+        Load a resource based on its type and specific data.
 
         Args:
             resource_name (str): The name of the resource.
             resource_data (dict): The data for the resource.
 
         Raises:
-            ValueError: If the resource type is missing or not properly defined.
-            ValueError: If the specified resource type is invalid for the resource.
-            ValueError: If 'resource_folder' and 'supported_formats' are not properly defined.
-            ValueError: If there's an error loading data for the resource.
-            ValueError: If there's an error loading an instance of the resource.
+            ValueError: If the 'type' field is missing or improperly defined in resource_data.
+            ValueError: If the specified resource type is not valid or not supported.
         """
-        # Step 1: Get the resource type from resource data
+        # Step 1: Get the resource information from RESOURCE_MAPPING
+        resource_info = self.get_info(resource_name, resource_data)
+
+        # Step 2: Load the appropriate resource type
+        resource_data = resource_info["load_type_function"](resource_name, resource_data, resource_info)
+
+        # Step 3: Load the specific resource data
+        resource_info["load_data_function"](resource_name, resource_data, resource_info)
+
+    def get_info(self, resource_name, resource_data):
+        # Step 1-1: Get the resource type from resource data
         resource_type = resource_data.get("type")
         if resource_type is None:
-            raise ValueError(f"Resource type is missing or not properly defined for resource '{resource_name}'.")
+            raise ValueError(f"The 'type' field is missing or improperly defined for the resource '{resource_name}'.")
 
-        # Step 2: Check if the specified resource type exists in RESOURCE_MAPPING
-        resource_info = self.RESOURCE_MAPPING.get(resource_type)
-        if resource_info is None:
-            raise ValueError(f"Invalid resource type '{resource_type}' for resource '{resource_name}'.")
+        # Step 1-2: Get the type information from RESOURCE_MAPPING
+        type_info = self.RESOURCE_MAPPING.get(resource_type)
+        if type_info is None:
+            raise ValueError(f"The resource type '{resource_type}' specified for '{resource_name}' is not valid or not supported.")
 
-        # Step 3: Get resource folder and supported formats from resource_info
-        resource_folder = resource_info.get("folder", None)
-        supported_formats = resource_info.get("format", set())
+        # Step 1-3: Get resource folder and supported formats from type_info (if applicable)
+        resource_folder = type_info.get("folder", None)
+        supported_formats = type_info.get("format", set())
 
-        # Step 4: Verify that 'resource_folder' and 'supported_formats' are correctly defined in RESOURCE_MAPPING
-        if resource_folder is None and len(supported_formats) > 0:
-            raise ValueError(
-                f"'resource_folder' is not defined for resource '{resource_name}' but 'supported_formats' is defined.")
-        elif resource_folder is not None and len(supported_formats) == 0:
-            raise ValueError(
-                f"'supported_formats' are not defined for resource '{resource_name}' but 'resource_folder' is defined.")
+        # Step 1-4: Get the load type function from type_info
+        load_type_function_name = type_info.get("load_type")
+        load_type_function = getattr(self, load_type_function_name)
 
-        # Step 5: Call the load_data_function
-        load_data_function_name = resource_info.get("load_data")
+        # Step 1-5: Get the load data function from type_info
+        load_data_function_name = type_info.get("load_data")
         load_data_function = getattr(self, load_data_function_name)
-        try:
-            if load_data_function_name == "load_rect_resource":
-                resource_data = load_data_function(resource_name, resource_data)
-            else:
-                resource_data = load_data_function(resource_name, resource_data, resource_folder, resource_type, supported_formats)
-        except Exception as e:
-            raise ValueError(f"Error loading data for resource '{resource_name}': {str(e)}")
 
-        # Step 6: Call the load_instance_function
-        load_instance_function_name = resource_info.get("load_instance")
-        load_instance_function = getattr(self, load_instance_function_name)
-        try:
-            load_instance_function(resource_name, resource_data)
-        except Exception as e:
-            raise ValueError(f"Error loading instance for resource '{resource_name}': {str(e)}")
+        # Return all relevant information as a dictionary
+        resource_info = {
+            "resource_type": resource_type,
+            "resource_folder": resource_folder,
+            "supported_formats": supported_formats,
+            "load_type_function": load_type_function,
+            "load_data_function": load_data_function
+        }
+
+        return resource_info
+
+    """
+    Resource Type Preparation
+        - set_resource_folders
+        - load_files
+        - load_file
+        - load_rect
+    """
+    def set_resource_folders(self, resource_folders):
+        """
+        Set resource folders for specific resource types.
+
+        Args:
+            resource_folders (dict): A dictionary specifying resource folders for specific resource types.
+
+        Raises:
+            ValueError: If the specified resource type is invalid.
+        """
+        for resource_type, folder in resource_folders.items():
+            if resource_type in self.RESOURCE_MAPPING:
+                self.RESOURCE_MAPPING[resource_type]["folder"] = folder
+            else:
+                raise ValueError(f"Invalid resource type '{resource_type}'.")
 
     @staticmethod
-    def load_multiple_resources(resource_name, resource_data, resource_folder, resource_type, supported_formats):
+    def load_files(resource_name, resource_data, resource_folder, resource_type, supported_formats):
         """
         Load multiple resources from data.
 
@@ -260,7 +215,7 @@ class ResourceManager:
         return resource_data
 
     @staticmethod
-    def load_single_resource(resource_name, resource_data, resource_folder, resource_type, supported_formats):
+    def load_file(resource_name, resource_data, resource_folder, resource_type, supported_formats):
         """
         Load a single resource from data.
 
@@ -287,7 +242,7 @@ class ResourceManager:
         return resource_data
 
     @staticmethod
-    def load_rect_resource(resource_name, resource_data):
+    def load_rect(resource_name, resource_data):
         """
         Load an interface rectangle resource from data.
 
@@ -318,7 +273,7 @@ class ResourceManager:
         return resource_data
 
     """
-    Resource loading
+    Resource Loading Methods
         - AudioManager
             - load_music
             - load_sound
@@ -338,7 +293,7 @@ class ResourceManager:
         """
         music_path = data["file_path"]
         pygame.mixer.music.load(music_path)
-        self.music_resources[name] = music_path
+        self.resources["music"][name] = music_path
 
     def load_sound(self, name, data):
         """
@@ -350,7 +305,7 @@ class ResourceManager:
         """
         sound_path = data["file_path"]
         sound = pygame.mixer.Sound(sound_path)
-        self.sound_resources[name] = sound
+        self.resources["sound"][name] = sound
 
     def load_font(self, name, data):
         """
@@ -361,8 +316,8 @@ class ResourceManager:
             data (dict): A dictionary containing font resource data.
         """
         font_path = data["file_path"]
-        font_size = data.get("size", DEFAULT_FONT_SIZE)
-        self.font_resources[name] = pygame.font.Font(font_path, font_size)
+        font_size = data.get("size")
+        self.resources["font"][name] = pygame.font.Font(font_path, font_size)
 
     def load_image(self, name, data):
         """
@@ -374,7 +329,7 @@ class ResourceManager:
         """
         image_path = data["file_path"]
         data["image"] = pygame.image.load(image_path).convert_alpha()
-        self.image_resources[name] = data
+        self.resources["image"][name] = data
 
     def load_image_sequence(self, name, data):
         """
@@ -389,7 +344,7 @@ class ResourceManager:
             frame = pygame.image.load(frame_path).convert_alpha()
             frames.append(frame)
         data["frames"] = frames
-        self.image_sequence_resources[name] = data
+        self.resources["image_sequence"][name] = data
 
     def load_interface(self, name, data):
         """
@@ -403,7 +358,7 @@ class ResourceManager:
         data["rect"] = rect
 
         # Create an instance of InterfaceRect and store it
-        self.interface_resources[name] = data
+        self.resources["interface"][name] = data
 
     def load_button(self, name, data):
         pass
