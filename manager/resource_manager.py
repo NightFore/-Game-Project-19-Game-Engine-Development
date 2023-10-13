@@ -11,12 +11,11 @@ class ResourceManager:
         resources (dict): A unified dictionary to store resources of different types.
 
     Example:
-        # First, create instances of ResourceManager, AudioManager, GraphicManager, and OtherManager
+        # First, create instances of ResourceManager and others managers such as AudioManager and GraphicManager
 
         resource_manager = ResourceManager()
         audio_manager = AudioManager()
         graphic_manager = GraphicManager()
-        other_manager = OtherManager()
 
         # Set resource folders for specific resource types
         resource_manager.set_resource_folders({"music": "music_folder", "image": "image_folder"})
@@ -27,10 +26,9 @@ class ResourceManager:
             "player_image": {"type": "image", "filename": "player.png"}
         })
 
-        # Load resources from ResourceManager into AudioManager, GraphicManager, and OtherManager
-        audio_manager.load_resources_from_manager(resource_manager)
-        graphic_manager.load_resources_from_manager(resource_manager)
-        other_manager.load_resources_from_manager(resource_manager)
+        # Load resources from ResourceManager into AudioManager and GraphicManager
+        audio_manager.musics = resource_manager.load_resources_from_manager("music")
+        graphic_manager.images = resource_manager.load_resources_from_manager("image")
 
     Methods:
     - Resource Acquisition from ResourceManager:
@@ -103,7 +101,7 @@ class ResourceManager:
 
     """
     Resource Acquisition from ResourceManager
-        -load_resources_from_manager
+        - load_resources_from_manager
     """
     def load_resources_from_manager(self, resource_type, loaded_resources=None):
         """

@@ -19,14 +19,14 @@ class AudioManager:
         # Then, create an AudioManager, load audio resources from the ResourceManager, and play background music.
 
         audio_manager = AudioManager()
-        audio_manager.load_resources_from_manager(resource_manager)
+        audio_manager.load_resources(resource_manager)
         audio_manager.play_music("background_music")
 
     Dependencies:
         - ResourceManager: A separate ResourceManager instance is required to load audio resources.
 
     Methods:
-    - Resource Loading:
+    - Resource Loading
         - load_resources_from_manager(resource_manager): Load music and sound resources from a ResourceManager.
 
     - Playback:
@@ -60,32 +60,18 @@ class AudioManager:
 
 
     """
-    Resources
-        - load_resources_from_manager    
+    Resource Loading
+        - load_resources
     """
-    def load_resources_from_manager(self, resource_manager):
+    def load_resources(self, resource_manager):
         """
         Load music and sound resources from a ResourceManager.
 
         Args:
             resource_manager (ResourceManager): The ResourceManager containing loaded resources.
         """
-        # Create a temporary dictionary to track already loaded resources
-        loaded_resources = {}
-
-        # Add existing resources to the temporary dictionary
-        loaded_resources.update(self.musics)
-        loaded_resources.update(self.sounds)
-
-        # Iterate through the resources in the ResourceManager
-        for resource_name, resource in resource_manager.resources["music"].items():
-            # Check if the resource has not been loaded already to avoid duplicates
-            if resource_name not in loaded_resources:
-                self.musics[resource_name] = resource
-
-        for resource_name, resource in resource_manager.resources["sound"].items():
-            if resource_name not in loaded_resources:
-                self.sounds[resource_name] = resource
+        self.musics = resource_manager.load_resources_from_manager("music")
+        self.sounds = resource_manager.load_resources_from_manager("sound")
 
 
 
