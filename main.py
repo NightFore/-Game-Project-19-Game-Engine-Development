@@ -17,7 +17,7 @@ from data.resource_data import DICT_AUDIO, DICT_FONT, DICT_GRAPHIC, DICT_SCENE
 
 from debug.debug_audio_manager import DebugAudioManager
 from debug.debug_graphic_manager import DebugGraphicManager
-from debug.debug_data import DEBUG_DICT_AUDIO, DEBUG_DICT_GRAPHIC, DEBUG_DICT_SCENE
+from debug.debug_data import DEBUG_DICT_AUDIO, DEBUG_DICT_FONT, DEBUG_DICT_GRAPHIC, DEBUG_DICT_SCENE
 
 class Game:
     """
@@ -73,6 +73,7 @@ class Game:
             self.scene_dict = DICT_SCENE
         else:
             self.audio_dict = DEBUG_DICT_AUDIO
+            self.font_dict = DEBUG_DICT_FONT
             self.graphic_dict = DEBUG_DICT_GRAPHIC
             self.scene_dict = DEBUG_DICT_SCENE
 
@@ -111,7 +112,7 @@ class Game:
         self.resource_manager.load_resources(self.graphic_dict)
 
         # Dependent Managers
-        self.audio_manager.load_resources_from_manager(self.resource_manager)
+        self.audio_manager.load_resources(self.resource_manager)
         self.graphic_manager.load_resources_from_manager(self.resource_manager)
 
     def load_scenes(self):
