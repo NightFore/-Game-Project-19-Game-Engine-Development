@@ -90,7 +90,6 @@ class AudioManager:
         Raises:
             ValueError: If the specified 'name' is not found in the AudioManager's music collection.
         """
-        print(self.musics, self.sounds)
         if name in self.musics:
             # Check if any music is currently playing
             current_music = pygame.mixer.music.get_busy()
