@@ -15,8 +15,8 @@ class AudioManager:
         music_volume (float): The volume level for the currently playing music (ranging from 0.0 to 1.0).
 
     Example:
-        First, define a ResourceManager and load audio resources into it.
-        Then, create an AudioManager, load audio resources from the ResourceManager, and play background music.
+        # First, define a ResourceManager and load audio resources into it.
+        # Then, create an AudioManager, load audio resources from the ResourceManager, and play background music.
 
         audio_manager = AudioManager()
         audio_manager.load_resources_from_manager(resource_manager)
@@ -26,16 +26,26 @@ class AudioManager:
         - ResourceManager: A separate ResourceManager instance is required to load audio resources.
 
     Methods:
-        - init_manager: Initialize the AudioManager.
+    - Resource Loading:
         - load_resources_from_manager(resource_manager): Load music and sound resources from a ResourceManager.
+
+    - Playback:
         - play_music(music_name): Play a music track by name.
         - play_sound(sound_name): Play a sound effect by name.
-        - set_sound_volume(volume): Set the volume for all loaded sound effects.
+
+    - Settings:
         - set_music_volume(volume): Set the volume for the currently playing music.
+        - set_sound_volume(volume): Set the volume for all loaded sound effects.
         - set_music_loop(loop): Set the loop behavior for playing music.
+
+    - Controls:
         - pause_music(): Pause the currently playing music.
         - resume_music(): Resume the paused music.
         - stop_music(): Stop playing the current music.
+
+    - Validation Functions:
+        - validate_volume(volume): Validate the volume for sound and music.
+        - validate_music_loop(loop): Validate the loop behavior for playing music.
     """
     def __init__(self):
         pygame.mixer.quit()
@@ -46,6 +56,8 @@ class AudioManager:
         self.music_volume = 1.0
         self.sound_volume = 1.0
         self.loop = -1
+
+
 
     """
     Resources
@@ -74,6 +86,8 @@ class AudioManager:
         for resource_name, resource in resource_manager.resources["sound"].items():
             if resource_name not in loaded_resources:
                 self.sounds[resource_name] = resource
+
+
 
     """
     Playback
@@ -121,27 +135,14 @@ class AudioManager:
         else:
             raise ValueError(f"Sound '{name}' does not exist in the AudioManager's sound collection.")
 
+
+
     """
     Settings
         - set_music_volume
         - set_sound_volume
         - set_music_loop
     """
-    def set_music_volume(self, volume):
-        """
-        Set the volume for the currently playing music.
-
-        Args:
-            volume (float or int): The volume to set (ranging from 0.0 to 1.0).
-
-        Raises:
-            ValueError: If the volume is not a float or int, or if it's not within the valid range [0.0, 1.0].
-        """
-        if (isinstance(volume, int) or isinstance(volume, float)) and not(0 <= volume <= 1):
-            raise ValueError("Volume must be a float or int between 0.0 and 1.0")
-
-        self.music_volume = volume
-        pygame.mixer.music.set_volume(self.music_volume)
 
     def set_sound_volume(self, volume):
         """
@@ -151,15 +152,34 @@ class AudioManager:
             volume (float or int): The volume to set (ranging from 0.0 to 1.0).
 
         Raises:
-            ValueError: If the volume is not a float or int, or if it's not within the valid range [0.0, 1.0].
+            TypeError: If the volume is not a float or int.
+            ValueError: If the volume is not within the valid range [0.0, 1.0].
         """
-        print(volume, isinstance(volume, int), isinstance(volume, float), 0 <= volume <= 1, (isinstance(volume, int) or isinstance(volume, float)) and 0 <= volume <= 1)
-        if (isinstance(volume, int) or isinstance(volume, float)) and not(0 <= volume <= 1):
-            raise ValueError("Volume must be a int or float between 0.0 and 1.0")
+        # Validate the volume
+        self.validate_volume(volume)
 
+        # Set the volume for sound effects
         self.sound_volume = volume
         for sound in self.sounds.values():
             sound.set_volume(self.sound_volume)
+
+    def set_music_volume(self, volume):
+        """
+        Set the volume for the currently playing music.
+
+        Args:
+            volume (float or int): The volume to set (ranging from 0.0 to 1.0).
+
+        Raises:
+            TypeError: If the volume is not a float or int.
+            ValueError: If the volume is not within the valid range [0.0, 1.0].
+        """
+        # Validate the volume
+        self.validate_volume(volume)
+
+        # Set the volume for the currently playing music
+        self.music_volume = volume
+        pygame.mixer.music.set_volume(self.music_volume)
 
     def set_music_loop(self, loop):
         """
@@ -167,11 +187,18 @@ class AudioManager:
 
         Args:
             loop (int): The number of repetitions. -1 for looping indefinitely, 0 for no looping.
+
+        Raises:
+            TypeError: If 'loop' is not an integer.
+            ValueError: If 'loop' is not within the valid values (-1 or 0).
         """
-        if not isinstance(loop, int) or (loop != -1 and loop != 0):
-            raise ValueError("The 'loop' argument must be an integer (-1 for looping indefinitely, 0 for no looping).")
-        else:
-            self.loop = loop
+        # Validate the loop behavior
+        self.validate_music_loop(loop)
+
+        # Set the loop behavior for playing music
+        self.loop = loop
+
+
 
     """
     Controls
@@ -199,3 +226,44 @@ class AudioManager:
         Stop the currently playing music.
         """
         pygame.mixer.music.stop()
+
+
+
+    """
+    Validation Functions
+        - validate_volume
+        - validate_music_loop
+    """
+    @staticmethod
+    def validate_volume(volume):
+        """
+        Validate the volume value to ensure it's of the correct type and within the valid range [0.0, 1.0].
+
+        Args:
+            volume (float or int): The volume value to validate.
+
+        Raises:
+            TypeError: If the volume is not a float or int.
+            ValueError: If the volume is not within the valid range [0.0, 1.0].
+        """
+        if not (isinstance(volume, int) or isinstance(volume, float)):
+            raise TypeError("Volume must be an int or float.")
+        if not (0.0 <= volume <= 1.0):
+            raise ValueError("Volume must be between 0.0 and 1.0.")
+
+    @staticmethod
+    def validate_music_loop(loop):
+        """
+        Validate the loop behavior for playing music.
+
+        Args:
+            loop (int): The number of repetitions. -1 for looping indefinitely, 0 for no looping.
+
+        Raises:
+            TypeError: If 'loop' is not an integer.
+            ValueError: If 'loop' is not within the valid values (-1 or 0).
+        """
+        if not isinstance(loop, int):
+            raise TypeError("The 'loop' argument must be an integer.")
+        if loop not in [-1, 0]:
+            raise ValueError("The 'loop' argument must be -1 for looping indefinitely or 0 for no looping.")

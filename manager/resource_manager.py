@@ -12,6 +12,7 @@ class ResourceManager:
 
     Example:
         # First, create instances of ResourceManager, AudioManager, GraphicManager, and OtherManager
+
         resource_manager = ResourceManager()
         audio_manager = AudioManager()
         graphic_manager = GraphicManager()
@@ -32,9 +33,13 @@ class ResourceManager:
         other_manager.load_resources_from_manager(resource_manager)
 
     Methods:
+    - Resource Acquisition from ResourceManager:
+        - load_resources_from_manager(resource_type, loaded_resources=None): Load resources of a specific type from a ResourceManager.
+
     - Resource Data Acquisition:
         - load_resources(resources_dict): Load multiple resources from a dictionary.
         - load_resource(resource_name, resource_data): Load a resource based on its type using the appropriate loading method.
+        - get_info(resource_name): Get information about a specific resource.
 
     - Resource Type Preparation (load_data):
         - set_resource_folders(resource_folders): Set resource folders for specific resource types.
@@ -97,9 +102,43 @@ class ResourceManager:
         self.resources = {resource_type: {} for resource_type in self.RESOURCE_MAPPING}
 
     """
+    Resource Acquisition from ResourceManager
+        -load_resources_from_manager
+    """
+    def load_resources_from_manager(self, resource_type, loaded_resources=None):
+        """
+        Load resources of a specific type from a ResourceManager.
+
+        Args:
+            resource_type (str): The type of resources to load (e.g., 'music', 'sound').
+            loaded_resources (dict): A dictionary to store the loaded resources (optional).
+
+        Returns:
+            dict: A dictionary containing the loaded resources of the specified type.
+        """
+        # Create a temporary dictionary to track already loaded resources
+        if loaded_resources is None:
+            loaded_resources = {}
+
+        # Get the resources of the specified type from the ResourceManager
+        resources = self.resources.get(resource_type, {})
+
+        # Iterate through the resources
+        for resource_name, resource in resources.items():
+            # Check if the resource has not been loaded already to avoid duplicates
+            if resource_name not in loaded_resources:
+                loaded_resources[resource_name] = resource
+
+        return loaded_resources
+
+
+
+    """
     Resource Data Acquisition
+        - load_resources_from_manager
         - load_resources
         - load_resource
+        - get_info
     """
     def load_resources(self, resources_dict):
         """Load multiple resources from a dictionary.
@@ -135,6 +174,16 @@ class ResourceManager:
         resource_info["load_data_function"](resource_name, resource_data)
 
     def get_info(self, resource_name, resource_data):
+        """
+        Get information about a specific resource.
+
+        Args:
+            resource_name (str): The name of the resource.
+            resource_data (dict): The data for the resource.
+
+        Returns:
+            dict: A dictionary containing information about the resource, including type, folder, supported formats, load type function, and load data function.
+        """
         # Step 1-1: Get the resource type from resource data
         resource_type = resource_data.get("type")
         if resource_type is None:
