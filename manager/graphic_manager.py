@@ -73,27 +73,14 @@ class GraphicManager:
         """
         Create instances for loaded resources.
         """
-        # Create instances for images
         for name, data in self.images.items():
-            image = data["image"]
-            self.graphics[name] = ImageGraphic(name, image)
+            self.graphics[name] = ImageGraphic(name, data)
 
-        # Create instances for image sequences
         for name, data in self.image_sequences.items():
-            frames = data["frames"]
-            frame_duration = data["frame_duration"]
-            self.graphics[name] = ImageSequenceGraphic(name, frames, frame_duration)
+            self.graphics[name] = ImageSequenceGraphic(name, data)
 
-        # Create instances for interfaces
         for name, data in self.interfaces.items():
-            color_data = data["color"]
-            rect = data["rect"]
-            hit_rect = data["hit_rect"]
-            border_data = data["border"]
-            self.graphics[name] = InterfaceGraphic(name, color_data, border_data, rect, hit_rect)
-
-
-
+            self.graphics[name] = InterfaceGraphic(name, data)
 
 
     """
@@ -124,16 +111,16 @@ class GraphicManager:
 
 
 class ImageGraphic:
-    def __init__(self, name, image):
+    def __init__(self, name, data):
         """
         Initialize an ImageGraphic instance.
 
         Args:
             name (str): The name of the graphic.
-            image (pygame.Surface): The image to be displayed.
+            data (dict): A dictionary containing graphic data.
         """
         self.name = name
-        self.image = image
+        self.image = data["image"]
 
     def update(self, *args, **kwargs):
         """
@@ -152,18 +139,17 @@ class ImageGraphic:
         screen.blit(self.image, position)
 
 class ImageSequenceGraphic:
-    def __init__(self, name, frames, frame_duration):
+    def __init__(self, name, data):
         """
         Initialize an ImageSequenceGraphic instance.
 
         Args:
             name (str): The name of the graphic.
-            frames (list): A list of pygame.Surface frames for the animation.
-            frame_duration (int): The duration (in milliseconds) of each frame.
+            data (dict): A dictionary containing graphic data.
         """
         self.name = name
-        self.frames = frames
-        self.frame_duration = frame_duration
+        self.frames = data["frames"]
+        self.frame_duration = data["frame_duration"]
         self.current_frame = 0
         self.frame_elapsed = 0
 
@@ -190,24 +176,25 @@ class ImageSequenceGraphic:
         screen.blit(self.frames[self.current_frame], position)
 
 class InterfaceGraphic:
-    def __init__(self, name, color_data, border_data, rect, hit_rect):
+    def __init__(self, name, data):
         """
         Initialize an InterfaceGraphic instance.
 
         Args:
             name (str): The name of the graphic.
-            color_data (dict): A dictionary containing color attributes, e.g., {"default": (0, 0, 0), "border": (255, 255, 255)}.
-            border_data (dict): A dictionary containing border attributes, e.g., {"width": 2, "height": 2}.
-            rect (pygame.Rect): The bounding rectangle of the graphic.
-            hit_rect (pygame.Rect): The collision detection rectangle.
+            data (dict): A dictionary containing graphic data.
         """
         self.name = name
+        self.rect = data["rect"]
+        self.hit_rect = data["hit_rect"]
+
+        color_data = data["color"]
         self.default_color = color_data.get("default", (0, 0, 0))
         self.border_color = color_data.get("border", (255, 255, 255))
+
+        border_data = data["border"]
         self.border_width = border_data.get("width", 0)
         self.border_height = border_data.get("height", 0)
-        self.rect = rect
-        self.hit_rect = hit_rect
 
     def check_collision(self, other_rect):
         """
