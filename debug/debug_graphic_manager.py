@@ -1,24 +1,29 @@
 # debug_graphic_manager.py
 
-import pygame
-
 class DebugGraphicManager:
-    def __init__(self, graphic_manager, gameDisplay):
+    def __init__(self, graphic_manager, game_display):
         self.graphic_manager = graphic_manager
-        self.gameDisplay = gameDisplay
-        # self.single_graphic = self.graphic_manager.create_graphic_instance("single")
-        # self.sequence_animation = self.graphic_manager.create_graphic_instance("sequence")
+        self.game_display = game_display
+
+        # Create a single image graphic instance
+        self.single_graphic = self.graphic_manager.create_graphic_instance("default_single", "image")
+
+        # Create an image sequence graphic instance
+        self.sequence_animation = self.graphic_manager.create_graphic_instance("default_sequence", "image_sequence")
+
+        # Set a fixed dt for 60 FPS
+        self.dt = 16.66
 
     def update(self):
-        pass
-        # self.single_graphic.update()
-        # self.sequence_animation.update(10)
+        # Update the single graphic
+        self.single_graphic.update(self.dt)
+
+        # Update the sequence animation (provide elapsed time for animation)
+        self.sequence_animation.update(self.dt)
 
     def draw(self):
-        pass
         # Draw the single graphic
-        # self.single_graphic.draw(self.gameDisplay, (100, 100))
+        self.single_graphic.draw(self.game_display, (100, 100))
 
         # Draw the sequence animation
-        # self.sequence_animation.draw(self.gameDisplay, (300, 100))
-
+        self.sequence_animation.draw(self.game_display, (300, 100))

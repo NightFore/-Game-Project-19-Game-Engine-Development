@@ -10,23 +10,25 @@ class GraphicManager:
         images (dict): A dictionary containing loaded image resources.
         image_sequences (dict): A dictionary containing loaded image sequence resources.
         interfaces (dict): A dictionary containing loaded interface resources.
-        graphics (dict): A dictionary containing instances of graphic resources.
 
     Example:
         # First, define a ResourceManager and load graphic resources into it.
-        # Then, create an GraphicManager, load graphic resources from the ResourceManager, and create instance:
+        # Then, create a GraphicManager, load graphic resources from the ResourceManager, and create instances:
 
         graphic_manager = GraphicManager()
         graphic_manager.load_resources(resource_manager)
 
-        In your game loop, update and draw the graphics using the GraphicManager.
+        # In your game loop, create graphic instances as needed and use them.
 
         while running:
+            # Example: Creating an image graphic instance on-the-fly
+            enemy_image = graphic_manager.create_graphic_instance("enemy_image", "image")
+
             # Update graphic instances
-            graphic_manager.update()
+            enemy_image.update()
 
             # Draw graphic instances on the screen
-            graphic_manager.draw(screen)
+            enemy_image.draw(screen)
 
     Dependencies:
         ResourceManager: A separate ResourceManager instance is required to load graphic resources.
@@ -34,11 +36,9 @@ class GraphicManager:
     Methods:
     - Resource Loading
         - load_resources_from_manager(resource_manager): Load music and sound resources from a ResourceManager.
-        - create_graphics: Create instances for loaded graphic resources.
 
     - Graphic Management
-        - update: Update the logic of graphic instances.
-        - draw(screen): Draw graphic instances on the screen.
+        - create_graphic_instance(name, resource_type): Create an instance of the appropriate graphic class.
     """
     def __init__(self):
         # Initialize dictionaries to store resource data
@@ -46,14 +46,10 @@ class GraphicManager:
         self.image_sequences = {}
         self.interfaces = {}
 
-        # Dictionary to store graphic instances
-        self.graphics = {}
-
 
     """
     Resources Loading
         - load_resources
-        - create_graphics
     """
     def load_resources(self, resource_manager):
         """
@@ -66,47 +62,30 @@ class GraphicManager:
         self.image_sequences = resource_manager.load_resources_from_manager("image_sequence")
         self.interfaces = resource_manager.load_resources_from_manager("interface")
 
-        # Create instances for the loaded resources
-        self.create_graphics()
-
-    def create_graphics(self):
-        """
-        Create instances for loaded resources.
-        """
-        for name, data in self.images.items():
-            self.graphics[name] = ImageGraphic(name, data)
-
-        for name, data in self.image_sequences.items():
-            self.graphics[name] = ImageSequenceGraphic(name, data)
-
-        for name, data in self.interfaces.items():
-            self.graphics[name] = InterfaceGraphic(name, data)
-
 
     """
     Graphic Management
-        - update
-        - draw
+        - create_graphic_instance
     """
-    def update(self, dt):
+    def create_graphic_instance(self, name, resource_type):
         """
-        Update the logic of graphic instances.
+        Create an instance of the appropriate graphic class based on the resource type.
 
         Args:
-            dt (int): The time elapsed since the last update (in milliseconds).
-        """
-        for graphic in self.graphics.values():
-            graphic.update(dt)
+            name (str): The name of the resource.
+            resource_type (str): The type of the resource.
 
-    def draw(self, screen):
+        Returns:
+            Graphic: An instance of the appropriate graphic class.
         """
-        Draw graphic instances on the screen.
-
-        Args:
-            screen (pygame.Surface): The screen surface to draw on.
-        """
-        for graphic in self.graphics.values():
-            graphic.draw(screen)
+        if resource_type == "image":
+            return ImageGraphic(name, self.images[name])
+        elif resource_type == "image_sequence":
+            return ImageSequenceGraphic(name, self.image_sequences[name])
+        elif resource_type == "interface":
+            return InterfaceGraphic(name, self.interfaces[name])
+        else:
+            raise ValueError("Unknown resource type: {}".format(resource_type))
 
 
 
