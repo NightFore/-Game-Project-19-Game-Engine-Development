@@ -13,11 +13,11 @@ class GraphicManager:
         graphics (dict): A dictionary containing instances of graphic resources.
 
     Example:
-        First, define a ResourceManager and load graphic resources into it.
-        Then, create an GraphicManager, load graphic resources from the ResourceManager, and create instance:
+        # First, define a ResourceManager and load graphic resources into it.
+        # Then, create an GraphicManager, load graphic resources from the ResourceManager, and create instance:
 
         graphic_manager = GraphicManager()
-        graphic_manager.load_resources_from_manager(resource_manager)
+        graphic_manager.load_resources(resource_manager)
 
         In your game loop, update and draw the graphics using the GraphicManager.
 
@@ -32,9 +32,11 @@ class GraphicManager:
         ResourceManager: A separate ResourceManager instance is required to load graphic resources.
 
     Methods:
-        - init_manager: Initialize the GraphicManager.
-        - load_resources_from_manager(resource_manager): Load graphic resources from a ResourceManager.
+    - Resource Loading
+        - load_resources_from_manager(resource_manager): Load music and sound resources from a ResourceManager.
         - create_graphics: Create instances for loaded graphic resources.
+
+    - Graphic Management
         - update: Update the logic of graphic instances.
         - draw(screen): Draw graphic instances on the screen.
     """
@@ -47,36 +49,24 @@ class GraphicManager:
         # Dictionary to store graphic instances
         self.graphics = {}
 
+
     """
-    Resources
-        - load_resources_from_manager
+    Resources Loading
+        - load_resources
         - create_graphics
     """
-    def load_resources_from_manager(self, resource_manager):
+    def load_resources(self, resource_manager):
         """
         Load graphic resources from a ResourceManager.
 
         Args:
             resource_manager (ResourceManager): The ResourceManager containing loaded resources.
-
-        Raises:
-            ValueError: If conflicting names are found between loaded resources and existing graphics.
         """
-        # Check for conflicting names among all graphic resources
-        all_resource_names = set(self.images.keys()) | set(self.image_sequences.keys()) | set(self.interfaces.keys())
-        loaded_resource_names = set(resource_manager.resources["image"].keys()) | set(resource_manager.resources["image_sequence"].keys()) | set(resource_manager.resources["interface"].keys())
+        self.images = resource_manager.load_resources_from_manager("image")
+        self.image_sequences = resource_manager.load_resources_from_manager("image_sequence")
+        self.interfaces = resource_manager.load_resources_from_manager("interface")
 
-        # Check for conflicting names between loaded resources and existing graphics
-        conflicting_names = all_resource_names & loaded_resource_names
-        if conflicting_names:
-            raise ValueError(f"Conflicting names found between loaded resources and existing graphics: {conflicting_names}")
-
-        # Merge loaded resources into the graphic manager
-        self.images.update(resource_manager.resources["image"])
-        self.image_sequences.update(resource_manager.resources["image_sequence"])
-        self.interfaces.update(resource_manager.resources["interface"])
-
-        # Create instances for the merged resources
+        # Create instances for the loaded resources
         self.create_graphics()
 
     def create_graphics(self):
@@ -102,6 +92,15 @@ class GraphicManager:
             border_data = data["border"]
             self.graphics[name] = InterfaceGraphic(name, color_data, border_data, rect, hit_rect)
 
+
+
+
+
+    """
+    Graphic Management
+        - update
+        - draw
+    """
     def update(self, dt):
         """
         Update the logic of graphic instances.
@@ -121,6 +120,8 @@ class GraphicManager:
         """
         for graphic in self.graphics.values():
             graphic.draw(screen)
+
+
 
 class ImageGraphic:
     def __init__(self, name, image):

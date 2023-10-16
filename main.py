@@ -113,7 +113,7 @@ class Game:
 
         # Dependent Managers
         self.audio_manager.load_resources(self.resource_manager)
-        self.graphic_manager.load_resources_from_manager(self.resource_manager)
+        self.graphic_manager.load_resources(self.resource_manager)
 
     def load_scenes(self):
         self.scene_manager.load_scenes_from_directory("scenes")
