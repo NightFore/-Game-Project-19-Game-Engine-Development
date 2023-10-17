@@ -12,19 +12,28 @@ class ResourceManager:
 
     Example:
         # First, create instances of ResourceManager and others managers such as AudioManager and GraphicManager
-
         resource_manager = ResourceManager()
         audio_manager = AudioManager()
         graphic_manager = GraphicManager()
 
         # Set resource folders for specific resource types
-        resource_manager.set_resource_folders({"music": "music_folder", "image": "image_folder"})
+        resource_manager.set_resource_folders({
+            "music": "music_folder",
+            "image": "image_folder"
+        })
 
         # Load resources from a dictionary using the ResourceManager
-        resource_manager.load_resources({
-            "background_music": {"type": "music", "filename": "bg_music.mp3"},
-            "player_image": {"type": "image", "filename": "player.png"}
-        })
+        resource_dict = {
+            "background_music": {
+                "type": "music",
+                "filename": "bg_music.mp3"
+            },
+            "player_image": {
+                "type": "image",
+                "filename": "player.png"
+            }
+        }
+        resource_manager.load_resources(resource_dict)
 
         # Load resources from ResourceManager into AudioManager and GraphicManager
         audio_manager.musics = resource_manager.load_resources_from_manager("music")
@@ -130,7 +139,6 @@ class ResourceManager:
         return loaded_resources
 
 
-
     """
     Resource Data Acquisition
         - load_resources_from_manager
@@ -214,7 +222,6 @@ class ResourceManager:
         }
 
         return resource_info
-
 
 
     """
@@ -324,7 +331,6 @@ class ResourceManager:
         # Create and return a pygame.Rect object
         resource_data["rect"] = pygame.Rect(x, y, width, height)
         return resource_data
-
 
 
     """

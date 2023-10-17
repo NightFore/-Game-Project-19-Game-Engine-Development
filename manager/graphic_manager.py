@@ -12,23 +12,37 @@ class GraphicManager:
         interfaces (dict): A dictionary containing loaded interface resources.
 
     Example:
-        # First, define a ResourceManager and load graphic resources into it.
-        # Then, create a GraphicManager, load graphic resources from the ResourceManager, and create instances:
+        # Example dictionary for loading image and image sequence resources:
+        graphic_dict = {
+            "player_ship": {
+                "type": "image",
+                "filename": "player_ship.png",
+            },
+            "explosion_sequence": {
+                "type": "image_sequence",
+                "files": [
+                    {"filename": "explosion_1.png"},
+                    {"filename": "explosion_2.png"},
+                    {"filename": "explosion_3.png"},
+                ],
+                "frame_duration": 100,
+            },
+        }
 
+        # Create a GraphicManager instance and load resources:
         graphic_manager = GraphicManager()
-        graphic_manager.load_resources(resource_manager)
+        graphic_manager.load_resources(graphic_dict)
 
         # In your game loop, create graphic instances as needed and use them.
-
         while running:
             # Example: Creating an image graphic instance on-the-fly
-            enemy_image = graphic_manager.create_graphic_instance("enemy_image", "image")
+            player_ship = graphic_manager.create_graphic_instance("player_ship", "image")
 
             # Update graphic instances
-            enemy_image.update()
+            player_ship.update()
 
             # Draw graphic instances on the screen
-            enemy_image.draw(screen)
+            player_ship.draw(screen)
 
     Dependencies:
         ResourceManager: A separate ResourceManager instance is required to load graphic resources.
@@ -117,6 +131,8 @@ class ImageGraphic:
         """
         screen.blit(self.image, position)
 
+
+
 class ImageSequenceGraphic:
     def __init__(self, name, data):
         """
@@ -153,6 +169,8 @@ class ImageSequenceGraphic:
             position (tuple): The (x, y) position to draw the frame.
         """
         screen.blit(self.frames[self.current_frame], position)
+
+
 
 class InterfaceGraphic:
     def __init__(self, name, data):

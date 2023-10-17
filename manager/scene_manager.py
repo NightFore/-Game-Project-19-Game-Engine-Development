@@ -26,6 +26,10 @@ class SceneManager:
         # Set the initial game scene.
         scene_manager.set_scene("MainMenuScene")
 
+        # Main game loop setup
+        clock = pygame.time.Clock()
+        running = True
+
         # In the game loop, update and draw the current scene and buttons.
         while running:
             dt = clock.tick(FPS)

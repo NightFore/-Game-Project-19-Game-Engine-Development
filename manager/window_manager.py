@@ -24,7 +24,10 @@ class WindowManager(pygame.Surface):
         # Create a WindowManager instance with the specified project title and size.
         window_manager = WindowManager()
         window_manager.create_window_instance("My Game", (800, 600))
+
+        # Main game loop setup
         clock = pygame.time.Clock()
+        running = True
 
         # Toggle fullscreen mode.
         window_manager.toggle_fullscreen()
@@ -34,8 +37,8 @@ class WindowManager(pygame.Surface):
 
         # Main game loop
         while running:
-            # Handle window resizing event
             for event in pygame.event.get():
+                # Handle window resizing event
                 if event.type == VIDEORESIZE:
                     window_manager.resize()
 
