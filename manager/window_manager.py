@@ -11,18 +11,22 @@ class WindowManager(pygame.Surface):
     Attributes:
         project_title (str): The title of the game project.
         game_size (tuple): The size of the game window in (width, height).
+        screen_info (pygame.Surface): Information about the display's capabilities.
         screen_scaled (tuple): The scaled screen resolution for maintaining aspect ratio.
         screen_gap (tuple): Gap used to center the game surface when zoomed.
         flags (int): Flags for the display mode.
         is_fullscreen (bool): Indicates if the game is in fullscreen mode.
         is_zoom (bool): Indicates if the game is in zoom mode.
+        display_factor (float): Factor used for scaling the display.
+        display (pygame.Surface): The game window surface.
 
     Example:
         # Create a WindowManager instance with the specified project title and size.
         window_manager = WindowManager()
         window_manager.create_window_instance("My Game", (800, 600))
+        clock = pygame.time.Clock()
 
-        # Set the window to fullscreen mode.
+        # Toggle fullscreen mode.
         window_manager.toggle_fullscreen()
 
         # Toggle zoom mode.
@@ -30,8 +34,8 @@ class WindowManager(pygame.Surface):
 
         # Main game loop
         while running:
+            # Handle window resizing event
             for event in pygame.event.get():
-                # Handle window resizing event
                 if event.type == VIDEORESIZE:
                     window_manager.resize()
 
@@ -256,28 +260,3 @@ class WindowManager(pygame.Surface):
         # Add game to screen with the scaled size and gap required.
         self.display.blit(pygame.transform.scale(self, self.screen_scaled), self.screen_gap)
         pygame.display.flip()
-
-
-
-"""
-Unused
-"""
-# import ctypes
-# from ctypes import wintypes
-
-# def get_taskbar_height():
-#     taskbar_hwnd = ctypes.windll.user32.FindWindowW(u"Shell_TrayWnd", None)
-#     rect = wintypes.RECT()
-#     ctypes.windll.user32.GetWindowRect(taskbar_hwnd, ctypes.byref(rect))
-#     return rect.bottom - rect.top
-
-# def get_window_title_bar_size():
-#     title_bar_height = ctypes.windll.user32.GetSystemMetrics(4)  # SM_CYCAPTION
-#     border_height = ctypes.windll.user32.GetSystemMetrics(6)  # SM_CYSIZEFRAME
-#     unknown_offset = -1
-#     return title_bar_height + border_height + unknown_offset
-
-# def get_total_window_height():
-#     window_height = get_window_title_bar_size()
-#     taskbar_height = get_taskbar_height()
-#     return window_height + taskbar_height
