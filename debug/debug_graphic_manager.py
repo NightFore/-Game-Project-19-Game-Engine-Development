@@ -1,9 +1,9 @@
 # debug_graphic_manager.py
 
 class DebugGraphicManager:
-    def __init__(self, graphic_manager, game_display):
+    def __init__(self, graphic_manager, screen):
         self.graphic_manager = graphic_manager
-        self.game_display = game_display
+        self.screen = screen
 
         # Create a single image graphic instance
         self.single_graphic = self.graphic_manager.create_graphic_instance("default_single", "image")
@@ -23,7 +23,7 @@ class DebugGraphicManager:
 
     def draw(self):
         # Draw the single graphic
-        self.single_graphic.draw(self.game_display, (100, 100))
+        self.single_graphic.draw(self.screen, (100, 100))
 
         # Draw the sequence animation
-        self.sequence_animation.draw(self.game_display, (300, 100))
+        self.sequence_animation.draw(self.screen, (300, 100))

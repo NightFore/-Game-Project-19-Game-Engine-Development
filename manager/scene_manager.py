@@ -9,9 +9,45 @@ from manager.button_manager import ButtonManager
 
 class SceneManager:
     """
-    SceneManager class manages the scenes and buttons of the game.
-    """
+    SceneManager handles game scenes and buttons.
 
+    Attributes:
+        scenes (dict): A dictionary containing loaded game scenes.
+        scenes_params (dict): A dictionary containing scene parameters.
+        current_scene (SceneBase): The currently active game scene.
+        button_manager (ButtonManager): A ButtonManager instance for managing buttons in scenes.
+
+    Example:
+        # Create a SceneManager and load game scenes and scene parameters.
+        scene_manager = SceneManager()
+        scene_manager.load_scenes_from_directory("scenes")
+        scene_manager.load_scenes_params(scene_params_dict)
+
+        # Set the initial game scene.
+        scene_manager.set_scene("MainMenuScene")
+
+        # In the game loop, update and draw the current scene and buttons.
+        while running:
+            dt = clock.tick(FPS)
+            scene_manager.update(dt)
+            scene_manager.draw(screen)
+
+    Dependencies:
+        - ButtonManager: A ButtonManager instance is used to manage buttons in scenes.
+
+    Methods:
+    - Scene Loading
+        - load_scenes_params(params_dict): Load scene parameters from a dictionary.
+        - load_scenes_from_directory(directory): Load game scenes from Python files in a directory.
+
+    - Scene Management
+        - add_scene(name, scene): Add a game scene to the manager.
+        - set_scene(name): Set the current game scene.
+
+    - Update and Draw
+        - update(dt): Update the current game scene and buttons.
+        - draw(screen): Draw the current game scene and buttons on the screen.
+    """
     def __init__(self):
         """
         Initialize the SceneManager.
@@ -21,6 +57,12 @@ class SceneManager:
         self.current_scene = None
         self.button_manager = ButtonManager()
 
+
+    """
+    Scene Loading
+        - load_scenes_params
+        - load_scenes_from_directory
+    """
     def load_scenes_params(self, params_dict):
         """
         Load scene parameters from a dictionary and store them.
@@ -55,6 +97,12 @@ class SceneManager:
                         scene_instance = obj(self)
                         self.add_scene(name, scene_instance)
 
+
+    """
+    Scene Management
+        - add_scene
+        - set_scene
+    """
     def add_scene(self, name, scene):
         """
         Add a scene to the manager.
@@ -81,6 +129,12 @@ class SceneManager:
             self.current_scene.set_scene_params(self.scenes_params)
             self.current_scene.enter()
 
+
+    """
+    Update and Draw
+        - update
+        - draw
+    """
     def update(self, dt):
         """
         Update the current scene and buttons.
@@ -103,11 +157,57 @@ class SceneManager:
             self.current_scene.draw(screen)
             self.button_manager.draw(screen)
 
+
+
 class SceneBase:
     """
-    SceneBase class provides a base for scenes with buttons.
-    """
+    SceneBase provides a base for game scenes with buttons.
 
+    Attributes:
+        scene_manager (SceneManager): The SceneManager instance managing game scenes.
+        scene_params (dict): A dictionary containing scene parameters.
+        button_manager (ButtonManager): A ButtonManager instance for managing buttons in scenes.
+
+    Example:
+        # Create a custom scene class that inherits from SceneBase.
+        class CustomScene(SceneBase):
+            def __init__(self, scene_manager):
+                super().__init__(scene_manager)
+
+            def enter(self):
+                # Called when entering the scene.
+                # Add custom code here.
+
+            def exit(self):
+                # Called when exiting the scene.
+                # Add custom code here.
+
+            def update(self, dt):
+                # Update the scene.
+                # Add custom code here.
+
+            def draw(self, screen):
+                # Draw the scene and its buttons on the screen.
+                # Add custom code here.
+
+    Dependencies:
+        - SceneManager: A SceneManager instance is required for managing game scenes.
+        - ButtonManager: A ButtonManager instance is used to manage buttons in scenes.
+
+    Methods:
+    - Scene Initialization
+        - set_scene_params(scene_params): Set scene parameters for the scene.
+        - set_button_manager(button_manager): Set the ButtonManager instance for the scene.
+
+    - Button Management
+        - create_buttons_from_dict(scene_name): Create buttons based on scene parameters.
+
+    - Scene Lifecycle
+        - enter(): Called when entering the scene. Create and configure buttons here.
+        - exit(): Called when exiting the scene.
+        - update(dt): Update the scene.
+        - draw(screen): Draw the scene and its buttons on the screen.
+    """
     def __init__(self, scene_manager):
         """
         Initialize the SceneBase.
@@ -119,6 +219,12 @@ class SceneBase:
         self.scene_params = None
         self.button_manager = None
 
+
+    """
+    Scene Initialization
+        - set_scene_params
+        - set_button_manager
+    """
     def set_scene_params(self, scene_params):
         """
         Set the scene parameters for the scene.
@@ -137,6 +243,11 @@ class SceneBase:
         """
         self.button_manager = button_manager
 
+
+    """
+    Button Management
+        - create_buttons_from_dict
+    """
     def create_buttons_from_dict(self, scene_name):
         """
         Create buttons based on button information retrieved from the scene_params.
@@ -145,13 +256,13 @@ class SceneBase:
             scene_name (str): The name of the scene to retrieve button information for.
         """
         # Retrieve button information for the specific scene from the scene_params dictionary
-        scene_button_infos = self.scene_params.get(scene_name, {}).get("buttons", [])
+        scene_button_info = self.scene_params.get(scene_name, {}).get("buttons", [])
 
         # Initialize an empty dictionary to store the created buttons
         self.buttons = {}
 
         # Iterate over each button information in the list
-        for button_info in scene_button_infos:
+        for button_info in scene_button_info:
             # Extract information for the button from the dictionary
             name = button_info["name"]
             position = button_info["position"]
@@ -163,6 +274,14 @@ class SceneBase:
             # Store the button in the buttons dictionary using its name as the key
             self.buttons[name] = button
 
+
+    """
+    Scene Lifecycle
+        - enter
+        - exit
+        - update
+        - draw
+    """
     def enter(self):
         """
         Called when entering the scene.

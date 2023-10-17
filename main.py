@@ -182,7 +182,7 @@ class Game:
         for event in self.event:
             # Handle window resizing event
             if event.type == VIDEORESIZE:
-                self.gameDisplay.resize()
+                self.window_manager.resize()
 
             # Check for keyboard shortcuts
             if event.type == pygame.KEYDOWN:
@@ -214,7 +214,7 @@ class Game:
                     debug_update_func()
 
             # Update the display with the current frames per second (FPS)
-            self.gameDisplay.update(self.clock.get_fps())
+            self.window_manager.update(self.clock.get_fps())
 
 
     def draw(self):
@@ -226,7 +226,7 @@ class Game:
             for debug_draw_func in self.debug_draws:
                 debug_draw_func()
 
-        self.gameDisplay.draw()
+        self.window_manager.draw()
 
     def quit_game(self):
         # pygame.image.save(self.gameDisplay, "screenshot.png")
