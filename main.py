@@ -137,32 +137,38 @@ class Game:
         self.screen_size = self.screen_width, self.screen_height = SCREEN_SIZE
         self.gameDisplay = self.window_manager.create_window_instance(self.project_title, self.screen_size)
 
+
     """
     Loading
         - load_game
-            - load_display
-            - load_managers_settings
             - load_managers_resources
             - load_scenes
     """
     def load_game(self):
-        self.load_managers_settings()
+        """
+        Initial loading for the game.
+        """
         self.load_managers_resources()
         self.load_scenes()
 
     def load_managers_resources(self):
-        # ResourceManager
+        """
+        Load resources for game managers.
+        """
+        # Load resources using the ResourceManager
         self.resource_manager.load_resources(self.audio_dict)
         self.resource_manager.load_resources(self.graphic_dict)
 
-        # Dependent Managers
+        # Load resources for other dependent managers
         self.audio_manager.load_resources(self.resource_manager)
         self.graphic_manager.load_resources(self.resource_manager)
 
     def load_scenes(self):
+        """
+        Load game scenes.
+        """
         self.scene_manager.load_scenes_from_directory("scenes")
         self.scene_manager.load_scenes_params(self.scene_dict)
-
 
 
     """
