@@ -29,38 +29,46 @@ class Game:
         self.playing = True
         self.paused = False
         self.debug_mode = True
-        self.init_game()
+        self.setup_game()
         self.load_game()
         self.start_game()
 
     """
-    Initialization
-        - init_game
-            - init_folders
-            - init_dict
-            - init_managers
+    Setup
+        - setup_game
+            - setup_folders
+            - setup_dict
+            - setup_managers
+            - setup_managers_settings
+            - setup_display
     """
-    def init_game(self):
-        self.init_folders()
-        self.init_dict()
-        self.init_managers()
+    def setup_game(self):
+        """
+        Initial setup for the game.
+        """
+        self.setup_folders()
+        self.setup_dict()
+        self.setup_managers()
+        self.setup_managers_settings()
+        self.setup_display()
 
-    def init_folders(self):
+    def setup_folders(self):
+        """
+        Configure folder paths based on debug mode.
+        """
         self.game_folder = path.dirname(__file__)
 
-        if not self.debug_mode:
-            self.resources_folder = path.join(self.game_folder, "resources")
-            self.font_folder = path.join(self.resources_folder, "font")
-            self.graphic_folder = path.join(self.resources_folder, "graphic")
-            self.music_folder = path.join(self.resources_folder, "music")
-            self.sound_folder = path.join(self.resources_folder, "sound")
-        else:
-            self.debug_folder = path.join(self.game_folder, "debug")
-            self.font_folder = path.join(self.debug_folder, "debug_resources")
-            self.graphic_folder = path.join(self.debug_folder, "debug_resources")
-            self.music_folder = path.join(self.debug_folder, "debug_resources")
-            self.sound_folder = path.join(self.debug_folder, "debug_resources")
+        # Define the base resources folder
+        base_folder = "resources" if not self.debug_mode else path.join("debug", "debug_resources")
+        self.resources_folder = path.join(self.game_folder, base_folder)
 
+        # Define individual resource folders
+        self.font_folder = path.join(self.resources_folder, "font")
+        self.graphic_folder = path.join(self.resources_folder, "graphic")
+        self.music_folder = path.join(self.resources_folder, "music")
+        self.sound_folder = path.join(self.resources_folder, "sound")
+
+        # Define resource type folders (see ResourceManagers)
         self.resource_type_folders = {
             "music": self.music_folder,
             "sound": self.sound_folder,
@@ -69,37 +77,65 @@ class Game:
             "font": self.font_folder,
         }
 
-    def init_dict(self):
+    def setup_dict(self):
+        """
+        Configure game dictionaries based on debug mode.
+        """
         if not self.debug_mode:
+            # Use regular dictionaries for non-debug mode.
             self.audio_dict = DICT_AUDIO
             self.font_dict = DICT_FONT
             self.graphic_dict = DICT_GRAPHIC
             self.scene_dict = DICT_SCENE
         else:
+            # Use debug dictionaries for debug mode.
             self.audio_dict = DEBUG_DICT_AUDIO
             self.font_dict = DEBUG_DICT_FONT
             self.graphic_dict = DEBUG_DICT_GRAPHIC
             self.scene_dict = DEBUG_DICT_SCENE
 
-    def init_managers(self):
+    def setup_managers(self):
+        """
+        Create and configure game managers.
+        """
+        # Create individual variables for managers
+        self.audio_manager = AudioManager()
+        self.button_manager = ButtonManager()
+        self.graphic_manager = GraphicManager()
+        self.resource_manager = ResourceManager()
+        self.scene_manager = SceneManager()
+        self.font_manager = FontManager()
+        self.window_manager = WindowManager()
+
+        # Regroup managers under a single variable
         self.managers = {
-            "audio_manager": AudioManager(),
-            "button_manager": ButtonManager(),
-            "graphic_manager": GraphicManager(),
-            "resource_manager": ResourceManager(),
-            "scene_manager": SceneManager(),
-            "font_manager": FontManager(),
-            "window_manager": WindowManager()
+            "audio_manager": self.audio_manager,
+            "button_manager": self.button_manager,
+            "graphic_manager": self.graphic_manager,
+            "resource_manager": self.resource_manager,
+            "scene_manager": self.scene_manager,
+            "font_manager": self.font_manager,
+            "window_manager": self.window_manager
         }
 
-        self.audio_manager = self.managers["audio_manager"]
-        self.button_manager = self.managers["button_manager"]
-        self.graphic_manager = self.managers["graphic_manager"]
-        self.resource_manager = self.managers["resource_manager"]
-        self.scene_manager = self.managers["scene_manager"]
-        self.font_manager = self.managers["font_manager"]
-        self.window_manager = self.managers["window_manager"]
+    def setup_managers_settings(self):
+        """
+        Configure game managers and their settings.
+        """
+        # Set resource folders for the ResourceManager
+        self.resource_manager.set_resource_folders(self.resource_type_folders)
 
+        # Set managers for the SceneManager
+        self.scene_manager.set_managers(self.managers)
+
+    def setup_display(self):
+        """
+        Configure game display settings.
+        """
+        self.project_title = PROJECT_TITLE
+        self.FPS = FPS
+        self.screen_size = self.screen_width, self.screen_height = SCREEN_SIZE
+        self.gameDisplay = self.window_manager.create_window_instance(self.project_title, self.screen_size)
 
     """
     Loading
@@ -110,23 +146,9 @@ class Game:
             - load_scenes
     """
     def load_game(self):
-        self.load_display()
         self.load_managers_settings()
         self.load_managers_resources()
         self.load_scenes()
-
-    def load_display(self):
-        """
-        Initialize game display settings.
-        """
-        self.project_title = PROJECT_TITLE
-        self.FPS = FPS
-        self.screen_size = self.screen_width, self.screen_height = SCREEN_SIZE
-        self.gameDisplay = self.window_manager.create_window_instance(self.project_title, self.screen_size)
-
-    def load_managers_settings(self):
-        self.resource_manager.set_resource_folders(self.resource_type_folders)
-        self.scene_manager.set_managers(self.managers)
 
     def load_managers_resources(self):
         # ResourceManager
