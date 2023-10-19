@@ -20,9 +20,6 @@ from debug.debug_graphic_manager import DebugGraphicManager
 from debug.debug_data import DEBUG_DICT_AUDIO, DEBUG_DICT_FONT, DEBUG_DICT_GRAPHIC, DEBUG_DICT_SCENE
 
 class Game:
-    """
-    Initialization
-    """
     def __init__(self):
         pygame.mixer.pre_init(44100, -16, 2, 2048)
         pygame.init()
@@ -36,6 +33,13 @@ class Game:
         self.load_game()
         self.start_game()
 
+    """
+    Initialization
+        - init_game
+            - init_folders
+            - init_dict
+            - init_managers
+    """
     def init_game(self):
         self.init_folders()
         self.init_dict()
@@ -78,22 +82,37 @@ class Game:
             self.scene_dict = DEBUG_DICT_SCENE
 
     def init_managers(self):
-        self.audio_manager = AudioManager()
-        self.button_manager = ButtonManager()
-        self.graphic_manager = GraphicManager()
-        self.resource_manager = ResourceManager()
-        self.scene_manager = SceneManager()
-        self.font_manager = FontManager()
-        self.window_manager = WindowManager()
+        self.managers = {
+            "audio_manager": AudioManager(),
+            "button_manager": ButtonManager(),
+            "graphic_manager": GraphicManager(),
+            "resource_manager": ResourceManager(),
+            "scene_manager": SceneManager(),
+            "font_manager": FontManager(),
+            "window_manager": WindowManager()
+        }
 
+        self.audio_manager = self.managers["audio_manager"]
+        self.button_manager = self.managers["button_manager"]
+        self.graphic_manager = self.managers["graphic_manager"]
+        self.resource_manager = self.managers["resource_manager"]
+        self.scene_manager = self.managers["scene_manager"]
+        self.font_manager = self.managers["font_manager"]
+        self.window_manager = self.managers["window_manager"]
 
 
     """
     Loading
+        - load_game
+            - load_display
+            - load_managers_settings
+            - load_managers_resources
+            - load_scenes
     """
     def load_game(self):
         self.load_display()
-        self.load_resources()
+        self.load_managers_settings()
+        self.load_managers_resources()
         self.load_scenes()
 
     def load_display(self):
@@ -101,13 +120,16 @@ class Game:
         Initialize game display settings.
         """
         self.project_title = PROJECT_TITLE
-        self.screen_size = self.screen_width, self.screen_height = SCREEN_SIZE
         self.FPS = FPS
+        self.screen_size = self.screen_width, self.screen_height = SCREEN_SIZE
         self.gameDisplay = self.window_manager.create_window_instance(self.project_title, self.screen_size)
 
-    def load_resources(self):
-        # ResourceManager
+    def load_managers_settings(self):
         self.resource_manager.set_resource_folders(self.resource_type_folders)
+        self.scene_manager.set_managers(self.managers)
+
+    def load_managers_resources(self):
+        # ResourceManager
         self.resource_manager.load_resources(self.audio_dict)
         self.resource_manager.load_resources(self.graphic_dict)
 

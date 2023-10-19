@@ -57,14 +57,24 @@ DEBUG_DICT_GRAPHIC = {
 
 DEBUG_DICT_SCENE = {
     "MainMenuScene": {
+        "managers": [],
         "buttons": [
             {"name": "start", "position": (200, 150), "text": "Start"}
         ],
     },
     "GameScene": {
+        "managers": [],
         "buttons": [
             {"name": "game_over", "position": (200, 150), "text": "Game Over"},
             {"name": "click_me", "position": (200, 250), "text": "Click Me!"}
+        ],
+    },
+    "SettingsScene": {
+        "managers": ["audio_manager", "window_manager"],
+        "buttons": [
+            {"name": "volume_up", "position": (200, 150), "text": "Volume Up"},
+            {"name": "volume_down", "position": (200, 200), "text": "Volume Down"},
+            {"name": "fullscreen_toggle", "position": (200, 250), "text": "Toggle Fullscreen"},
         ],
     },
 }

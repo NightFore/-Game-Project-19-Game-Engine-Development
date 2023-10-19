@@ -2,8 +2,8 @@ import pygame
 from manager.scene_manager import SceneBase
 
 class GameScene(SceneBase):
-    def __init__(self, scene_manager):
-        super().__init__(scene_manager)
+    def __init__(self):
+        super().__init__()
 
     def enter(self):
         super().enter()

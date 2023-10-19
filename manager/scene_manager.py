@@ -15,7 +15,6 @@ class SceneManager:
         scenes (dict): A dictionary containing loaded game scenes.
         scenes_params (dict): A dictionary containing scene parameters.
         current_scene (SceneBase): The currently active game scene.
-        button_manager (ButtonManager): A ButtonManager instance for managing buttons in scenes.
 
     Example:
         # Create a SceneManager and load game scenes and scene parameters.
@@ -37,15 +36,16 @@ class SceneManager:
             scene_manager.draw(screen)
 
     Dependencies:
-        - ButtonManager: A ButtonManager instance is used to manage buttons in scenes.
 
     Methods:
+        set_managers
+
     - Scene Loading
         - load_scenes_params(params_dict): Load scene parameters from a dictionary.
         - load_scenes_from_directory(directory): Load game scenes from Python files in a directory.
+        - add_scene(name, scene): Add a game scene to the manager.
 
     - Scene Management
-        - add_scene(name, scene): Add a game scene to the manager.
         - set_scene(name): Set the current game scene.
 
     - Update and Draw
@@ -59,7 +59,12 @@ class SceneManager:
         self.scenes = {}
         self.scenes_params = None
         self.current_scene = None
-        self.button_manager = ButtonManager()
+
+    def set_managers(self, managers):
+        """
+        Set the managers used by SceneManager.
+        """
+        self.managers = managers
 
 
     """
@@ -98,15 +103,9 @@ class SceneManager:
                     # Check if the object is a class and a subclass of SceneBase (excluding SceneBase itself)
                     if inspect.isclass(obj) and issubclass(obj, SceneBase) and obj != SceneBase:
                         # Create an instance of the scene class and add it to the SceneManager
-                        scene_instance = obj(self)
+                        scene_instance = obj()
                         self.add_scene(name, scene_instance)
 
-
-    """
-    Scene Management
-        - add_scene
-        - set_scene
-    """
     def add_scene(self, name, scene):
         """
         Add a scene to the manager.
@@ -116,8 +115,12 @@ class SceneManager:
             scene (SceneBase): The scene to add.
         """
         self.scenes[name] = scene
-        scene.set_button_manager(self.button_manager)
 
+
+    """
+    Scene Management
+        - set_scene
+    """
     def set_scene(self, name):
         """
         Set the current scene.
@@ -128,9 +131,12 @@ class SceneManager:
         if name in self.scenes:
             if self.current_scene:
                 self.current_scene.exit()
-                self.button_manager.clear_buttons()
+                self.managers["button_manager"].clear_buttons()
             self.current_scene = self.scenes[name]
-            self.current_scene.set_scene_params(self.scenes_params)
+
+            scenes_params = self.scenes_params.get(name, {})
+            managers = scenes_params.get("managers", [])
+            self.current_scene.set_scene_settings(managers, scenes_params)
             self.current_scene.enter()
 
 
@@ -148,7 +154,6 @@ class SceneManager:
         """
         if self.current_scene:
             self.current_scene.update(dt)
-            self.button_manager.update()
 
     def draw(self, screen):
         """
@@ -159,7 +164,6 @@ class SceneManager:
         """
         if self.current_scene:
             self.current_scene.draw(screen)
-            self.button_manager.draw(screen)
 
 
 
@@ -168,7 +172,6 @@ class SceneBase:
     SceneBase provides a base for game scenes with buttons.
 
     Attributes:
-        scene_manager (SceneManager): The SceneManager instance managing game scenes.
         scene_params (dict): A dictionary containing scene parameters.
         button_manager (ButtonManager): A ButtonManager instance for managing buttons in scenes.
 
@@ -212,14 +215,10 @@ class SceneBase:
         - update(dt): Update the scene.
         - draw(screen): Draw the scene and its buttons on the screen.
     """
-    def __init__(self, scene_manager):
+    def __init__(self):
         """
         Initialize the SceneBase.
-
-        Args:
-            scene_manager (SceneManager): The SceneManager instance.
         """
-        self.scene_manager = scene_manager
         self.scene_params = None
         self.button_manager = None
 
@@ -229,13 +228,15 @@ class SceneBase:
         - set_scene_params
         - set_button_manager
     """
-    def set_scene_params(self, scene_params):
+    def set_scene_settings(self, managers, scene_params):
         """
         Set the scene parameters for the scene.
 
         Args:
+            managers
             scene_params (dict): The dictionary of scene parameters.
         """
+        self.managers = managers
         self.scene_params = scene_params
 
     def set_button_manager(self, button_manager):

@@ -2,8 +2,8 @@ import pygame
 from manager.scene_manager import SceneBase
 
 class MainMenuScene(SceneBase):
-    def __init__(self, scene_manager):
-        super().__init__(scene_manager)
+    def __init__(self):
+        super().__init__()
 
     def enter(self):
         super().enter()
@@ -21,7 +21,7 @@ class MainMenuScene(SceneBase):
             else:
                 if self.buttons["start"].clicked:
                     self.buttons["start"].clicked = False
-                    self.scene_manager.set_scene("GameScene")
+                    self.managers["scene_manager"].set_scene("GameScene")
 
     def draw(self, screen):
         super().draw(screen)
