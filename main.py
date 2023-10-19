@@ -33,6 +33,7 @@ class Game:
         self.load_game()
         self.start_game()
 
+
     """
     Setup
         - setup_game
@@ -173,26 +174,42 @@ class Game:
 
     """
     Startup
+        - start_game
+            - start_managers
+            - start_debug_mode
     """
     def start_game(self):
+        """
+        Initialize game startup procedures.
+        """
         self.start_managers()
         self.start_debug_mode()
 
     def start_managers(self):
+        """
+        Initialize game managers for the initial scene.
+        """
+        # Set the initial scene to "MainMenuScene"
         self.scene_manager.set_scene("MainMenuScene")
 
     def start_debug_mode(self):
+        """
+        Initialize debug mode and create debug update and draw lists.
+        """
+        # Create empty debug update and draw lists
         self.debug_updates = []
         self.debug_draws = []
 
-        if self.debug_mode:
-            debug_managers = [
-                DebugAudioManager(self.audio_manager),
-                DebugGraphicManager(self.graphic_manager, self.window_manager)]
+        # Initialize debug handlers
+        debug_handlers = [
+            DebugAudioManager(self.audio_manager),
+            DebugGraphicManager(self.graphic_manager, self.window_manager)]
 
-            for debug_manager in debug_managers:
-                self.debug_updates.append(debug_manager.update)
-                self.debug_draws.append(debug_manager.draw)
+        for debug_handler in debug_handlers:
+            # Add debug update and draw functions to the lists
+            self.debug_updates.append(debug_handler.update)
+            self.debug_draws.append(debug_handler.draw)
+
 
     """
     Update
