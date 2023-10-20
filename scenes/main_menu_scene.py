@@ -14,5 +14,8 @@ class MainMenuScene(SceneBase):
     def update(self, dt):
         super().update(dt)
 
+        if self.buttons["start"].clicked:
+            self.managers["scene_manager"].set_scene("GameScene")
+
     def draw(self, screen):
         super().draw(screen)
