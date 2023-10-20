@@ -36,12 +36,11 @@ class Game:
 
     """
     Setup
-        - setup_game
-            - setup_folders
-            - setup_dict
-            - setup_managers
-            - setup_managers_settings
-            - setup_display
+        - setup_folders
+        - setup_dict
+        - setup_managers
+        - setup_managers_settings
+        - setup_display
     """
     def setup_game(self):
         """
@@ -141,9 +140,8 @@ class Game:
 
     """
     Loading
-        - load_game
-            - load_managers_resources
-            - load_scenes
+        - load_managers_resources
+        - load_scenes
     """
     def load_game(self):
         """
@@ -174,9 +172,8 @@ class Game:
 
     """
     Startup
-        - start_game
-            - start_managers
-            - start_debug_mode
+        - start_managers
+        - start_debug_mode
     """
     def start_game(self):
         """
@@ -212,20 +209,7 @@ class Game:
 
 
     """
-    Update
-        - calculate_total_play_time
-    """
-    def calculate_total_play_time(self):
-        # Calculate the elapsed time since the last frame update
-        elapsed_time = self.dt
-
-        # Add the elapsed time to the total play time
-        self.total_play_time += elapsed_time
-
-
-    """
     Game Loop
-        - start_game
         - run
         - events
         - update
@@ -236,7 +220,8 @@ class Game:
         while self.playing:
             self.dt = self.clock.tick(self.FPS) / 1000
             self.events()
-            self.update()
+            if not self.paused:
+                self.update()
             self.draw()
         self.quit_game()
 
@@ -257,8 +242,6 @@ class Game:
                     self.quit_game()
                 elif event.key == pygame.K_F4:
                     self.window_manager.update_display_mode(toggle_zoom=True)
-                elif event.key == pygame.K_F5:
-                    self.start_game()
                 elif event.key == pygame.K_F11:
                     self.window_manager.update_display_mode(toggle_fullscreen=True)
 
@@ -266,22 +249,31 @@ class Game:
             if event.type == pygame.QUIT:
                 self.quit_game()
 
+    """
+    Update
+        - calculate_total_play_time
+    """
     def update(self):
-        # Check if the game is not paused before performing updates
-        if not self.paused:
-            # Update game time if the game is not paused
-            self.calculate_total_play_time()
+        # Update game time if the game is not paused
+        self.calculate_total_play_time()
 
-            # Update the scene manager with the time elapsed since the last update
-            self.scene_manager.update(self.dt)
+        # Update the scene manager with the time elapsed since the last update
+        self.scene_manager.update(self.dt)
 
-            # Debug: If debug mode is enabled, perform debug operations
-            if self.debug_mode:
-                for debug_update_func in self.debug_updates:
-                    debug_update_func()
+        # Debug: If debug mode is enabled, perform debug operations
+        if self.debug_mode:
+            for debug_update_func in self.debug_updates:
+                debug_update_func()
 
-            # Update the display with the current frames per second (FPS)
-            self.window_manager.update(self.clock.get_fps())
+        # Update the display with the current frames per second (FPS)
+        self.window_manager.update(self.clock.get_fps())
+
+    def calculate_total_play_time(self):
+        # Calculate the elapsed time since the last frame update
+        elapsed_time = self.dt
+
+        # Add the elapsed time to the total play time
+        self.total_play_time += elapsed_time
 
 
     def draw(self):
