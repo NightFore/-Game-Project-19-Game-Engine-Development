@@ -251,30 +251,20 @@ class Game:
 
     """
     Update
-        - calculate_total_play_time
     """
     def update(self):
-        # Update game time if the game is not paused
-        self.calculate_total_play_time()
+        # Calculate the total play time of the game
+        self.total_play_time += self.dt
 
-        # Update the scene manager with the time elapsed since the last update
+        # Update game components
+        self.button_manager.update()
         self.scene_manager.update(self.dt)
+        self.window_manager.update(self.clock.get_fps())
 
-        # Debug: If debug mode is enabled, perform debug operations
+        # Debug mode operations
         if self.debug_mode:
             for debug_update_func in self.debug_updates:
                 debug_update_func()
-
-        # Update the display with the current frames per second (FPS)
-        self.window_manager.update(self.clock.get_fps())
-
-    def calculate_total_play_time(self):
-        # Calculate the elapsed time since the last frame update
-        elapsed_time = self.dt
-
-        # Add the elapsed time to the total play time
-        self.total_play_time += elapsed_time
-
 
     def draw(self):
         self.gameDisplay.fill((30, 30, 30))
