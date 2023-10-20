@@ -210,7 +210,7 @@ class Game:
         Load game scenes.
         """
         self.scene_manager.load_scenes_from_directory("scenes")
-        self.scene_manager.load_scenes_params(self.scene_dict)
+        self.scene_manager.load_scenes_parameters(self.scene_dict)
 
 
     """
