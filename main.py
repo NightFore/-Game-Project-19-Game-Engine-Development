@@ -20,6 +20,49 @@ from debug.debug_graphic_manager import DebugGraphicManager
 from debug.debug_data import DEBUG_DICT_AUDIO, DEBUG_DICT_FONT, DEBUG_DICT_GRAPHIC, DEBUG_DICT_SCENE
 
 class Game:
+    """
+    The Game class manages the initialization, setup, loading, and execution of a game using the Pygame framework.
+
+    Attributes:
+        total_play_time (float): The total play time of the game in seconds.
+        clock (pygame.time.Clock): The Pygame clock used for controlling the game's frame rate.
+        playing (bool): A flag that indicates if the game is currently running.
+        paused (bool): A flag that indicates if the game is in a paused state.
+        debug_mode (bool): A flag that indicates if the game is running in debug mode.
+        project_title (str): The title of the game project.
+        FPS (int): The desired frames per second for the game's execution.
+        screen_size (tuple): The dimensions of the game window (width, height).
+        gameDisplay (pygame.Surface): The Pygame surface representing the game's display window.
+
+    Methods:
+    - Setup:
+        - setup_game: Initialize the game's setup, including folders, dictionaries, managers, and display.
+        - setup_folders: Configure folder paths based on the debug mode.
+        - setup_dict: Configure game dictionaries based on the debug mode.
+        - setup_managers: Create and configure game managers.
+        - setup_managers_settings: Configure game managers and their settings.
+        - setup_display: Configure game display settings.
+
+    - Loading:
+        - load_game: Load initial resources and scenes for the game.
+        - load_managers_resources: Load resources for game managers.
+        - load_scenes: Load game scenes.
+
+    - Startup:
+        - start_game: Initialize game startup procedures.
+        - start_managers: Initialize game managers for the initial scene.
+        - start_debug_mode: Initialize debug mode and create debug update and draw lists.
+
+    - Game Loop:
+        - run: The main game loop that handles game events, updates, and drawing.
+        - events: Handle game events, including user input and window events.
+        - update: Update game components, including scenes, managers, and debug operations.
+        - draw: Draw game components, scenes, managers, and debug elements.
+        - quit_game: Exit the game, print total play time, and clean up resources.
+
+    Dependencies:
+        - Pygame: The Pygame framework is required for game development.
+    """
     def __init__(self):
         pygame.mixer.pre_init(44100, -16, 2, 2048)
         pygame.init()
