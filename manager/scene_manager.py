@@ -12,45 +12,14 @@ class SceneManager:
     SceneManager handles game scenes and buttons.
 
     Attributes:
-        scenes (dict): A dictionary containing loaded game scenes.
-        scenes_params (dict): A dictionary containing scene parameters.
-        current_scene (SceneBase): The currently active game scene.
 
     Example:
-        # Create a SceneManager and load game scenes and scene parameters.
-        scene_manager = SceneManager()
-        scene_manager.load_scenes_from_directory("scenes")
-        scene_manager.load_scenes_params(scene_params_dict)
-
-        # Set the initial game scene.
-        scene_manager.set_scene("MainMenuScene")
-
-        # Main game loop setup
-        clock = pygame.time.Clock()
-        running = True
-
-        # In the game loop, update and draw the current scene and buttons.
-        while running:
-            dt = clock.tick(FPS)
-            scene_manager.update(dt)
-            scene_manager.draw(screen)
-
-    Dependencies:
 
     Methods:
-        set_managers
-
-    - Scene Loading
-        - load_scenes_params(params_dict): Load scene parameters from a dictionary.
-        - load_scenes_from_directory(directory): Load game scenes from Python files in a directory.
-        - add_scene(name, scene): Add a game scene to the manager.
-
-    - Scene Management
-        - set_scene(name): Set the current game scene.
-
-    - Update and Draw
-        - update(dt): Update the current game scene and buttons.
-        - draw(screen): Draw the current game scene and buttons on the screen.
+    - Initial Loading
+        - load_managers
+        - load_scene_parameters
+        - load_scenes_from_directory
     """
     def __init__(self):
         """
@@ -60,19 +29,23 @@ class SceneManager:
         self.scenes_params = None
         self.current_scene = None
 
-    def set_managers(self, managers):
+
+    """
+    Initial Loading
+        - load_managers
+        - load_scene_parameters
+        - load_scenes_from_directory
+    """
+    def load_managers(self, managers):
         """
-        Set the managers used by SceneManager.
+        Load game managers into the SceneManager.
+
+        Args:
+            managers (dict): A dictionary containing game managers.
         """
         self.managers = managers
 
-
-    """
-    Scene Loading
-        - load_scenes_params
-        - load_scenes_from_directory
-    """
-    def load_scenes_params(self, params_dict):
+    def load_scene_parameters(self, params_dict):
         """
         Load scene parameters from a dictionary and store them.
 
@@ -83,7 +56,7 @@ class SceneManager:
 
     def load_scenes_from_directory(self, directory):
         """
-        Load scenes from Python files in the specified directory and add them to the SceneManager.
+        Load game scenes from Python files in the specified directory and add them to the SceneManager.
 
         Args:
             directory (str): The directory containing the scene Python files.
@@ -104,17 +77,7 @@ class SceneManager:
                     if inspect.isclass(obj) and issubclass(obj, SceneBase) and obj != SceneBase:
                         # Create an instance of the scene class and add it to the SceneManager
                         scene_instance = obj()
-                        self.add_scene(name, scene_instance)
-
-    def add_scene(self, name, scene):
-        """
-        Add a scene to the manager.
-
-        Args:
-            name (str): The name of the scene.
-            scene (SceneBase): The scene to add.
-        """
-        self.scenes[name] = scene
+                        self.scenes[name] = scene_instance
 
 
     """

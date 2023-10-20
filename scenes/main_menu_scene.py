@@ -14,14 +14,5 @@ class MainMenuScene(SceneBase):
     def update(self, dt):
         super().update(dt)
 
-        # Check if the "start" button is clicked
-        if self.buttons["start"].rect.collidepoint(pygame.mouse.get_pos()):
-            if pygame.mouse.get_pressed()[0]:
-                self.buttons["start"].clicked = True
-            else:
-                if self.buttons["start"].clicked:
-                    self.buttons["start"].clicked = False
-                    self.managers["scene_manager"].set_scene("GameScene")
-
     def draw(self, screen):
         super().draw(screen)
