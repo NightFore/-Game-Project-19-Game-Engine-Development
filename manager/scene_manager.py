@@ -156,6 +156,7 @@ class SceneBase:
         scenes_params (dict): A dictionary of scene parameters.
         buttons (dict): A dictionary containing buttons in the scene.
         button_manager: The manager for buttons.
+        scene_manager: The manager for scenes.
 
     Methods:
     - Initial Loading
@@ -172,10 +173,14 @@ class SceneBase:
         """
         Initialize the SceneBase.
         """
+        # Initialize game managers
         self.managers = None
+        self.button_manager = None
+        self.scene_manager = None
+
+        # Initialize scene parameters and buttons
         self.scenes_params = None
         self.buttons = {}
-        self.button_manager = None
 
 
     """
@@ -192,6 +197,7 @@ class SceneBase:
         """
         self.managers = managers
         self.scenes_params = scenes_params
+        self.scene_manager = self.managers["scene_manager"]
         self.button_manager = self.managers["button_manager"]
 
 

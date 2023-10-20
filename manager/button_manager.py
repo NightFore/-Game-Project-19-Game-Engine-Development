@@ -88,6 +88,7 @@ class Button:
         font (pygame.font.Font): The font used for rendering the button's text.
         rect (pygame.Rect): The rectangular area that defines the button.
         clicked (bool): Indicates whether the button has been clicked.
+        clicked_and_released (bool): Indicates whether the button was clicked and released in the current frame.
     """
     def __init__(self, position, text):
         """
@@ -102,6 +103,7 @@ class Button:
         self.font = pygame.font.Font(None, 36)
         self.rect = pygame.Rect(position[0], position[1], 150, 50)
         self.clicked = False
+        self.clicked_and_released = False
 
     def update(self):
         """
@@ -110,9 +112,16 @@ class Button:
         if self.rect.collidepoint(pygame.mouse.get_pos()):
             if pygame.mouse.get_pressed()[0]:
                 self.clicked = True
+                self.clicked_and_released = False
             else:
                 if self.clicked:
-                    self.clicked = False
+                    self.clicked_and_released = True
+                elif self.clicked_and_released:
+                    self.clicked_and_released = False
+                self.clicked = False
+        else:
+            self.clicked = False
+            self.clicked_and_released = False
 
     def draw(self, screen):
         """
