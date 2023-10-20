@@ -267,15 +267,21 @@ class Game:
                 debug_update_func()
 
     def draw(self):
+        # Fill the display with a background color
         self.gameDisplay.fill((30, 30, 30))
-        pygame.draw.rect(self.gameDisplay, (255, 0, 0), (100, 100, 200, 150))
-        self.scene_manager.draw(self.gameDisplay)
 
+        # Example drawing a red rectangle
+        pygame.draw.rect(self.gameDisplay, (255, 0, 0), (100, 100, 200, 150))
+
+        # Draw the game scene
+        self.button_manager.draw(self.gameDisplay)
+        self.scene_manager.draw(self.gameDisplay)
+        self.window_manager.draw()
+
+        # Debug mode operations
         if self.debug_mode:
             for debug_draw_func in self.debug_draws:
                 debug_draw_func()
-
-        self.window_manager.draw()
 
     def quit_game(self):
         # pygame.image.save(self.gameDisplay, "screenshot.png")
