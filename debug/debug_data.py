@@ -55,13 +55,13 @@ DEBUG_DICT_SCENE = {
     "GameScene": {
         "managers": [],
         "buttons": {
-
+            "game_over": {"graphic": "default_button", "text": "Game Over", "rect": (400, 300, 200, 60)},
+            "click_me": {"graphic": "default_button", "text": "Click Me!", "rect": (400, 400, 200, 60)},
         },
     },
     "SettingsScene": {
         "managers": ["audio_manager", "window_manager"],
         "buttons": {
-
         },
     },
 }
