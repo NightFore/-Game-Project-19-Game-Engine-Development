@@ -242,7 +242,7 @@ class Game:
 
         # Initialize debug handlers
         debug_handlers = [
-            DebugAudioManager(self.audio_manager),
+            # DebugAudioManager(self.audio_manager),
             DebugGraphicManager(self.graphic_manager, self.window_manager)]
 
         for debug_handler in debug_handlers:
@@ -302,29 +302,31 @@ class Game:
         # Update game components
         self.button_manager.update()
         self.scene_manager.update(self.dt)
-        self.window_manager.update(self.clock.get_fps())
 
         # Debug mode operations
         if self.debug_mode:
             for debug_update_func in self.debug_updates:
                 debug_update_func()
 
-    def draw(self):
-        # Fill the display with a background color
-        self.gameDisplay.fill((30, 30, 30))
+        # Update the window
+        self.window_manager.update(self.clock.get_fps())
 
-        # Example drawing a red rectangle
+    def draw(self):
+        # Testing
+        self.gameDisplay.fill((30, 30, 30))
         pygame.draw.rect(self.gameDisplay, (255, 0, 0), (100, 100, 200, 150))
 
         # Draw the game scene
         self.button_manager.draw(self.gameDisplay)
         self.scene_manager.draw(self.gameDisplay)
-        self.window_manager.draw()
 
         # Debug mode operations
         if self.debug_mode:
             for debug_draw_func in self.debug_draws:
                 debug_draw_func()
+
+        # Draw the window
+        self.window_manager.draw()
 
     def quit_game(self):
         # pygame.image.save(self.gameDisplay, "screenshot.png")

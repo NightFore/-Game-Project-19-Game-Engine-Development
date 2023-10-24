@@ -9,22 +9,7 @@ class ButtonManager:
     Attributes:
         buttons (list): A list of Button instances managed by the ButtonManager.
 
-    Example:
-        # Create a ButtonManager instance.
-        button_manager = ButtonManager()
-
-        # Create a button and add it to the manager.
-        button = button_manager.create_button((100, 100), "Click Me")
-
-        # In the game loop, update and draw the buttons.
-        while running:
-            button_manager.update()
-            button_manager.draw(screen)
-
     Methods:
-    - Initialization
-        - __init__: Initialize the ButtonManager.
-
     - Button Management
         - create_button(position, text): Create a button and add it to the manager.
         - clear_buttons(): Clear all buttons from the manager.
@@ -39,18 +24,20 @@ class ButtonManager:
         """
         self.buttons = []
 
-    def create_button(self, position, text):
+
+    """
+    Button Management
+        - create_button
+        - clear_buttons
+    """
+    def create_button(self):
         """
         Create a button and add it to the manager.
-
-        Args:
-            position (tuple): The position of the button.
-            text (str): The text to display on the button.
 
         Returns:
             Button: The created button instance.
         """
-        button = Button(position, text)
+        button = Button()
         self.buttons.append(button)
         return button
 
@@ -60,6 +47,12 @@ class ButtonManager:
         """
         self.buttons.clear()
 
+
+    """
+    Update and draw
+        - update
+        - draw
+    """
     def update(self):
         """
         Update all buttons in the manager.
@@ -78,32 +71,68 @@ class ButtonManager:
             button.draw(screen)
 
 
+
 class Button:
     """
     Button class for creating interactive buttons.
 
     Attributes:
-        position (tuple): The position of the button.
+        graphic (str or Graphic): The graphic associated with the button.
         text (str): The text to display on the button.
-        font (pygame.font.Font): The font used for rendering the button's text.
         rect (pygame.Rect): The rectangular area that defines the button.
+        hit_rect (pygame.Rect): The rectangular area used for hit detection.
+        font (pygame.font.Font): The font used for rendering the button's text.
         clicked (bool): Indicates whether the button has been clicked.
         clicked_and_released (bool): Indicates whether the button was clicked and released in the current frame.
     """
-    def __init__(self, position, text):
+    def __init__(self):
         """
         Initialize the Button.
-
-        Args:
-            position (tuple): The position of the button.
-            text (str): The text to display on the button.
         """
-        self.position = position
-        self.text = text
+        self.graphic = None
+        self.text = None
         self.font = pygame.font.Font(None, 36)
-        self.rect = pygame.Rect(position[0], position[1], 150, 50)
+        self.rect = pygame.Rect(0, 0, 0, 0)
+        self.hit_rect = pygame.Rect(0, 0, 0, 0)
         self.clicked = False
         self.clicked_and_released = False
+
+    def set_graphic(self, graphic):
+        """
+        Set the graphic for the button.
+
+        Args:
+            graphic (Graphic): The graphic associated with the button.
+        """
+        self.graphic = graphic
+
+    def set_text(self, text):
+        """
+        Set the text to display on the button.
+
+        Args:
+            text (str): The text to display on the button.
+        """
+        self.text = text
+
+    def set_rect(self, rect):
+        """
+        Set the rectangular area that defines the button.
+
+        Args:
+            rect (tuple or pygame.Rect): The rectangular area (x, y, width, height) to define the button.
+        """
+        self.rect = pygame.Rect(rect[0], rect[1], rect[2], rect[3])
+
+    def set_hit_rect(self, hit_rect):
+        """
+        Set the rectangular area used for hit detection. The hit_rect is centered within the button's rect.
+
+        Args:
+            hit_rect (tuple or pygame.Rect): The hit detection area (x, y, width, height) for the button.
+        """
+        self.hit_rect = pygame.Rect(hit_rect)
+        self.hit_rect.center = self.rect.center
 
     def update(self):
         """
@@ -119,9 +148,11 @@ class Button:
                 elif self.clicked_and_released:
                     self.clicked_and_released = False
                 self.clicked = False
+            self.graphic.color = self.graphic.color_active
         else:
             self.clicked = False
             self.clicked_and_released = False
+            self.graphic.color = self.graphic.color_inactive
 
     def draw(self, screen):
         """
@@ -130,8 +161,8 @@ class Button:
         Args:
             screen (pygame.Surface): The screen to draw on.
         """
-        color = (0, 255, 0) if self.rect.collidepoint(pygame.mouse.get_pos()) else (255, 255, 255)
-        pygame.draw.rect(screen, color, self.rect)
-        text_surface = self.font.render(self.text, True, (0, 0, 0))
-        text_rect = text_surface.get_rect(center=self.rect.center)
-        screen.blit(text_surface, text_rect)
+        self.graphic.draw(screen)
+        if self.text:
+            text_surface = self.font.render(self.text, True, (0, 0, 0))
+            text_rect = text_surface.get_rect(center=self.rect.center)
+            screen.blit(text_surface, text_rect)

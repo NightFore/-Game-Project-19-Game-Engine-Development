@@ -10,6 +10,7 @@ class GraphicManager:
         images (dict): A dictionary containing loaded image resources.
         image_sequences (dict): A dictionary containing loaded image sequence resources.
         interfaces (dict): A dictionary containing loaded interface resources.
+        buttons (dict): A dictionary containing loaded button resources.
 
     Example:
         # Example dictionary for loading image and image sequence resources:
@@ -59,6 +60,7 @@ class GraphicManager:
         self.images = {}
         self.image_sequences = {}
         self.interfaces = {}
+        self.buttons = {}
 
 
     """

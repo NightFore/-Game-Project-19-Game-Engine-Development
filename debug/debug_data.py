@@ -34,23 +34,15 @@ DEBUG_DICT_GRAPHIC = {
     },
     "default_interface": {
         "type": "interface",
-        "color": {
-            "default": (0, 0, 0),
-            "border": (255, 255, 255),
-        },
+        "color": {"default": (0, 0, 0), "border": (255, 255, 255)},
         "rect": {"x": 50, "y": 50, "width": 400, "height": 300},
         "hit_rect": {"x": 50, "y": 50, "width": 400, "height": 300},
         "border": {"width": 2, "height": 2}
     },
     "default_button": {
         "type": "button",
-        "color": {
-            "active": (0, 255, 0),
-            "inactive": (255, 0, 0),
-            "border": (0, 0, 255)
-        },
+        "color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
         "rect": {"x": 100, "y": 100, "width": 200, "height": 50},
-        "hit_rect": {"x": 100, "y": 100, "width": 200, "height": 50},
         "border": {"width": 2, "height": 2}
     },
 }
@@ -58,23 +50,24 @@ DEBUG_DICT_GRAPHIC = {
 DEBUG_DICT_SCENE = {
     "MainMenuScene": {
         "managers": [],
-        "buttons": [
-            {"name": "start", "position": (200, 150), "text": "Start"}
-        ],
+        "buttons": {
+            "start": {
+                "graphic": "default_button", "text": "Start",
+                "rect": {"x": 300, "y": 250, "width": 300, "height": 60},
+                "hit_rect": {"x": 0, "y": 0, "width": 300, "height": 60}
+            }
+        },
     },
     "GameScene": {
         "managers": [],
-        "buttons": [
-            {"name": "game_over", "position": (200, 150), "text": "Game Over"},
-            {"name": "click_me", "position": (200, 250), "text": "Click Me!"}
-        ],
+        "buttons": {
+
+        },
     },
     "SettingsScene": {
         "managers": ["audio_manager", "window_manager"],
-        "buttons": [
-            {"name": "volume_up", "position": (200, 150), "text": "Volume Up"},
-            {"name": "volume_down", "position": (200, 200), "text": "Volume Down"},
-            {"name": "fullscreen_toggle", "position": (200, 250), "text": "Toggle Fullscreen"},
-        ],
+        "buttons": {
+
+        },
     },
 }

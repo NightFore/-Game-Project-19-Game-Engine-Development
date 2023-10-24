@@ -153,10 +153,11 @@ class SceneBase:
 
     Attributes:
         managers (dict): A dictionary containing game managers.
-        scenes_params (dict): A dictionary of scene parameters.
-        buttons (dict): A dictionary containing buttons in the scene.
         button_manager: The manager for buttons.
+        graphic_manager: The manager for graphics.
         scene_manager: The manager for scenes.
+        scenes_params (dict): A dictionary of scene parameters.
+        scene_buttons (dict): A dictionary containing buttons in the scene.
 
     Methods:
     - Initial Loading
@@ -164,7 +165,7 @@ class SceneBase:
 
     - Scene Lifecycle
         - enter: Called when entering the scene.
-        - create_buttons_from_dict: Create buttons based on button information retrieved from the scene_params.
+            - create_buttons_from_dict: Create buttons based on button information retrieved from the scene_params.
         - exit: Called when exiting the scene.
         - update: Update the scene.
         - draw: Draw the scene and its buttons on the screen.
@@ -176,11 +177,12 @@ class SceneBase:
         # Initialize game managers
         self.managers = None
         self.button_manager = None
+        self.graphic_manager = None
         self.scene_manager = None
 
         # Initialize scene parameters and buttons
         self.scenes_params = None
-        self.buttons = {}
+        self.scene_buttons = {}
 
 
     """
@@ -196,9 +198,10 @@ class SceneBase:
             scenes_params (dict): The dictionary of scene parameters.
         """
         self.managers = managers
-        self.scenes_params = scenes_params
-        self.scene_manager = self.managers["scene_manager"]
         self.button_manager = self.managers["button_manager"]
+        self.graphic_manager = self.managers["graphic_manager"]
+        self.scene_manager = self.managers["scene_manager"]
+        self.scenes_params = scenes_params
 
 
     """
@@ -218,22 +221,44 @@ class SceneBase:
     def create_buttons_from_dict(self, scene_name):
         """
         Create buttons based on button information retrieved from the scene_params.
+
+        Args:
+            scene_name (str): The name of the current scene.
         """
         # Retrieve button information for the specific scene from the scene_params dictionary
-        scene_button_info = self.scenes_params[scene_name].get("buttons", [])
+        scene_buttons_info = self.scenes_params[scene_name].get("buttons", {})
 
-        # Iterate over each button information in the list
-        for button_info in scene_button_info:
+        # Iterate over each button information in the dictionary
+        for name, button_info in scene_buttons_info.items():
             # Extract information for the button from the dictionary
-            name = button_info["name"]
-            position = button_info["position"]
-            text = button_info["text"]
+            graphic = button_info.get("graphic", "default_button")
+            text = button_info.get("text", None)
+            rect = button_info.get("rect", {})
+            hit_rect = button_info.get("hit_rect", {})
 
             # Create a button using the ButtonManager and the extracted information
-            button = self.button_manager.create_button(position, text)
+            button = self.button_manager.create_button()
 
-            # Store the button in the buttons dictionary using its name as the key
-            self.buttons[name] = button
+            # Update the button's graphic if specified, and it exists in the graphic manager
+            if graphic in self.graphic_manager.buttons:
+                button.set_graphic(self.graphic_manager.buttons[graphic])
+            else:
+                raise ValueError(f"Graphic '{graphic}' not found in the graphic manager.")
+
+            # Update the button's text if specified
+            if text:
+                button.set_text(text)
+
+            # Update the button's rect if specified
+            if rect:
+                button.set_rect(rect)
+
+            # Update the button's hit_rect if specified
+            if hit_rect:
+                button.set_hit_rect(hit_rect)
+
+            # Store the button in the scene_buttons dictionary using its name as the key
+            self.scene_buttons[name] = button
 
     def exit(self):
         """
