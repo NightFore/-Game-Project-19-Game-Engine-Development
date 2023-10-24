@@ -42,20 +42,14 @@ DEBUG_DICT_GRAPHIC = {
     "default_button": {
         "type": "button",
         "color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
-        "rect": {"x": 100, "y": 100, "width": 200, "height": 50},
         "border": {"width": 2, "height": 2}
     },
 }
-
 DEBUG_DICT_SCENE = {
     "MainMenuScene": {
         "managers": [],
         "buttons": {
-            "start": {
-                "graphic": "default_button", "text": "Start",
-                "rect": {"x": 300, "y": 250, "width": 300, "height": 60},
-                "hit_rect": {"x": 0, "y": 0, "width": 300, "height": 60}
-            }
+            "start": {"graphic": "default_button", "text": "Start", "rect": (300, 250, 300, 60)},
         },
     },
     "GameScene": {
@@ -71,3 +65,4 @@ DEBUG_DICT_SCENE = {
         },
     },
 }
+

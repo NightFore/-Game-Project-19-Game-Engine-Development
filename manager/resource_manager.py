@@ -311,25 +311,7 @@ class ResourceManager:
 
         Returns:
             dict: The updated resource data.
-
-        Raises:
-        ValueError: If the 'rect' data is missing or invalid.
         """
-        resource_type = resource_info['resource_type']
-        rect_data = resource_data.get("rect")
-        if rect_data is None:
-            raise ValueError(f"Missing 'rect' data for {resource_type} resource '{resource_name}'.")
-
-        x = rect_data.get("x")
-        y = rect_data.get("y")
-        width = rect_data.get("width")
-        height = rect_data.get("height")
-
-        if x is None or y is None or width is None or height is None:
-            raise ValueError(f"Invalid 'rect' data for {resource_type} resource '{resource_name}'. Missing or invalid variables.")
-
-        # Create and return a pygame.Rect object
-        resource_data["rect"] = pygame.Rect(x, y, width, height)
         return resource_data
 
 
@@ -350,6 +332,7 @@ class ResourceManager:
             - load_image_sequence
             - load_interface
     """
+    # AudioManager
     def load_music(self, name, data):
         music_path = data["file_path"]
         pygame.mixer.music.load(music_path)
@@ -360,11 +343,13 @@ class ResourceManager:
         sound = pygame.mixer.Sound(sound_path)
         self.resources["sound"][name] = sound
 
+    # FontManager
     def load_font(self, name, data):
         font_path = data["file_path"]
         font_size = data.get("size")
         self.resources["font"][name] = pygame.font.Font(font_path, font_size)
 
+    # GraphicManager
     def load_image(self, name, data):
         image_path = data["file_path"]
         data["image"] = pygame.image.load(image_path).convert_alpha()
@@ -379,14 +364,7 @@ class ResourceManager:
         self.resources["image_sequence"][name] = data
 
     def load_interface(self, name, data):
-        rect = data.get("rect")
-        data["rect"] = rect
-
-        # Create an instance of InterfaceRect and store it
         self.resources["interface"][name] = data
 
     def load_button(self, name, data):
-        pass
-
-    def load_collision(self, name, data):
-        pass
+        self.resources["button"][name] = data

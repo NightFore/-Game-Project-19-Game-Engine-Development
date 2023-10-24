@@ -77,6 +77,7 @@ class GraphicManager:
         self.images = resource_manager.load_resources_from_manager("image")
         self.image_sequences = resource_manager.load_resources_from_manager("image_sequence")
         self.interfaces = resource_manager.load_resources_from_manager("interface")
+        self.buttons = resource_manager.load_resources_from_manager("button")
 
 
     """
@@ -100,6 +101,8 @@ class GraphicManager:
             return ImageSequenceGraphic(name, self.image_sequences[name])
         elif resource_type == "interface":
             return InterfaceGraphic(name, self.interfaces[name])
+        elif resource_type == "button":
+            return ButtonGraphic(name, self.buttons[name])
         else:
             raise ValueError("Unknown resource type: {}".format(resource_type))
 
@@ -221,4 +224,50 @@ class InterfaceGraphic:
             screen (pygame.Surface): The screen surface to draw on.
         """
         pygame.draw.rect(screen, self.default_color, self.rect)
+        pygame.draw.rect(screen, self.border_color, self.rect, self.border_width)
+
+
+
+class ButtonGraphic:
+    def __init__(self, name, data):
+        """
+        Initialize an ButtonGraphic instance.
+
+        Args:
+            name (str): The name of the graphic.
+            data (dict): A dictionary containing graphic data.
+        """
+        self.name = name
+        self.rect = pygame.Rect(0, 0, 0, 0)
+
+        color_data = data["color"]
+        self.color_active = color_data.get("active", (0, 0, 0))
+        self.color_inactive = color_data.get("inactive", (255, 0, 0))
+        self.border_color = color_data.get("border", (255, 255, 255))
+        self.color = self.color_inactive
+
+        border_data = data["border"]
+        self.border_width = border_data.get("width", 0)
+        self.border_height = border_data.get("height", 0)
+
+    def set_rect(self, rect):
+        """
+        Set the rectangular area for the button graphic.
+
+        Args:
+            rect (tuple or pygame.Rect): The rectangular area (x, y, width, height) for the button graphic.
+        """
+        self.rect = pygame.Rect(rect)
+
+    def update(self):
+        pass
+
+    def draw(self, screen):
+        """
+        Draw the filled rectangle with a border on the screen.
+
+        Args:
+            screen (pygame.Surface): The screen surface to draw on.
+        """
+        pygame.draw.rect(screen, self.color, self.rect)
         pygame.draw.rect(screen, self.border_color, self.rect, self.border_width)

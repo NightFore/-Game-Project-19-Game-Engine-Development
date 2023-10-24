@@ -234,14 +234,13 @@ class SceneBase:
             graphic = button_info.get("graphic", "default_button")
             text = button_info.get("text", None)
             rect = button_info.get("rect", {})
-            hit_rect = button_info.get("hit_rect", {})
 
             # Create a button using the ButtonManager and the extracted information
             button = self.button_manager.create_button()
 
             # Update the button's graphic if specified, and it exists in the graphic manager
             if graphic in self.graphic_manager.buttons:
-                button.set_graphic(self.graphic_manager.buttons[graphic])
+                button.set_graphic(self.graphic_manager.create_graphic_instance(graphic, "button"))
             else:
                 raise ValueError(f"Graphic '{graphic}' not found in the graphic manager.")
 
@@ -252,10 +251,6 @@ class SceneBase:
             # Update the button's rect if specified
             if rect:
                 button.set_rect(rect)
-
-            # Update the button's hit_rect if specified
-            if hit_rect:
-                button.set_hit_rect(hit_rect)
 
             # Store the button in the scene_buttons dictionary using its name as the key
             self.scene_buttons[name] = button

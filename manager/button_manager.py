@@ -93,7 +93,6 @@ class Button:
         self.text = None
         self.font = pygame.font.Font(None, 36)
         self.rect = pygame.Rect(0, 0, 0, 0)
-        self.hit_rect = pygame.Rect(0, 0, 0, 0)
         self.clicked = False
         self.clicked_and_released = False
 
@@ -122,17 +121,8 @@ class Button:
         Args:
             rect (tuple or pygame.Rect): The rectangular area (x, y, width, height) to define the button.
         """
-        self.rect = pygame.Rect(rect[0], rect[1], rect[2], rect[3])
-
-    def set_hit_rect(self, hit_rect):
-        """
-        Set the rectangular area used for hit detection. The hit_rect is centered within the button's rect.
-
-        Args:
-            hit_rect (tuple or pygame.Rect): The hit detection area (x, y, width, height) for the button.
-        """
-        self.hit_rect = pygame.Rect(hit_rect)
-        self.hit_rect.center = self.rect.center
+        self.rect = pygame.Rect(rect)
+        self.graphic.set_rect(self.rect)
 
     def update(self):
         """
