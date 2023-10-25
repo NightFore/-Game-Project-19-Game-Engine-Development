@@ -80,7 +80,6 @@ class Button:
         graphic (str or Graphic): The graphic associated with the button.
         text (str): The text to display on the button.
         rect (pygame.Rect): The rectangular area that defines the button.
-        hit_rect (pygame.Rect): The rectangular area used for hit detection.
         font (pygame.font.Font): The font used for rendering the button's text.
         clicked (bool): Indicates whether the button has been clicked.
         clicked_and_released (bool): Indicates whether the button was clicked and released in the current frame.

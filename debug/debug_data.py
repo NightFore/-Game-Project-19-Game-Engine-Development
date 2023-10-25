@@ -1,5 +1,3 @@
-from os import path
-
 DEBUG_DICT_AUDIO = {
     "debug_music": {
         "type": "music",
@@ -47,22 +45,23 @@ DEBUG_DICT_GRAPHIC = {
 }
 DEBUG_DICT_SCENE = {
     "MainMenuScene": {
-        "managers": [],
         "buttons": {
             "start": {"graphic": "default_button", "text": "Start", "rect": (300, 250, 300, 60)},
+            "settings": {"graphic": "default_button", "text": "Settings", "rect": (300, 320, 300, 60)}
         },
     },
     "GameScene": {
-        "managers": [],
         "buttons": {
             "game_over": {"graphic": "default_button", "text": "Game Over", "rect": (400, 300, 200, 60)},
             "click_me": {"graphic": "default_button", "text": "Click Me!", "rect": (400, 400, 200, 60)},
         },
     },
     "SettingsScene": {
-        "managers": ["audio_manager", "window_manager"],
         "buttons": {
-        },
+            "back": {"graphic": "default_button", "text": "Back", "rect": (300, 250, 300, 60)},
+            "volume_up": {"graphic": "default_button", "text": "Volume Up", "rect": (300, 320, 300, 60)},
+            "volume_down": {"graphic": "default_button", "text": "Volume Down", "rect": (300, 390, 300, 60)},
+            "fullscreen": {"graphic": "default_button", "text": "Fullscreen", "rect": (300, 460, 300, 60)}
+        }
     },
 }
-

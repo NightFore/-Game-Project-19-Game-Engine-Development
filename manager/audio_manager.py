@@ -50,10 +50,13 @@ class AudioManager:
         - set_music_volume(volume): Set the volume for the currently playing music.
         - set_sound_volume(volume): Set the volume for all loaded sound effects.
         - set_music_loop(loop): Set the loop behavior for playing music.
+        - increment_sound_volume(increment): Increment the sound volume (0.0 to 1.0).
+        - increment_music_volume(increment): Increment the music volume (0.0 to 1.0).
 
     - Validation Functions:
         - validate_volume(volume): Validate the volume for sound and music.
         - validate_music_loop(loop): Validate the loop behavior for playing music.
+        - validate_increment(increment): Validate that the volume increment is a float or int.
 
     - Controls:
         - pause_music(): Pause the currently playing music.
@@ -138,6 +141,8 @@ class AudioManager:
         - set_music_volume
         - set_sound_volume
         - set_music_loop
+        - increment_sound_volume
+        - increment_music_volume
     """
     def set_sound_volume(self, volume):
         """
@@ -193,11 +198,44 @@ class AudioManager:
         # Set the loop behavior for playing music
         self.loop = loop
 
+    def increment_sound_volume(self, increment):
+        """
+        Increment the sound volume.
+
+        Args:
+            increment (float or int): The amount to increment the volume (can be positive or negative).
+
+        Raises:
+            TypeError: If the increment is not a float or int.
+        """
+        # Validate the increment
+        self.validate_increment(increment)
+
+        new_volume = self.sound_volume + increment
+        self.set_sound_volume(max(0.0, min(1.0, new_volume)))
+
+    def increment_music_volume(self, increment):
+        """
+        Increment the music volume.
+
+        Args:
+            increment (float or int): The amount to increment the volume (can be positive or negative).
+
+        Raises:
+            TypeError: If the increment is not a float or int.
+        """
+        # Validate the increment
+        self.validate_increment(increment)
+
+        new_volume = self.music_volume + increment
+        self.set_music_volume(max(0.0, min(1.0, new_volume)))
+
 
     """
     Validation Functions
         - validate_volume
         - validate_music_loop
+        - validate_increment
     """
     @staticmethod
     def validate_volume(volume):
@@ -232,6 +270,20 @@ class AudioManager:
             raise TypeError("The 'loop' argument must be an integer.")
         if loop not in [-1, 0]:
             raise ValueError("The 'loop' argument must be -1 for looping indefinitely or 0 for no looping.")
+
+    @staticmethod
+    def validate_increment(increment):
+        """
+        Validate that the volume increment is a float or int.
+
+        Args:
+            increment (float or int): The increment to be validated.
+
+        Raises:
+            TypeError: If the increment is not a float or int.
+        """
+        if not isinstance(increment, (float, int)):
+            raise TypeError("Volume increment must be a float or int.")
 
 
     """

@@ -242,7 +242,7 @@ class Game:
 
         # Initialize debug handlers
         debug_handlers = [
-            # DebugAudioManager(self.audio_manager),
+            DebugAudioManager(self.audio_manager),
             DebugGraphicManager(self.graphic_manager, self.window_manager)]
 
         for debug_handler in debug_handlers:

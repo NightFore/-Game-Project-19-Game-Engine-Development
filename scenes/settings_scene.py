@@ -1,4 +1,3 @@
-import pygame
 from manager.scene_manager import SceneBase
 
 class SettingsScene(SceneBase):
@@ -8,7 +7,6 @@ class SettingsScene(SceneBase):
     def enter(self):
         super().enter()
         self.audio_manager = self.managers["audio_manager"]
-        self.button_manager = self.managers["button_manager"]
         self.window_manager = self.managers["window_manager"]
 
     def exit(self):
@@ -17,20 +15,21 @@ class SettingsScene(SceneBase):
     def update(self, dt):
         super().update(dt)
 
+        # Return to MainMenuScene
+        if self.scene_buttons["back"].clicked_and_released:
+            self.scene_manager.set_scene("MainMenuScene")
+
         # Volume Up
-        if self.buttons["volume_up"].rect.collidepoint(pygame.mouse.get_pos()):
-            if pygame.mouse.get_pressed()[0]:
-                self.audio_manager.set_music_volume(self.audio_manager.music_volume + 0.1)
+        if self.scene_buttons["volume_up"].clicked_and_released:
+            self.audio_manager.increment_music_volume(0.1)
 
         # Volume Down
-        if self.buttons["volume_down"].rect.collidepoint(pygame.mouse.get_pos()):
-            if pygame.mouse.get_pressed()[0]:
-                self.audio_manager.set_music_volume(self.audio_manager.music_volume - 0.1)
+        if self.scene_buttons["volume_down"].clicked_and_released:
+            self.audio_manager.increment_music_volume(-0.1)
 
         # Toggle Fullscreen
-        if self.buttons["fullscreen_toggle"].rect.collidepoint(pygame.mouse.get_pos()):
-            if pygame.mouse.get_pressed()[0]:
-                self.window_manager.toggle_fullscreen()
+        if self.scene_buttons["fullscreen"].clicked_and_released:
+            self.window_manager.toggle_fullscreen()
 
     def draw(self, screen):
         super().draw(screen)
