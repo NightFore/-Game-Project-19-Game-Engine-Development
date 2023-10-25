@@ -35,12 +35,12 @@ DEBUG_DICT_GRAPHIC = {
         "color": {"default": (0, 0, 0), "border": (255, 255, 255)},
         "rect": {"x": 50, "y": 50, "width": 400, "height": 300},
         "hit_rect": {"x": 50, "y": 50, "width": 400, "height": 300},
-        "border": {"width": 2, "height": 2}
+        "border_size": 2
     },
     "default_button": {
         "type": "button",
         "color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
-        "border": {"width": 2, "height": 2}
+        "border_size": 5
     },
 }
 DEBUG_DICT_SCENE = {

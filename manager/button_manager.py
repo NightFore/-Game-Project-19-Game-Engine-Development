@@ -15,7 +15,7 @@ class ButtonManager:
         - clear_buttons(): Clear all buttons from the manager.
 
     - Update and draw
-        - update(): Update all buttons in the manager.
+        - update(mouse_pos): Update all buttons in the manager.
         - draw(screen): Draw all buttons on the screen.
     """
     def __init__(self):
@@ -53,12 +53,15 @@ class ButtonManager:
         - update
         - draw
     """
-    def update(self):
+    def update(self, mouse_pos):
         """
         Update all buttons in the manager.
+
+        Args:
+            mouse_pos (tuple): The current position of the mouse (x, y).
         """
         for button in self.buttons:
-            button.update()
+            button.update(mouse_pos)
 
     def draw(self, screen):
         """
@@ -83,6 +86,16 @@ class Button:
         font (pygame.font.Font): The font used for rendering the button's text.
         clicked (bool): Indicates whether the button has been clicked.
         clicked_and_released (bool): Indicates whether the button was clicked and released in the current frame.
+
+    Methods:
+    - Button Settings
+        - set_graphic(graphic): Set the graphic for the button.
+        - set_text(text): Set the text to display on the button.
+        - set_rect(rect): Set the rectangular area that defines the button.
+
+    - Update and draw
+        - update(mouse_pos): Update the button's state.
+        - draw(screen): Draw the button.
     """
     def __init__(self):
         """
@@ -95,6 +108,13 @@ class Button:
         self.clicked = False
         self.clicked_and_released = False
 
+
+    """
+    Button Settings
+        - set_graphic(graphic): Set the graphic for the button.
+        - set_text(text): Set the text to display on the button.
+        - set_rect(rect): Set the rectangular area that defines the button.
+    """
     def set_graphic(self, graphic):
         """
         Set the graphic for the button.
@@ -123,11 +143,20 @@ class Button:
         self.rect = pygame.Rect(rect)
         self.graphic.set_rect(self.rect)
 
-    def update(self):
+
+    """
+    Update and draw
+        - update
+        - draw
+    """
+    def update(self, mouse_pos):
         """
         Update the button's state.
+
+        Args:
+            mouse_pos (tuple): The current mouse position in (x, y) coordinates.
         """
-        if self.rect.collidepoint(pygame.mouse.get_pos()):
+        if self.rect.collidepoint(mouse_pos):
             if pygame.mouse.get_pressed()[0]:
                 self.clicked = True
                 self.clicked_and_released = False

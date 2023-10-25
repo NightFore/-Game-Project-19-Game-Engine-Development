@@ -62,6 +62,9 @@ class WindowManager(pygame.Surface):
         - update_display_mode(toggle_fullscreen, toggle_zoom, flags, resize): Create the game window with the specified size.
         - adjust_aspect_ratio(): Adjust the aspect ratio for maintaining proper scaling during resizing.
 
+    - Input Handling
+        - get_adjusted_mouse_position(): Get the adjusted mouse position based on display_factor.
+
     - Update and Drawing
         - update(frame_rate): Update the display with the current frame rate.
         - draw(): Draw the game surface onto the screen.
@@ -239,6 +242,27 @@ class WindowManager(pygame.Surface):
             # To maintain the aspect ratio, divide the width by the height scaling factor.
             self.display_factor = ss[1] / gs[1]
             self.screen_scaled = int(gs[0] * self.display_factor), ss[1]
+
+
+    """
+    Input Handling
+        - get_adjusted_mouse_position
+    """
+    def get_adjusted_mouse_position(self):
+        """
+        Get the adjusted mouse position based on display_factor.
+
+        Returns:
+            tuple: Adjusted mouse position (x, y).
+        """
+        # Get the mouse coordinates
+        x, y = pygame.mouse.get_pos()
+
+        # Adjust the mouse coordinates based on display_factor
+        adjusted_x = int(x / self.display_factor + 0.5) - self.screen_gap[0]
+        adjusted_y = int(y / self.display_factor + 0.5) - self.screen_gap[1]
+
+        return adjusted_x, adjusted_y
 
 
     """

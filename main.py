@@ -33,6 +33,7 @@ class Game:
         FPS (int): The desired frames per second for the game's execution.
         screen_size (tuple): The dimensions of the game window (width, height).
         gameDisplay (pygame.Surface): The Pygame surface representing the game's display window.
+        mouse_pos (tuple): The adjusted position of the mouse based on display_factor.
 
     Methods:
     - Setup:
@@ -67,8 +68,9 @@ class Game:
         pygame.mixer.pre_init(44100, -16, 2, 2048)
         pygame.init()
         random.seed()
-        self.total_play_time = 0
         self.clock = pygame.time.Clock()
+        self.total_play_time = 0
+        self.mouse_pos = (0, 0)
         self.playing = True
         self.paused = False
         self.debug_mode = True
@@ -242,7 +244,7 @@ class Game:
 
         # Initialize debug handlers
         debug_handlers = [
-            DebugAudioManager(self.audio_manager),
+            # DebugAudioManager(self.audio_manager),
             DebugGraphicManager(self.graphic_manager, self.window_manager)]
 
         for debug_handler in debug_handlers:
@@ -292,6 +294,9 @@ class Game:
             if event.type == pygame.QUIT:
                 self.quit_game()
 
+        # Update mouse position based on display_factor
+        self.mouse_pos = self.window_manager.get_adjusted_mouse_position()
+
     """
     Update
     """
@@ -300,7 +305,7 @@ class Game:
         self.total_play_time += self.dt
 
         # Update game components
-        self.button_manager.update()
+        self.button_manager.update(self.mouse_pos)
         self.scene_manager.update(self.dt)
 
         # Debug mode operations

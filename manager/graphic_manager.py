@@ -194,9 +194,7 @@ class InterfaceGraphic:
         self.default_color = color_data.get("default", (0, 0, 0))
         self.border_color = color_data.get("border", (255, 255, 255))
 
-        border_data = data["border"]
-        self.border_width = border_data.get("width", 0)
-        self.border_height = border_data.get("height", 0)
+        self.border_size = data.get("border_size", 0)
 
     def check_collision(self, other_rect):
         """
@@ -224,7 +222,7 @@ class InterfaceGraphic:
             screen (pygame.Surface): The screen surface to draw on.
         """
         pygame.draw.rect(screen, self.default_color, self.rect)
-        pygame.draw.rect(screen, self.border_color, self.rect, self.border_width)
+        pygame.draw.rect(screen, self.border_color, self.rect, self.border_size)
 
 
 
@@ -246,9 +244,7 @@ class ButtonGraphic:
         self.border_color = color_data.get("border", (255, 255, 255))
         self.color = self.color_inactive
 
-        border_data = data["border"]
-        self.border_width = border_data.get("width", 0)
-        self.border_height = border_data.get("height", 0)
+        self.border_size = data.get("border_size", 0)
 
     def set_rect(self, rect):
         """
@@ -270,4 +266,4 @@ class ButtonGraphic:
             screen (pygame.Surface): The screen surface to draw on.
         """
         pygame.draw.rect(screen, self.color, self.rect)
-        pygame.draw.rect(screen, self.border_color, self.rect, self.border_width)
+        pygame.draw.rect(screen, self.border_color, self.rect, self.border_size)
