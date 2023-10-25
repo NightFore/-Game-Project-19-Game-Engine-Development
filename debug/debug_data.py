@@ -28,7 +28,7 @@ DEBUG_DICT_GRAPHIC = {
             {"filename": "debug_graphic_manager_sequence_1.png"},
             {"filename": "debug_graphic_manager_sequence_2.png"},
         ],
-        "frame_duration": 200,
+        "frame_duration": 0.2,
     },
     "default_interface": {
         "type": "interface",

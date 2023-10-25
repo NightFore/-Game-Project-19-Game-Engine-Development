@@ -151,7 +151,7 @@ class ImageSequenceGraphic:
         self.frames = data["frames"]
         self.frame_duration = data["frame_duration"]
         self.current_frame = 0
-        self.frame_elapsed = 0
+        self.time_elapsed = 0
 
     def update(self, dt):
         """
@@ -160,9 +160,9 @@ class ImageSequenceGraphic:
         Args:
             dt (int): The time elapsed since the last update (in milliseconds).
         """
-        self.frame_elapsed += dt
-        if self.frame_elapsed >= self.frame_duration:
-            self.frame_elapsed = 0
+        self.time_elapsed += dt
+        if self.time_elapsed >= self.frame_duration:
+            self.time_elapsed = 0
             self.current_frame = (self.current_frame + 1) % len(self.frames)
 
     def draw(self, screen, position):
