@@ -49,10 +49,10 @@ class GraphicManager:
         ResourceManager: A separate ResourceManager instance is required to load graphic resources.
 
     Methods:
-    - Resource Loading
+    - Setup
         - load_resources_from_manager(resource_manager): Load music and sound resources from a ResourceManager.
 
-    - Graphic Management
+    - Management
         - create_graphic_instance(name, resource_type): Create an instance of the appropriate graphic class.
     """
     def __init__(self):
@@ -64,7 +64,7 @@ class GraphicManager:
 
 
     """
-    Resources Loading
+    Setup
         - load_resources
     """
     def load_resources(self, resource_manager):
@@ -81,7 +81,7 @@ class GraphicManager:
 
 
     """
-    Graphic Management
+    Management
         - create_graphic_instance
     """
     def create_graphic_instance(self, name, resource_type):

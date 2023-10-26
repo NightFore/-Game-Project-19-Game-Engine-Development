@@ -65,7 +65,7 @@ class WindowManager(pygame.Surface):
     - Input Handling
         - get_adjusted_mouse_position(): Get the adjusted mouse position based on display_factor.
 
-    - Update and Drawing
+    - Update and Draw
         - update(frame_rate): Update the display with the current frame rate.
         - draw(): Draw the game surface onto the screen.
     """

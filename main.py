@@ -9,7 +9,6 @@ from manager.button_manager import ButtonManager
 from manager.graphic_manager import GraphicManager
 from manager.resource_manager import ResourceManager
 from manager.scene_manager import SceneManager
-from manager.font_manager import FontManager
 from manager.window_manager import WindowManager
 
 from data.constant_data import PROJECT_TITLE, SCREEN_SIZE, FPS
@@ -149,7 +148,6 @@ class Game:
         self.graphic_manager = GraphicManager()
         self.resource_manager = ResourceManager()
         self.scene_manager = SceneManager()
-        self.font_manager = FontManager()
         self.window_manager = WindowManager()
 
         # Regroup managers under a single variable
@@ -159,7 +157,6 @@ class Game:
             "graphic_manager": self.graphic_manager,
             "resource_manager": self.resource_manager,
             "scene_manager": self.scene_manager,
-            "font_manager": self.font_manager,
             "window_manager": self.window_manager
         }
 

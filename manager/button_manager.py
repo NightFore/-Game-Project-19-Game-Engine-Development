@@ -10,7 +10,10 @@ class ButtonManager:
         buttons (list): A list of Button instances managed by the ButtonManager.
 
     Methods:
-    - Button Management
+    - Setup
+        - set_managers(graphic_manager): Set the graphic manager for the buttons.
+
+    - Management
         - create_button(position, text): Create a button and add it to the manager.
         - clear_buttons(): Clear all buttons from the manager.
 
@@ -26,7 +29,15 @@ class ButtonManager:
 
 
     """
-    Button Management
+    Setup
+        - set_managers
+    """
+    def set_managers(self, graphic_manager):
+        self.graphic_manager = graphic_manager
+
+
+    """
+    Management
         - create_button
         - clear_buttons
     """

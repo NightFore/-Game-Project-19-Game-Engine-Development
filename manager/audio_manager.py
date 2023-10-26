@@ -39,26 +39,24 @@ class AudioManager:
         - ResourceManager: A separate ResourceManager instance is required to load audio resources.
 
     Methods:
-    - Resource Loading
+    - Setup
         - load_resources_from_manager(resource_manager): Load music and sound resources from a ResourceManager.
 
-    - Settings:
+    - Settings
         - set_music_volume(volume): Set the volume for the currently playing music.
         - set_sound_volume(volume): Set the volume for all loaded sound effects.
         - set_music_loop(loop): Set the loop behavior for playing music.
         - increment_sound_volume(increment): Increment the sound volume (0.0 to 1.0).
         - increment_music_volume(increment): Increment the music volume (0.0 to 1.0).
 
-    - Validation Functions:
+    - Validation
         - validate_volume(volume): Validate the volume for sound and music.
         - validate_music_loop(loop): Validate the loop behavior for playing music.
         - validate_increment(increment): Validate that the volume increment is a float or int.
 
-    - Playback:
+    - Management
         - play_music(music_name): Play a music track by name.
         - play_sound(sound_name): Play a sound effect by name.
-
-    - Controls:
         - stop_music(): Stop playing the current music.
         - pause_music(): Pause the currently playing music.
         - unpause_music(): Resume the paused music.
@@ -76,7 +74,7 @@ class AudioManager:
 
 
     """
-    Resource Loading
+    Setup
         - load_resources
     """
     def load_resources(self, resource_manager):
@@ -186,7 +184,7 @@ class AudioManager:
 
 
     """
-    Validation Functions
+    Validation
         - validate_volume
         - validate_music_loop
         - validate_increment
@@ -241,9 +239,13 @@ class AudioManager:
 
 
     """
-    Playback
+    Management
         - play_music
         - play_sound
+        - stop_music
+        - pause_music
+        - unpause_music
+        - toggle_music
     """
     def play_music(self, name):
         """
@@ -286,14 +288,6 @@ class AudioManager:
         else:
             raise ValueError(f"Sound '{name}' does not exist in the AudioManager's sound collection.")
 
-
-    """
-    Controls
-        - stop_music
-        - pause_music
-        - unpause_music
-        - toggle_music
-    """
     @staticmethod
     def stop_music():
         """

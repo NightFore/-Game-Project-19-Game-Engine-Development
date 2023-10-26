@@ -16,12 +16,12 @@ class SceneManager:
         current_scene (SceneBase): The currently active game scene.
 
     Methods:
-    - Initial Loading
+    - Setup
         - set_managers(managers): Load and set game managers in the SceneManager.
         - load_scene_parameters(params_dict): Load scene parameters from a dictionary and store them.
         - load_scenes_from_directory(directory): Load game scenes from Python files in the specified directory and add them to the SceneManager.
 
-    - Scene Management
+    - Management
         - set_scene(scene_name): Set the currently active game scene.
 
     - Update and Draw
@@ -39,7 +39,7 @@ class SceneManager:
 
 
     """
-    Initial Loading
+    Setup
         - set_managers
         - load_scene_parameters
         - load_scenes_from_directory
@@ -96,7 +96,7 @@ class SceneManager:
 
 
     """
-    Scene Management
+    Management
         - set_scene
     """
     def set_scene(self, scene_name):
@@ -160,7 +160,7 @@ class SceneBase:
         scene_buttons (dict): A dictionary containing buttons in the scene.
 
     Methods:
-    - Initial Loading
+    - Scene Setup
         - set_scene_settings: Set the scene parameters for the scene.
 
     - Scene Lifecycle
@@ -168,7 +168,7 @@ class SceneBase:
             - create_buttons_from_dict: Create buttons based on button information retrieved from the scene_params.
         - exit: Called when exiting the scene.
         - update: Update the scene.
-        - draw: Draw the scene and its buttons on the screen.
+        - draw: Draw the scene.
     """
     def __init__(self):
         """
@@ -186,8 +186,8 @@ class SceneBase:
 
 
     """
-    Initial Loading
-        - set_scene_params
+    Setup
+        - set_scene_settings
     """
     def set_scene_settings(self, managers, scenes_params):
         """
@@ -272,7 +272,7 @@ class SceneBase:
 
     def draw(self, screen):
         """
-        Draw the scene and its buttons on the screen.
+        Draw the scene.
 
         Args:
             screen (pygame.Surface): The screen to draw on.

@@ -11,7 +11,7 @@ class ResourceManager:
         resources (dict): A unified dictionary to store resources of different types.
 
     Example:
-        # First, create instances of ResourceManager and others managers such as AudioManager and GraphicManager
+        # First, create instances of ResourceManager and others managers such as AudioManager or GraphicManager
         resource_manager = ResourceManager()
         audio_manager = AudioManager()
         graphic_manager = GraphicManager()
