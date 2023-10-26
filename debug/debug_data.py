@@ -47,7 +47,10 @@ DEBUG_DICT_SCENE = {
     "MainMenuScene": {
         "buttons": {
             "start": {"graphic": "default_button", "text": "Start", "rect": (300, 250, 300, 60)},
-            "settings": {"graphic": "default_button", "text": "Settings", "rect": (300, 320, 300, 60)}
+            "settings": {"graphic": "default_button", "text": "Settings", "rect": (300, 320, 300, 60)},
+            "debug_audio": {"graphic": "default_button", "text": "Debug Audio", "rect": (300, 390, 300, 60)},
+            "pause_music": {"graphic": "default_button", "text": "Pause Music", "rect": (300, 460, 300, 60)},
+            "toggle_music": {"graphic": "default_button", "text": "Toggle Music", "rect": (300, 530, 300, 60)},
         },
     },
     "GameScene": {
