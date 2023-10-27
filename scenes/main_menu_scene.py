@@ -31,6 +31,7 @@ class MainMenuScene(SceneBase):
     def init_managers(self):
         self.audio_manager = self.managers["audio_manager"]
         self.graphic_manager = self.managers["graphic_manager"]
+        self.window_manager = self.managers["window_manager"]
 
     def init_graphics(self):
         self.single_graphic = self.graphic_manager.create_graphic_instance("default_single", "image")
@@ -47,6 +48,8 @@ class MainMenuScene(SceneBase):
             self.audio_manager.pause_music()
         if self.scene_buttons["toggle_music"].clicked_and_released:
             self.audio_manager.toggle_music()
+        if self.scene_buttons["toggle_zoom"].clicked_and_released:
+            self.window_manager.toggle_zoom()
 
     def update_graphics(self, dt):
         self.single_graphic.update(dt)

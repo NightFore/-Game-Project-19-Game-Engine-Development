@@ -14,8 +14,6 @@ from manager.window_manager import WindowManager
 from data.constant_data import PROJECT_TITLE, SCREEN_SIZE, FPS
 from data.resource_data import DICT_AUDIO, DICT_FONT, DICT_GRAPHIC, DICT_SCENE
 
-from debug.debug_audio_manager import DebugAudioManager
-from debug.debug_graphic_manager import DebugGraphicManager
 from debug.debug_data import DEBUG_DICT_AUDIO, DEBUG_DICT_FONT, DEBUG_DICT_GRAPHIC, DEBUG_DICT_SCENE
 
 class Game:
@@ -241,8 +239,7 @@ class Game:
 
         # Initialize debug handlers
         debug_handlers = [
-            # DebugAudioManager(self.audio_manager),
-            # DebugGraphicManager(self.graphic_manager, self.window_manager)
+            # DebugTemplate()
         ]
 
         for debug_handler in debug_handlers:
@@ -283,6 +280,8 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.quit_game()
+                elif event.key == pygame.K_h:
+                    self.debug_mode = not self.debug_mode
                 elif event.key == pygame.K_F4:
                     self.window_manager.update_display_mode(toggle_zoom=True)
                 elif event.key == pygame.K_F11:

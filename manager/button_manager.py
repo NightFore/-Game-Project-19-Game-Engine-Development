@@ -99,7 +99,7 @@ class Button:
         clicked_and_released (bool): Indicates whether the button was clicked and released in the current frame.
 
     Methods:
-    - Button Settings
+    - Setup
         - set_graphic(graphic): Set the graphic for the button.
         - set_text(text): Set the text to display on the button.
         - set_rect(rect): Set the rectangular area that defines the button.
@@ -121,7 +121,7 @@ class Button:
 
 
     """
-    Button Settings
+    Setup
         - set_graphic(graphic): Set the graphic for the button.
         - set_text(text): Set the text to display on the button.
         - set_rect(rect): Set the rectangular area that defines the button.

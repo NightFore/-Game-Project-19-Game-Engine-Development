@@ -52,6 +52,7 @@ DICT_GRAPHIC = {
         "border_size": 5
     },
 }
+
 DICT_SCENE = {
     "MainMenuScene": {
         "buttons": {
@@ -60,6 +61,7 @@ DICT_SCENE = {
             "debug_audio": {"graphic": "default_button", "text": "Debug Audio", "rect": (300, 390, 300, 60)},
             "pause_music": {"graphic": "default_button", "text": "Pause Music", "rect": (300, 460, 300, 60)},
             "toggle_music": {"graphic": "default_button", "text": "Toggle Music", "rect": (300, 530, 300, 60)},
+            "toggle_zoom": {"graphic": "default_button", "text": "Toggle Zoom", "rect": (300, 600, 300, 60)},
         },
     },
     "GameScene": {
