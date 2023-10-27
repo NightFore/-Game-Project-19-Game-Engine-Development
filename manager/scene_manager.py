@@ -174,15 +174,18 @@ class SceneBase:
         """
         Initialize the SceneBase.
         """
-        # Initialize game managers
+        self.scene_name = self.__class__.__name__
+
+        # Initialize managers
         self.managers = None
         self.button_manager = None
         self.graphic_manager = None
         self.scene_manager = None
+        self.text_manager = None
 
-        # Initialize scene parameters and buttons
         self.scenes_params = None
         self.scene_buttons = {}
+        self.scene_texts = []
 
 
     """
@@ -201,6 +204,7 @@ class SceneBase:
         self.button_manager = self.managers["button_manager"]
         self.graphic_manager = self.managers["graphic_manager"]
         self.scene_manager = self.managers["scene_manager"]
+        self.text_manager = self.managers["text_manager"]
         self.scenes_params = scenes_params
 
 
@@ -216,44 +220,54 @@ class SceneBase:
         """
         Called when entering the scene.
         """
-        self.create_buttons_from_dict(self.__class__.__name__)
+        buttons_dict = self.scenes_params[self.scene_name].get("buttons", {})
+        texts_dict = self.scenes_params[self.scene_name].get("texts", [])
 
-    def create_buttons_from_dict(self, scene_name):
+        self.create_buttons_from_dict(buttons_dict)
+        # self.create_texts_from_dict(texts_dict)
+
+    def create_buttons_from_dict(self, buttons_dict):
         """
         Create buttons based on button information retrieved from the scene_params.
-
-        Args:
-            scene_name (str): The name of the current scene.
         """
-        # Retrieve button information for the specific scene from the scene_params dictionary
-        scene_buttons_info = self.scenes_params[scene_name].get("buttons", {})
+        for name, button_info in buttons_dict.items():
+            # Create an instance
+            button_instance = self.button_manager.create_button()
 
-        # Iterate over each button information in the dictionary
-        for name, button_info in scene_buttons_info.items():
-            # Extract information for the button from the dictionary
-            graphic = button_info.get("graphic", "default_button")
-            text = button_info.get("text", None)
-            rect = button_info.get("rect", {})
+            #
+            button_instance.set_graphic(button_info["graphic"])
+            button_instance.set_rect(button_info["rect"])
 
-            # Create a button using the ButtonManager and the extracted information
-            button = self.button_manager.create_button()
+            #
+            if "text" in button_info:
+                button_instance.set_text(button_info["text"])
+            if "align" in button_info:
+                # button_instance.set_align(button_info["align"])
+                pass
 
-            # Update the button's graphic if specified, and it exists in the graphic manager
-            if graphic in self.graphic_manager.buttons:
-                button.set_graphic(self.graphic_manager.create_graphic_instance(graphic, "button"))
-            else:
-                raise ValueError(f"Graphic '{graphic}' not found in the graphic manager.")
+            # Store the instance
+            self.scene_buttons[name] = button_instance
 
-            # Update the button's text if specified
-            if text:
-                button.set_text(text)
+    def create_texts_from_dict(self, texts_dict):
+        for text_info in texts_dict:
+            # Create an instance
+            text_instance = self.text_manager.create_text_instance()
 
-            # Update the button's rect if specified
-            if rect:
-                button.set_rect(rect)
+            #
+            text_instance.set_model(text_info["model"])
+            text_instance.set_position(text_info["position"])
+            text_instance.set_text(text_info["text"])
 
-            # Store the button in the scene_buttons dictionary using its name as the key
-            self.scene_buttons[name] = button
+            #
+            if "color" in text_info:
+                text_instance.set_color(text_info["color"])
+            if "size" in text_info:
+                text_instance.set_size(text_info["size"])
+            if "align" in text_info:
+                text_instance.set_align(text_info["align"])
+
+            # Store the instance
+            self.scene_texts.append(text_instance)
 
     def exit(self):
         """

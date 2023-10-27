@@ -367,4 +367,5 @@ class ResourceManager:
         self.resources["interface"][name] = data
 
     def load_button(self, name, data):
+        data["graphic"] = self.graphic_manager.create_graphic_instance(data["graphic"], "button")
         self.resources["button"][name] = data

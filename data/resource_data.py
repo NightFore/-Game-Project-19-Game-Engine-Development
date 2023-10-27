@@ -39,23 +39,34 @@ DICT_GRAPHIC = {
 DICT_SCENE = {
     "MainMenuScene": {
         "buttons": {
-            "start": {"graphic": "default_button", "text": "Start", "rect": (300, 250, 300, 60)},
-            "settings": {"graphic": "default_button", "text": "Settings", "rect": (300, 320, 300, 60)},
-            "debug_audio": {"graphic": "default_button", "text": "Debug Audio", "rect": (300, 390, 300, 60)},
-            "pause_music": {"graphic": "default_button", "text": "Pause Music", "rect": (300, 460, 300, 60)},
-            "toggle_music": {"graphic": "default_button", "text": "Toggle Music", "rect": (300, 530, 300, 60)},
-            "toggle_zoom": {"graphic": "default_button", "text": "Toggle Zoom", "rect": (300, 600, 300, 60)},
+            "start": {
+                "graphic": "default_button", "rect": (300, 250, 300, 60),
+                "text": "Start", "align": "center"},
+            "settings": {
+                "graphic": "default_button", "rect": (300, 320, 300, 60),
+                "text": "Settings", "align": "center"},
+            "debug_audio": {
+                "graphic": "default_button", "rect": (300, 390, 300, 60),
+                "text": "Debug Audio", "align": "center"},
+            "pause_music": {
+                "graphic": "default_button", "rect": (300, 460, 300, 60),
+                "text": "Pause Music", "align": "center"},
+            "toggle_music": {
+                "graphic": "default_button", "rect": (300, 530, 300, 60),
+                "text": "Toggle Music", "align": "center"},
+            "toggle_zoom": {
+                "graphic": "default_button", "rect": (300, 600, 300, 60),
+                "text": "Toggle Zoom", "align": "center"},
+            "exit_game": {
+                "graphic": "default_button", "rect": (10, 10, 50, 50),
+                "text": "X"},
         },
-        "texts": {
-            "hello_world_1": {
-                "model": "liberation_serif", "text": "Hello World!",
-                "position": (600, 300),
-            },
-            "hello_world_2": {
-                "model": "liberation_serif", "text": "Hello World 2!",
-                "position": (600, 360), "align": "nw", "color": (0, 0, 0),
-            },
-        },
+        "texts": [
+            {"model": "liberation_serif", "position": (600, 300),
+             "text": "Hello World!"},
+            {"model": "liberation_serif", "position": (600, 360), "align": "nw", "color": (0, 0, 0),
+             "text": "Hello World 2!"},
+        ],
     },
     "GameScene": {
         "buttons": {
@@ -76,6 +87,7 @@ DICT_SCENE = {
 DICT_TEXT = {
     "liberation_serif": {
         "type": "font", "filename": "LiberationSerif-Regular.ttf",
+        "text": "Template Liberation Serif",
         "size": 24, "color": (255, 255, 255), "alignment": "center",
     },
 }
