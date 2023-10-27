@@ -95,6 +95,7 @@ class Button:
         text (str): The text to display on the button.
         rect (pygame.Rect): The rectangular area that defines the button.
         font (pygame.font.Font): The font used for rendering the button's text.
+        align
         clicked (bool): Indicates whether the button has been clicked.
         clicked_and_released (bool): Indicates whether the button was clicked and released in the current frame.
 
@@ -113,9 +114,10 @@ class Button:
         Initialize the Button.
         """
         self.graphic = None
-        self.text = None
-        self.font = pygame.font.Font(None, 36)
         self.rect = pygame.Rect(0, 0, 0, 0)
+        self.font = pygame.font.Font(None, 36)
+        self.text = None
+        self.align = "nw"
         self.clicked = False
         self.clicked_and_released = False
 
@@ -125,6 +127,7 @@ class Button:
         - set_graphic(graphic): Set the graphic for the button.
         - set_text(text): Set the text to display on the button.
         - set_rect(rect): Set the rectangular area that defines the button.
+        - set_align
     """
     def set_graphic(self, graphic):
         """
@@ -134,15 +137,6 @@ class Button:
             graphic (Graphic): The graphic associated with the button.
         """
         self.graphic = graphic
-
-    def set_text(self, text):
-        """
-        Set the text to display on the button.
-
-        Args:
-            text (str): The text to display on the button.
-        """
-        self.text = text
 
     def set_rect(self, rect):
         """
@@ -154,6 +148,36 @@ class Button:
         self.rect = pygame.Rect(rect)
         self.graphic.set_rect(self.rect)
 
+    def set_text(self, text):
+        """
+        Set the text to display on the button.
+
+        Args:
+            text (str): The text to display on the button.
+        """
+        self.text = text
+
+    def set_align(self, align):
+        pos = (self.rect[0], self.rect[1])
+        self.align = align
+        if self.align == "center":
+            self.rect.center = pos
+        if self.align == "nw":
+            self.rect.topleft = pos
+        if self.align == "ne":
+            self.rect.topright = pos
+        if self.align == "sw":
+            self.rect.bottomleft = pos
+        if self.align == "se":
+            self.rect.bottomright = pos
+        if self.align == "n":
+            self.rect.midtop = pos
+        if self.align == "s":
+            self.rect.midbottom = pos
+        if self.align == "e":
+            self.rect.midright = pos
+        if self.align == "w":
+            self.rect.midleft = pos
 
     """
     Update and draw
@@ -165,7 +189,7 @@ class Button:
         Update the button's state.
 
         Args:
-            mouse_pos (tuple): The current mouse position in (x, y) coordinates.
+            mouse_pos (tuple): The current mouse rect in (x, y) coordinates.
         """
         if self.rect.collidepoint(mouse_pos):
             if pygame.mouse.get_pressed()[0]:

@@ -76,7 +76,7 @@ class Text:
         font (pygame.font.Font): The font used for rendering the text.
         color (tuple): The color of the text in RGB format.
         position (tuple): The position of the text (x, y) on the screen.
-        alignment (str): The alignment of the text inside the specified rect.
+        align (str): The alignment of the text inside the specified rect.
 
     Methods:
     - Setup (Text)
@@ -87,7 +87,7 @@ class Text:
 
     - Setup (Rect)
         - set_position(self, position): Set the position of the text.
-        - set_alignment(self, alignment): Set the text alignment.
+        - set_align(self, align): Set the text alignment.
         - update_rect(self): Update the text's rectangular area.
 
     - Update and draw
@@ -106,7 +106,7 @@ class Text:
         self.color = data["color"]
         self.text = data["text"]
         self.position = data["position"]
-        self.alignment = data["alignment"]
+        self.align = data["align"]
         self.text_surface = None
         self.text_rect = None
 
@@ -159,7 +159,7 @@ class Text:
     """
     Setup (Rect)
         - set_position
-        - set_alignment
+        - set_align
         - update_rect
     """
     def set_position(self, position):
@@ -172,37 +172,37 @@ class Text:
         self.position = position
         self.update_rect()
 
-    def set_alignment(self, alignment):
+    def set_align(self, align):
         """
         Set the text alignment.
 
         Args:
-            alignment (str): The text alignment.
+            align (str): The text align.
         """
-        self.alignment = alignment
+        self.align = align
         self.update_rect()
 
     def update_rect(self):
         """
         Update the text rect.
         """
-        if self.alignment == "center":
+        if self.align == "center":
             self.text_rect = self.text_surface.get_rect(center=self.position)
-        elif self.alignment == "nw":
+        elif self.align == "nw":
             self.text_rect = self.text_surface.get_rect(topleft=self.position)
-        elif self.alignment == "n":
+        elif self.align == "n":
             self.text_rect = self.text_surface.get_rect(midtop=self.position)
-        elif self.alignment == "ne":
+        elif self.align == "ne":
             self.text_rect = self.text_surface.get_rect(topright=self.position)
-        elif self.alignment == "w":
+        elif self.align == "w":
             self.text_rect = self.text_surface.get_rect(midleft=self.position)
-        elif self.alignment == "e":
+        elif self.align == "e":
             self.text_rect = self.text_surface.get_rect(midright=self.position)
-        elif self.alignment == "sw":
+        elif self.align == "sw":
             self.text_rect = self.text_surface.get_rect(bottomleft=self.position)
-        elif self.alignment == "s":
+        elif self.align == "s":
             self.text_rect = self.text_surface.get_rect(midbottom=self.position)
-        elif self.alignment == "se":
+        elif self.align == "se":
             self.text_rect = self.text_surface.get_rect(bottomright=self.position)
 
 

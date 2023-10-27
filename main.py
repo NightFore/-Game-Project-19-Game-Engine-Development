@@ -152,6 +152,7 @@ class Game:
 
         # Regroup managers under a single variable
         self.managers = {
+            "game_manager": self,
             "audio_manager": self.audio_manager,
             "button_manager": self.button_manager,
             "graphic_manager": self.graphic_manager,

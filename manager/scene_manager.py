@@ -235,7 +235,8 @@ class SceneBase:
             button_instance = self.button_manager.create_button()
 
             #
-            button_instance.set_graphic(button_info["graphic"])
+            graphic = self.graphic_manager.create_graphic_instance(button_info["graphic"], "button")
+            button_instance.set_graphic(graphic)
             button_instance.set_rect(button_info["rect"])
 
             #

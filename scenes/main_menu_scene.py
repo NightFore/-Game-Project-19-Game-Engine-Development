@@ -29,6 +29,7 @@ class MainMenuScene(SceneBase):
     Scene Logic
     """
     def init_managers(self):
+        self.game_manager = self.managers["game_manager"]
         self.audio_manager = self.managers["audio_manager"]
         self.graphic_manager = self.managers["graphic_manager"]
         self.window_manager = self.managers["window_manager"]
@@ -50,6 +51,8 @@ class MainMenuScene(SceneBase):
             self.audio_manager.toggle_music()
         if self.scene_buttons["toggle_zoom"].clicked_and_released:
             self.window_manager.toggle_zoom()
+        if self.scene_buttons["quit_game"].clicked_and_released:
+            self.game_manager.quit_game()
 
     def update_graphics(self, dt):
         self.single_graphic.update(dt)

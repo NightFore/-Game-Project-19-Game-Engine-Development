@@ -57,7 +57,7 @@ DICT_SCENE = {
             "toggle_zoom": {
                 "graphic": "default_button", "rect": (300, 600, 300, 60),
                 "text": "Toggle Zoom", "align": "center"},
-            "exit_game": {
+            "quit_game": {
                 "graphic": "default_button", "rect": (10, 10, 50, 50),
                 "text": "X"},
         },
