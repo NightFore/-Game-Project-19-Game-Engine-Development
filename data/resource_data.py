@@ -19,11 +19,7 @@ DICT_AUDIO = {
 }
 
 DICT_FONT = {
-    "liberation_serif_font_data": {
-        "type": "font",
-        "file_path": "LiberationSerif-Regular.ttf",
-        "size": 24
-    }
+    "liberation_serif": {"type": "font", "filename": "LiberationSerif-Regular.ttf", "size": 24}
 }
 
 DICT_GRAPHIC = {
@@ -63,6 +59,9 @@ DICT_SCENE = {
             "toggle_music": {"graphic": "default_button", "text": "Toggle Music", "rect": (300, 530, 300, 60)},
             "toggle_zoom": {"graphic": "default_button", "text": "Toggle Zoom", "rect": (300, 600, 300, 60)},
         },
+        "texts": {
+            "hello_world": {}
+        },
     },
     "GameScene": {
         "buttons": {
@@ -78,4 +77,8 @@ DICT_SCENE = {
             "fullscreen": {"graphic": "default_button", "text": "Fullscreen", "rect": (300, 460, 300, 60)}
         }
     },
+}
+
+DICT_TEXT = {
+    "hello_world": {}
 }

@@ -8,6 +8,7 @@ from manager.audio_manager import AudioManager
 from manager.button_manager import ButtonManager
 from manager.graphic_manager import GraphicManager
 from manager.resource_manager import ResourceManager
+from manager.text_manager import TextManager
 from manager.scene_manager import SceneManager
 from manager.window_manager import WindowManager
 
@@ -146,6 +147,7 @@ class Game:
         self.graphic_manager = GraphicManager()
         self.resource_manager = ResourceManager()
         self.scene_manager = SceneManager()
+        self.text_manager = TextManager()
         self.window_manager = WindowManager()
 
         # Regroup managers under a single variable
@@ -155,6 +157,7 @@ class Game:
             "graphic_manager": self.graphic_manager,
             "resource_manager": self.resource_manager,
             "scene_manager": self.scene_manager,
+            "text_manager": self.text_manager,
             "window_manager": self.window_manager
         }
 
@@ -196,11 +199,13 @@ class Game:
         """
         # Load resources using the ResourceManager
         self.resource_manager.load_resources(self.audio_dict)
+        self.resource_manager.load_resources(self.font_dict)
         self.resource_manager.load_resources(self.graphic_dict)
 
         # Load resources for other dependent managers
         self.audio_manager.load_resources(self.resource_manager)
         self.graphic_manager.load_resources(self.resource_manager)
+        self.text_manager.load_resources(self.resource_manager)
 
     def load_scenes(self):
         """

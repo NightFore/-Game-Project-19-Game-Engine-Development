@@ -14,7 +14,7 @@ class ButtonManager:
         - set_managers(graphic_manager): Set the graphic manager for the buttons.
 
     - Management
-        - create_button(position, text): Create a button and add it to the manager.
+        - create_button(): Create a button and add it to the manager.
         - clear_buttons(): Clear all buttons from the manager.
 
     - Update and draw
@@ -43,7 +43,7 @@ class ButtonManager:
     """
     def create_button(self):
         """
-        Create a button and add it to the manager.
+        Create a button instance.
 
         Returns:
             Button: The created button instance.
