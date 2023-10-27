@@ -3,30 +3,17 @@
 """
 Dictionary
     - DICT_AUDIO
-    - DICT_FONT
     - DICT_GRAPHIC
     - DICT_SCENE
+    - DICT_TEXT
 """
 DICT_AUDIO = {
-    "debug_music": {
-        "type": "music",
-        "filename": "debug_audio_music.mp3",
-    },
-    "debug_sound": {
-        "type": "sound",
-        "filename": "debug_audio_sound.wav",
-    },
-}
-
-DICT_FONT = {
-    "liberation_serif": {"type": "font", "filename": "LiberationSerif-Regular.ttf", "size": 24}
+    "debug_music": {"type": "music", "filename": "debug_audio_music.mp3"},
+    "debug_sound": {"type": "sound", "filename": "debug_audio_sound.wav"},
 }
 
 DICT_GRAPHIC = {
-    "default_single": {
-        "type": "image",
-        "filename": "debug_graphic_manager_single.png",
-    },
+    "default_single": {"type": "image", "filename": "debug_graphic_manager_single.png"},
     "default_sequence": {
         "type": "image_sequence",
         "files": [
@@ -60,7 +47,14 @@ DICT_SCENE = {
             "toggle_zoom": {"graphic": "default_button", "text": "Toggle Zoom", "rect": (300, 600, 300, 60)},
         },
         "texts": {
-            "hello_world": {}
+            "hello_world_1": {
+                "model": "liberation_serif", "text": "Hello World!",
+                "position": (600, 300),
+            },
+            "hello_world_2": {
+                "model": "liberation_serif", "text": "Hello World 2!",
+                "position": (600, 360), "align": "nw", "color": (0, 0, 0),
+            },
         },
     },
     "GameScene": {
@@ -80,5 +74,8 @@ DICT_SCENE = {
 }
 
 DICT_TEXT = {
-    "hello_world": {}
+    "liberation_serif": {
+        "type": "font", "filename": "LiberationSerif-Regular.ttf",
+        "size": 24, "color": (255, 255, 255), "alignment": "center",
+    },
 }

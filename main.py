@@ -13,9 +13,9 @@ from manager.scene_manager import SceneManager
 from manager.window_manager import WindowManager
 
 from data.constant_data import PROJECT_TITLE, SCREEN_SIZE, FPS
-from data.resource_data import DICT_AUDIO, DICT_FONT, DICT_GRAPHIC, DICT_SCENE
+from data.resource_data import DICT_AUDIO, DICT_GRAPHIC, DICT_SCENE, DICT_TEXT
 
-from debug.debug_data import DEBUG_DICT_AUDIO, DEBUG_DICT_FONT, DEBUG_DICT_GRAPHIC, DEBUG_DICT_SCENE
+from debug.debug_data import DEBUG_DICT_AUDIO, DEBUG_DICT_GRAPHIC, DEBUG_DICT_SCENE, DEBUG_DICT_TEXT
 
 class Game:
     """
@@ -127,15 +127,15 @@ class Game:
         if not self.debug_mode:
             # Use regular dictionaries for non-debug mode.
             self.audio_dict = DICT_AUDIO
-            self.font_dict = DICT_FONT
             self.graphic_dict = DICT_GRAPHIC
             self.scene_dict = DICT_SCENE
+            self.text_dict = DICT_TEXT
         else:
             # Use debug dictionaries for debug mode.
             self.audio_dict = DEBUG_DICT_AUDIO
-            self.font_dict = DEBUG_DICT_FONT
             self.graphic_dict = DEBUG_DICT_GRAPHIC
             self.scene_dict = DEBUG_DICT_SCENE
+            self.text_dict = DEBUG_DICT_TEXT
 
     def setup_managers(self):
         """
@@ -199,7 +199,7 @@ class Game:
         """
         # Load resources using the ResourceManager
         self.resource_manager.load_resources(self.audio_dict)
-        self.resource_manager.load_resources(self.font_dict)
+        self.resource_manager.load_resources(self.text_dict)
         self.resource_manager.load_resources(self.graphic_dict)
 
         # Load resources for other dependent managers
