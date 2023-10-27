@@ -1,3 +1,5 @@
+import pygame
+
 class TemplateManager:
     """
     TemplateManager handles resources and their instances in the game.
@@ -101,6 +103,8 @@ class SubTemplate:
         self.font = data.get("font", None)
         self.color = data.get("color", None)
         self.graphic = data.get("graphic", None)
+        self.border_color = data.get("border_color", None)
+        self.border_size = data.get("border_size", None)
         self.text_rect = None
         self.text_surface = None
 
@@ -157,3 +161,30 @@ class SubTemplate:
 
     def update_text(self):
         pass
+
+    """
+    Render
+        - update
+        - draw
+    """
+    def update(self):
+        pass
+
+    def draw(self, screen):
+        """
+        Draw the sub-template on the screen.
+
+        Args:
+            screen (pygame.Surface): The screen surface to draw on.
+        """
+        if self.graphic:
+            self.graphic.draw(screen)
+        else:
+            if self.color:
+                pygame.draw.rect(screen, self.color, self.rect)
+
+            if self.border_size:
+                pygame.draw.rect(screen, self.border_color, self.rect, self.border_size)
+
+        if self.text:
+            screen.blit(self.text_surface, self.text_rect)
