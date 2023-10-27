@@ -72,7 +72,7 @@ class Game:
         self.mouse_pos = (0, 0)
         self.playing = True
         self.paused = False
-        self.debug_mode = True
+        self.debug_mode = False
         self.setup_game()
         self.load_game()
         self.start_game()
