@@ -4,7 +4,7 @@ from pygame.locals import *
 import random
 from os import path
 
-from manager.audio_manager import AudioManager
+from manager.audio_manager_new import AudioManager
 from manager.button_manager import ButtonManager
 from manager.graphic_manager import GraphicManager
 from manager.resource_manager import ResourceManager
@@ -65,6 +65,7 @@ class Game:
     def __init__(self):
         pygame.mixer.pre_init(44100, -16, 2, 2048)
         pygame.init()
+        pygame.mixer.init()
         random.seed()
         self.clock = pygame.time.Clock()
         self.total_play_time = 0
@@ -141,26 +142,23 @@ class Game:
         """
         Create and configure game managers.
         """
-        # Create individual variables for managers
-        self.audio_manager = AudioManager()
-        self.button_manager = ButtonManager()
-        self.graphic_manager = GraphicManager()
-        self.resource_manager = ResourceManager()
-        self.scene_manager = SceneManager()
-        self.text_manager = TextManager()
-        self.window_manager = WindowManager()
-
-        # Regroup managers under a single variable
         self.managers = {
             "game_manager": self,
-            "audio_manager": self.audio_manager,
-            "button_manager": self.button_manager,
-            "graphic_manager": self.graphic_manager,
-            "resource_manager": self.resource_manager,
-            "scene_manager": self.scene_manager,
-            "text_manager": self.text_manager,
-            "window_manager": self.window_manager
+            "audio_manager": AudioManager(),
+            "button_manager": ButtonManager(),
+            "graphic_manager": GraphicManager(),
+            "resource_manager": ResourceManager(),
+            "scene_manager": SceneManager(),
+            "text_manager": TextManager(),
+            "window_manager": WindowManager()
         }
+        self.audio_manager = self.managers["audio_manager"]
+        self.button_manager = self.managers["button_manager"]
+        self.graphic_manager = self.managers["graphic_manager"]
+        self.resource_manager = self.managers["resource_manager"]
+        self.scene_manager = self.managers["scene_manager"]
+        self.text_manager = self.managers["text_manager"]
+        self.window_manager = self.managers["window_manager"]
 
     def setup_managers_settings(self):
         """
@@ -204,7 +202,7 @@ class Game:
         self.resource_manager.load_resources(self.graphic_dict)
 
         # Load resources for other dependent managers
-        self.audio_manager.load_resources(self.resource_manager)
+        self.audio_manager.start_manager(self.managers)
         self.graphic_manager.load_resources(self.resource_manager)
         self.text_manager.load_resources(self.resource_manager)
 

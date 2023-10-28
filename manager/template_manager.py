@@ -3,41 +3,60 @@ import pygame
 class TemplateManager:
     """
     TemplateManager handles resources and their instances in the game.
-
-    Attributes:
-        resources (dict): A dictionary containing resource templates.
-        instances (dict): A dictionary containing resource instances.
-
-    Methods:
-    - Setup
-        - load_resources_from_manager(resource_manager): Load resource templates from a ResourceManager.
-
-    - Management
-        - create_resource_instance(template_name): Create a new resource instance.
-        - clear_resources(): Clear all resource instances.
-
-    - Render
-        - update
-        - draw
     """
     def __init__(self):
+        # Initialize the manager as a subclass of TemplateManager
+        super().__init__()
+
+        # Initialize dictionaries to store resources and instances
         self.resources = {}
         self.instances = {}
 
+        # Define resource types to load for this manager
+        self.resource_types_to_load = []
+
+        # Initialize manager-related attributes
+        self.manager_specific_attribute = None
 
     """
     Setup
         - load_resources
     """
-    def load_resources(self, resource_manager):
+    def start_manager(self, managers):
+        self.set_managers(managers)
+        self.initialize_resources()
+
+    def set_managers(self, managers):
         """
-        Load resource templates from a ResourceManager.
+        Load and set game managers.
 
         Args:
-            resource_manager (ResourceManager): The ResourceManager containing loaded resource templates.
+            managers (dict): A dictionary containing game managers.
         """
-        self.resource_templates = resource_manager.load_resources_from_manager("templates")
+        self.managers = managers
+        self.audio_manager = self.managers["audio_manager"]
+        self.button_manager = self.managers["button_manager"]
+        self.graphic_manager = self.managers["graphic_manager"]
+        self.resource_manager = self.managers["resource_manager"]
+        self.scene_manager = self.managers["scene_manager"]
+        self.text_manager = self.managers["text_manager"]
+        self.window_manager = self.managers["window_manager"]
 
+    def initialize_resources(self):
+        # Check that resources have unique names
+        all_resource_names = []
+
+        for resource_type in self.resource_types_to_load:
+            # Load resources for each resource type
+            loaded_resources = self.resource_manager.load_resources_from_manager(resource_type)
+
+            # Check if any of the loaded resource names already exist
+            for resource_name in loaded_resources:
+                if resource_name in all_resource_names:
+                    raise ValueError(f"Duplicate resource name '{resource_name}' found in {resource_type}.")
+
+            # Add the loaded resources to the self.resources dictionary
+            self.resources.update(loaded_resources)
 
     """
     Management
