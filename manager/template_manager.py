@@ -78,7 +78,7 @@ class TemplateManager:
         """
         if template_name in self.resources:
             resource_data = self.resources[template_name]
-            new_instance = SubTemplate(resource_data, self.managers)
+            new_instance = TemplateInstance(resource_data, self.managers)
             self.instances[template_name] = new_instance
             return new_instance
         else:
@@ -93,17 +93,11 @@ class TemplateManager:
 
 
 
-class SubTemplate:
+class TemplateInstance:
     """
-    SubTemplate class for managing sub-templates of resources.
+    TemplateInstance class for managing instances of resources.
     """
     def __init__(self, data, managers):
-        """
-        Initialize a SubTemplate instance.
-
-        Args:
-            data (dict): A dictionary containing sub-template data.
-        """
         self.data = data
         self.pos = data.get("pos", None)
         self.size = data.get("size", None)
@@ -149,15 +143,6 @@ class SubTemplate:
         self.text_manager = self.managers["text_manager"]
         self.window_manager = self.managers["window_manager"]
 
-    def customize(self, resource_template):
-        """
-        Customize a resource template using the sub-template data.
-
-        Args:
-            resource_template: The resource template to be customized.
-        """
-        pass
-
     def set_position(self, pos):
         self.pos = pos
         self.update_rect()
@@ -169,21 +154,6 @@ class SubTemplate:
     def set_rect(self, rect):
         self.rect = rect
         self.update_rect()
-
-    def set_text(self, text):
-        self.text = text
-        self.update_text()
-
-    def set_font(self, text_font):
-        self.text_font = text_font
-        self.update_text()
-
-    def set_text_color(self, text_color):
-        self.text_color = text_color
-        self.update_text()
-
-    def set_graphic(self, graphic):
-        self.graphic = graphic
 
     def set_align(self, align):
         self.align = align
@@ -205,43 +175,42 @@ class SubTemplate:
             self.rect.midright = self.pos
         if self.align == "w":
             self.rect.midleft = self.pos
+        self.update_rect()
 
-        if self.text and self.text_rect:
-            if self.align == "center":
-                self.text_rect.center = self.rect.center
-            elif self.align == "nw":
-                self.text_rect.topleft = self.rect.topleft
-            elif self.align == "ne":
-                self.text_rect.topright = self.rect.topright
-            elif self.align == "sw":
-                self.text_rect.bottomleft = self.rect.bottomleft
-            elif self.align == "se":
-                self.text_rect.bottomright = self.rect.bottomright
-            elif self.align == "n":
-                self.text_rect.midtop = self.rect.midtop
-            elif self.align == "s":
-                self.text_rect.midbottom = self.rect.midbottom
-            elif self.align == "e":
-                self.text_rect.midright = self.rect.midright
-            elif self.align == "w":
-                self.text_rect.midleft = self.rect.midleft
+    def set_text(self, text):
+        self.text = text
+        self.update_text()
+
+    def set_font(self, text_font):
+        self.text_font = text_font
+        self.update_text()
+
+    def set_text_color(self, text_color):
+        self.text_color = text_color
+        self.update_text()
+
+    def set_graphic(self, graphic):
+        self.graphic = graphic
 
     def update_rect(self):
-        pass
+        if self.rect:
+            self.rect = pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
+            if self.text_rect:
+                self.text_rect.center = self.rect.center
+            if self.graphic:
+                self.update_graphic()
 
     def update_text(self):
-        self.text_surface = self.text_font.render(self.text, True, self.text_color)
-        self.text_rect = self.text_surface.get_rect()
+        if self.text:
+            self.text_surface = self.text_font.render(self.text, True, self.text_color)
+            self.text_rect = self.text_surface.get_rect()
+            self.text_rect.center = self.rect.center
 
-    """
-    Render
-        - update
-        - draw
-    """
+    def update_graphic(self):
+        self.graphic.update_rect()
+        self.graphic.update_text()
+
     def draw(self):
-        """
-        Draw the sub-template on the screen.
-        """
         if self.graphic:
             self.graphic.draw(self.screen)
         else:
