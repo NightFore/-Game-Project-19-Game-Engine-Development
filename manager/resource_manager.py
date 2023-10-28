@@ -356,11 +356,11 @@ class ResourceManager:
         self.resources["image"][name] = data
 
     def load_image_sequence(self, name, data):
-        frames = []
-        for frame_path in data["file_paths"]:
-            frame = pygame.image.load(frame_path).convert_alpha()
-            frames.append(frame)
-        data["frames"] = frames
+        images = []
+        for image_path in data["file_paths"]:
+            image = pygame.image.load(image_path).convert_alpha()
+            images.append(image)
+        data["images"] = images
         self.resources["image_sequence"][name] = data
 
     def load_interface(self, name, data):

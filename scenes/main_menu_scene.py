@@ -60,7 +60,7 @@ class MainMenuScene(SceneBase):
 
     def draw_graphics(self, screen):
         self.single_graphic.set_position((100, 100))
-        self.sequence_animation.set_position((300, 200))
+        self.sequence_animation.set_position((300, 100))
         self.single_graphic.draw()
         self.sequence_animation.draw()
 

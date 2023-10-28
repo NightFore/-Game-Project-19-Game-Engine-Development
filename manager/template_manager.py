@@ -224,7 +224,9 @@ class TemplateInstance:
         self.graphic.update_text()
 
     def update(self):
+        self.dt = self.game_manager.dt
         self.time_elapsed += self.dt
+        print(self.image_duration, self.time_elapsed, self.dt)
         if self.image_duration:
             if self.time_elapsed >= self.image_duration:
                 self.time_elapsed = 0
