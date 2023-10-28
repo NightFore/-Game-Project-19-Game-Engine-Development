@@ -35,8 +35,8 @@ class MainMenuScene(SceneBase):
         self.window_manager = self.managers["window_manager"]
 
     def init_graphics(self):
-        self.single_graphic = self.graphic_manager.create_graphic_instance("default_single", "image")
-        self.sequence_animation = self.graphic_manager.create_graphic_instance("default_sequence", "image_sequence")
+        self.single_graphic = self.graphic_manager.create_resource_instance("default_single")
+        self.sequence_animation = self.graphic_manager.create_resource_instance("default_sequence")
 
     def update_buttons(self):
         if self.scene_buttons["start"].clicked_and_released:
@@ -55,12 +55,14 @@ class MainMenuScene(SceneBase):
             self.game_manager.quit_game()
 
     def update_graphics(self, dt):
-        self.single_graphic.update(dt)
-        self.sequence_animation.update(dt)
+        self.single_graphic.update()
+        self.sequence_animation.update()
 
     def draw_graphics(self, screen):
-        self.single_graphic.draw(screen, (100, 100))
-        self.sequence_animation.draw(screen, (300, 100))
+        self.single_graphic.set_position((100, 100))
+        self.sequence_animation.set_position((300, 200))
+        self.single_graphic.draw()
+        self.sequence_animation.draw()
 
 
     """

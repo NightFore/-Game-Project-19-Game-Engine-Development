@@ -1,7 +1,7 @@
 # button_manager.py
 
 import pygame
-from manager.template_manager import TemplateManager, SubTemplate
+from manager.template_manager import TemplateManager, TemplateInstance
 
 class ButtonManager(TemplateManager):
     """
@@ -63,7 +63,7 @@ class ButtonManager(TemplateManager):
 
 
 
-class Button(SubTemplate):
+class Button(TemplateInstance):
     def __init__(self, data, managers):
         """
         Initialize the Button.

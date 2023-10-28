@@ -119,9 +119,18 @@ class TemplateInstance:
             self.color_inactive = color_data.get("inactive", (0, 255, 0))
             self.border_color = color_data.get("border", (0, 0, 255))
             self.color = self.color_inactive
+        else:
+            self.color = None
+
+        self.image = data.get("image", None)
+        self.images = data.get("images", None)
+        self.image_duration = data.get("image_duration", None)
+        self.current_frame = 0
+        self.time_elapsed = 0
 
         self.set_managers(managers)
         self.screen = self.game_manager.gameDisplay
+        self.dt = self.game_manager.dt
 
         self.update_rect()
         self.update_text()
@@ -145,14 +154,18 @@ class TemplateInstance:
 
     def set_position(self, pos):
         self.pos = pos
+        if self.rect:
+            self.rect[0], self.rect[1] = pos
         self.update_rect()
 
     def set_size(self, size):
-        self.size = size
+        self.size = self.rect[2], self.rect[3] = size
         self.update_rect()
 
     def set_rect(self, rect):
         self.rect = rect
+        self.pos = self.rect[0], self.rect[1]
+        self.size = self.rect[2], self.rect[3]
         self.update_rect()
 
     def set_align(self, align):
@@ -210,6 +223,13 @@ class TemplateInstance:
         self.graphic.update_rect()
         self.graphic.update_text()
 
+    def update(self):
+        self.time_elapsed += self.dt
+        if self.image_duration:
+            if self.time_elapsed >= self.image_duration:
+                self.time_elapsed = 0
+                self.current_frame = (self.current_frame + 1) % len(self.images)
+
     def draw(self):
         if self.graphic:
             self.graphic.draw(self.screen)
@@ -219,6 +239,11 @@ class TemplateInstance:
 
             if self.border_size:
                 pygame.draw.rect(self.screen, self.border_color, self.rect, self.border_size)
+
+        if self.images:
+            self.screen.blit(self.images[self.current_frame], self.pos)
+        elif self.image:
+            self.screen.blit(self.image, self.pos)
 
         if self.text:
             self.screen.blit(self.text_surface, self.text_rect)

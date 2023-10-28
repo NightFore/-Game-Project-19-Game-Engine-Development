@@ -214,7 +214,7 @@ class Button:
         Args:
             screen (pygame.Surface): The screen to draw on.
         """
-        self.graphic.draw(screen)
+        self.graphic.draw()
         if self.text:
             text_surface = self.font.render(self.text, True, (0, 0, 0))
             text_rect = text_surface.get_rect(center=self.rect.center)

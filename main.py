@@ -6,7 +6,7 @@ from os import path
 
 from manager.audio_manager import AudioManager
 from manager.button_manager import ButtonManager
-from manager.graphic_manager import GraphicManager
+from manager.graphic_manager_new import GraphicManager
 from manager.resource_manager import ResourceManager
 from manager.text_manager import TextManager
 from manager.scene_manager import SceneManager
@@ -68,6 +68,7 @@ class Game:
         pygame.mixer.init()
         random.seed()
         self.clock = pygame.time.Clock()
+        self.dt = self.clock.tick()
         self.total_play_time = 0
         self.mouse_pos = (0, 0)
         self.playing = True
@@ -203,7 +204,7 @@ class Game:
 
         # Load resources for other dependent managers
         self.audio_manager.setup_manager(self.managers)
-        self.graphic_manager.load_resources(self.resource_manager)
+        self.graphic_manager.setup_manager(self.managers)
         self.text_manager.load_resources(self.resource_manager)
 
     def load_scenes(self):
