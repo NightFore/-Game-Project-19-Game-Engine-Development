@@ -14,7 +14,6 @@ from manager.window_manager import WindowManager
 
 from data.constant_data import PROJECT_TITLE, SCREEN_SIZE, FPS
 from data.resource_data import DICT_RESOURCES, DICT_SCENES
-from debug.debug_data import DEBUG_DICT_RESOURCES, DEBUG_DICT_SCENES
 
 class Game:
     """
@@ -43,38 +42,33 @@ class Game:
         - setup_scenes: Load and configure game scenes.
         - setup_display: Configure game display settings.
 
-    - Loading:
-        - load_game: Load initial resources and scenes for the game.
-        - load_managers_resources: Load resources for game managers.
-        - load_scenes: Load game scenes.
-
-    - Startup:
-        - start_game: Initialize game startup procedures.
-        - start_managers: Initialize game managers for the initial scene.
-
     - Game Loop:
         - run: The main game loop that handles game events, updates, and drawing.
         - events: Handle game events, including user input and window events.
         - update: Update game components, including scenes, managers.
         - draw: Draw game components, scenes, managers.
         - quit_game: Exit the game, print total play time, and clean up resources.
-
-    Dependencies:
-        - Pygame: The Pygame framework is required for game development.
     """
     def __init__(self):
+        # Initialize the game
         pygame.mixer.pre_init(44100, -16, 2, 2048)
         pygame.init()
         pygame.mixer.init()
         random.seed()
+        self.setup_game()
+
+        # Set initial game state flags
+        self.playing = True
+        self.paused = False
+        self.debug_mode = False
+
+        # Initialize game-related variables
         self.clock = pygame.time.Clock()
         self.dt = self.clock.tick()
         self.total_play_time = 0
         self.mouse_pos = (0, 0)
-        self.playing = True
-        self.paused = False
-        self.debug_mode = False
-        self.setup_game()
+
+        # Set the initial scene to "MainMenuScene"
         self.scene_manager.set_scene("MainMenuScene")
 
 
@@ -244,10 +238,6 @@ class Game:
         # Update mouse position based on display_factor
         self.mouse_pos = self.window_manager.get_adjusted_mouse_position()
 
-
-    """
-    Update
-    """
     def update(self):
         # Calculate the total play time of the game
         self.total_play_time += self.dt
@@ -267,7 +257,6 @@ class Game:
         # Draw the game scene
         self.button_manager.draw(self.gameDisplay)
         self.scene_manager.draw(self.gameDisplay)
-
 
         # Draw the window
         self.window_manager.draw()
