@@ -7,15 +7,14 @@ from os import path
 from manager.audio_manager import AudioManager
 from manager.button_manager import ButtonManager
 from manager.graphic_manager_new import GraphicManager
-from manager.resource_manager_new import ResourceManager
+from manager.resource_manager import ResourceManager
 from manager.text_manager import TextManager
 from manager.scene_manager import SceneManager
 from manager.window_manager import WindowManager
 
 from data.constant_data import PROJECT_TITLE, SCREEN_SIZE, FPS
-from data.resource_data import DICT_AUDIO, DICT_GRAPHIC, DICT_SCENE, DICT_TEXT, DICT_RESOURCES
-
-from debug.debug_data import DEBUG_DICT_AUDIO, DEBUG_DICT_GRAPHIC, DEBUG_DICT_SCENE, DEBUG_DICT_TEXT
+from data.resource_data import DICT_RESOURCES, DICT_SCENES
+from debug.debug_data import DEBUG_DICT_RESOURCES, DEBUG_DICT_SCENES
 
 class Game:
     """
@@ -104,8 +103,7 @@ class Game:
         self.game_folder = path.dirname(__file__)
 
         # Define the base resources folder
-        base_folder = "resources" if not self.debug_mode else path.join("debug", "debug_resources")
-        self.resources_folder = path.join(self.game_folder, base_folder)
+        self.resources_folder = path.join(self.game_folder, "resources")
 
         # Define individual resource folders
         self.font_folder = path.join(self.resources_folder, "font")
@@ -117,28 +115,21 @@ class Game:
         self.resource_type_folders = {
             "music": self.music_folder,
             "sound": self.sound_folder,
+            "font": self.font_folder,
             "image": self.graphic_folder,
             "image_sequence": self.graphic_folder,
-            "font": self.font_folder,
         }
 
     def setup_dict(self):
         """
         Configure game dictionaries based on debug mode.
         """
-        self.resources_dict = DICT_RESOURCES
         if not self.debug_mode:
-            # Use regular dictionaries for non-debug mode.
-            self.audio_dict = DICT_AUDIO
-            self.graphic_dict = DICT_GRAPHIC
-            self.scene_dict = DICT_SCENE
-            self.text_dict = DICT_TEXT
+            self.resources_dict = DICT_RESOURCES
+            self.scenes_dict = DICT_SCENES
         else:
-            # Use debug dictionaries for debug mode.
-            self.audio_dict = DEBUG_DICT_AUDIO
-            self.graphic_dict = DEBUG_DICT_GRAPHIC
-            self.scene_dict = DEBUG_DICT_SCENE
-            self.text_dict = DEBUG_DICT_TEXT
+            self.resources_dict = DEBUG_DICT_RESOURCES
+            self.scenes_dict = DEBUG_DICT_SCENES
 
     def setup_managers(self):
         """
@@ -210,7 +201,7 @@ class Game:
         """
         Load game scenes.
         """
-        self.scene_manager.load_scenes_parameters(self.scene_dict)
+        self.scene_manager.load_scenes_parameters(self.scenes_dict)
         self.scene_manager.load_scenes_from_directory("scenes")
 
 

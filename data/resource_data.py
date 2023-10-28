@@ -31,37 +31,7 @@ DICT_RESOURCES = {
     },
 }
 
-
-DICT_AUDIO = {
-    "debug_music": {"type": "music", "filename": "debug_audio_music.mp3"},
-    "debug_sound": {"type": "sound", "filename": "debug_audio_sound.wav"},
-}
-
-DICT_GRAPHIC = {
-    "default_single": {"type": "image", "filename": "debug_graphic_manager_single.png"},
-    "default_sequence": {
-        "type": "image_sequence",
-        "files": [
-            {"filename": "debug_graphic_manager_sequence_1.png"},
-            {"filename": "debug_graphic_manager_sequence_2.png"},
-        ],
-        "image_duration": 0.2,
-    },
-    "default_interface": {
-        "type": "interface",
-        "color": {"default": (0, 0, 0), "border": (255, 255, 255)},
-        "rect": {"x": 50, "y": 50, "width": 400, "height": 300},
-        "hit_rect": {"x": 50, "y": 50, "width": 400, "height": 300},
-        "border_size": 2
-    },
-    "default_button": {
-        "type": "button",
-        "color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
-        "border_size": 5
-    },
-}
-
-DICT_SCENE = {
+DICT_SCENES = {
     "MainMenuScene": {
         "buttons": {
             "start": {
@@ -106,13 +76,5 @@ DICT_SCENE = {
             "volume_down": {"graphic": "default_button", "text": "Volume Down", "rect": (300, 390, 300, 60)},
             "fullscreen": {"graphic": "default_button", "text": "Fullscreen", "rect": (300, 460, 300, 60)}
         }
-    },
-}
-
-DICT_TEXT = {
-    "liberation_serif": {
-        "type": "font", "filename": "LiberationSerif-Regular.ttf",
-        "text": "Template Liberation Serif",
-        "size": 24, "color": (255, 255, 255), "alignment": "center",
     },
 }
