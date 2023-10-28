@@ -98,50 +98,10 @@ class TemplateInstance:
     TemplateInstance class for managing instances of resources.
     """
     def __init__(self, data, managers):
+        # Store the input data for this instance.
         self.data = data
-        self.pos = data.get("pos", None)
-        self.size = data.get("size", None)
-        self.rect = data.get("rect", None)
 
-        self.align = data.get("align", None)
-        self.text = data.get("text", None)
-        self.text_font = data.get("text_font", None)
-        self.text_color = data.get("text_color", None)
-        self.graphic = data.get("graphic", None)
-        self.border_color = data.get("border_color", None)
-        self.border_size = data.get("border_size", None)
-        self.text_rect = None
-        self.text_surface = None
-
-        color_data = data.get("color", None)
-        if color_data:
-            self.color_active = color_data.get("active", (255, 0, 0))
-            self.color_inactive = color_data.get("inactive", (0, 255, 0))
-            self.border_color = color_data.get("border", (0, 0, 255))
-            self.color = self.color_inactive
-        else:
-            self.color = None
-
-        self.image = data.get("image", None)
-        self.images = data.get("images", None)
-        self.image_duration = data.get("image_duration", None)
-        self.current_frame = 0
-        self.time_elapsed = 0
-
-        self.set_managers(managers)
-        self.screen = self.game_manager.gameDisplay
-        self.dt = self.game_manager.dt
-
-        self.update_rect()
-        self.update_text()
-
-    def set_managers(self, managers):
-        """
-        Load and set game managers.
-
-        Args:
-            managers (dict): A dictionary containing game managers.
-        """
+        # Set the managers used for this instance.
         self.managers = managers
         self.game_manager = self.managers["game_manager"]
         self.audio_manager = self.managers["audio_manager"]
@@ -152,14 +112,60 @@ class TemplateInstance:
         self.text_manager = self.managers["text_manager"]
         self.window_manager = self.managers["window_manager"]
 
+        # Rect attributes
+        self.pos = data.get("pos", None)
+        self.size = data.get("size", None)
+        self.rect = data.get("rect", None)
+        self.align = data.get("align", None)
+
+        # Text attributes
+        self.text = data.get("text", None)
+        self.text_font = data.get("text_font", None)
+        self.text_color = data.get("text_color", None)
+        self.text_rect = None
+        self.text_surface = None
+
+        # Border attributes
+        self.border_color = data.get("border_color", None)
+        self.border_size = data.get("border_size", None)
+
+        # Color attributes
+        color_data = data.get("color", None)
+        if color_data:
+            self.color_active = color_data.get("active", (255, 0, 0))
+            self.color_inactive = color_data.get("inactive", (0, 255, 0))
+            self.border_color = color_data.get("border", (0, 0, 255))
+            self.color = self.color_inactive
+        else:
+            self.color = None
+
+        # Graphic attributes
+        self.graphic = data.get("graphic", None)
+        self.image = data.get("image", None)
+        self.images = data.get("images", None)
+        self.image_duration = data.get("image_duration", None)
+        self.current_image = 0
+        if self.images:
+            self.image = self.images[self.current_image]
+        if self.image:
+            self.rect = self.image.get_rect()
+            self.size = self.rect[2], self.rect[3]
+
+        # Time attributes
+        self.time_elapsed = 0
+        self.dt = self.game_manager.dt
+
+        # Screen attribute
+        self.screen = self.game_manager.gameDisplay
+
     def set_position(self, pos):
         self.pos = pos
-        if self.rect:
-            self.rect[0], self.rect[1] = pos
+        self.rect[0], self.rect[1] = pos
         self.update_rect()
 
     def set_size(self, size):
-        self.size = self.rect[2], self.rect[3] = size
+        self.size = size
+        self.rect[2], self.rect[3] = size
         self.update_rect()
 
     def set_rect(self, rect):
@@ -206,12 +212,10 @@ class TemplateInstance:
         self.graphic = graphic
 
     def update_rect(self):
-        if self.rect:
-            self.rect = pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
-            if self.text_rect:
-                self.text_rect.center = self.rect.center
-            if self.graphic:
-                self.update_graphic()
+        if self.text:
+            self.text_rect.center = self.rect.center
+        if self.graphic:
+            self.update_graphic()
 
     def update_text(self):
         if self.text:
@@ -226,11 +230,11 @@ class TemplateInstance:
     def update(self):
         self.dt = self.game_manager.dt
         self.time_elapsed += self.dt
-        print(self.image_duration, self.time_elapsed, self.dt)
         if self.image_duration:
             if self.time_elapsed >= self.image_duration:
                 self.time_elapsed = 0
-                self.current_frame = (self.current_frame + 1) % len(self.images)
+                self.current_image = (self.current_image + 1) % len(self.images)
+                self.image = self.images[self.current_image]
 
     def draw(self):
         if self.graphic:
@@ -242,9 +246,7 @@ class TemplateInstance:
             if self.border_size:
                 pygame.draw.rect(self.screen, self.border_color, self.rect, self.border_size)
 
-        if self.images:
-            self.screen.blit(self.images[self.current_frame], self.pos)
-        elif self.image:
+        if self.image:
             self.screen.blit(self.image, self.pos)
 
         if self.text:

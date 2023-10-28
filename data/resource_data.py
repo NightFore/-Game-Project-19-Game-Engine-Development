@@ -7,6 +7,31 @@ Dictionary
     - DICT_SCENE
     - DICT_TEXT
 """
+DICT_RESOURCES = {
+    "music": {
+
+    },
+    "sound": {
+
+    },
+    "image": {
+
+    },
+    "image_sequence": {
+
+    },
+    "interface": {
+
+    },
+    "button": {
+
+    },
+    "font": {
+
+    }
+}
+
+
 DICT_AUDIO = {
     "debug_music": {"type": "music", "filename": "debug_audio_music.mp3"},
     "debug_sound": {"type": "sound", "filename": "debug_audio_sound.wav"},
