@@ -4,7 +4,7 @@ from pygame.locals import *
 import random
 from os import path
 
-from manager.audio_manager_new import AudioManager
+from manager.audio_manager import AudioManager
 from manager.button_manager import ButtonManager
 from manager.graphic_manager import GraphicManager
 from manager.resource_manager import ResourceManager
@@ -202,7 +202,7 @@ class Game:
         self.resource_manager.load_resources(self.graphic_dict)
 
         # Load resources for other dependent managers
-        self.audio_manager.start_manager(self.managers)
+        self.audio_manager.setup_manager(self.managers)
         self.graphic_manager.load_resources(self.resource_manager)
         self.text_manager.load_resources(self.resource_manager)
 
