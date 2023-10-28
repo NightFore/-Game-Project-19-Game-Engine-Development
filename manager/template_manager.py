@@ -23,10 +23,6 @@ class TemplateManager:
     Setup
         - load_resources
     """
-    def setup_manager(self, managers):
-        self.set_managers(managers)
-        self.set_resources()
-
     def set_managers(self, managers):
         """
         Load and set game managers.

@@ -35,10 +35,12 @@ class Game:
     Methods:
     - Setup:
         - setup_game: Initialize the game's setup, including folders, dictionaries, managers, and display.
-        - setup_folders: Configure folder paths based on the debug mode.
-        - setup_dict: Configure game dictionaries based on the debug mode.
-        - setup_managers: Create and configure game managers.
+        - setup_folders: Define the game's folder paths
+        - setup_dict: Load game dictionaries.
+        - setup_managers: Create game managers.
         - setup_managers_settings: Configure game managers and their settings.
+        - setup_managers_resources: Load and assign resources to managers.
+        - setup_scenes: Load and configure game scenes.
         - setup_display: Configure game display settings.
 
     - Loading:
@@ -49,13 +51,12 @@ class Game:
     - Startup:
         - start_game: Initialize game startup procedures.
         - start_managers: Initialize game managers for the initial scene.
-        - start_debug_mode: Initialize debug mode and create debug update and draw lists.
 
     - Game Loop:
         - run: The main game loop that handles game events, updates, and drawing.
         - events: Handle game events, including user input and window events.
-        - update: Update game components, including scenes, managers, and debug operations.
-        - draw: Draw game components, scenes, managers, and debug elements.
+        - update: Update game components, including scenes, managers.
+        - draw: Draw game components, scenes, managers.
         - quit_game: Exit the game, print total play time, and clean up resources.
 
     Dependencies:
@@ -74,16 +75,18 @@ class Game:
         self.paused = False
         self.debug_mode = False
         self.setup_game()
-        self.load_game()
-        self.start_game()
+        self.scene_manager.set_scene("MainMenuScene")
 
 
     """
     Setup
+        - setup_game
         - setup_folders
         - setup_dict
         - setup_managers
         - setup_managers_settings
+        - setup_managers_resources
+        - setup_scenes
         - setup_display
     """
     def setup_game(self):
@@ -94,11 +97,13 @@ class Game:
         self.setup_dict()
         self.setup_managers()
         self.setup_managers_settings()
+        self.setup_managers_resources()
+        self.setup_scenes()
         self.setup_display()
 
     def setup_folders(self):
         """
-        Configure folder paths based on debug mode.
+        Define the game's folder paths
         """
         self.game_folder = path.dirname(__file__)
 
@@ -122,18 +127,14 @@ class Game:
 
     def setup_dict(self):
         """
-        Configure game dictionaries based on debug mode.
+        Load game dictionaries.
         """
-        if not self.debug_mode:
-            self.resources_dict = DICT_RESOURCES
-            self.scenes_dict = DICT_SCENES
-        else:
-            self.resources_dict = DEBUG_DICT_RESOURCES
-            self.scenes_dict = DEBUG_DICT_SCENES
+        self.resources_dict = DICT_RESOURCES
+        self.scenes_dict = DICT_SCENES
 
     def setup_managers(self):
         """
-        Create and configure game managers.
+        Create game managers.
         """
         self.managers = {
             "game_manager": self,
@@ -160,8 +161,32 @@ class Game:
         # Set resource folders for the ResourceManager
         self.resource_manager.set_resource_folders(self.resource_type_folders)
 
-        # Set managers for the SceneManager
-        self.scene_manager.set_managers(self.managers)
+        # Set managers for all game managers
+        for manager in self.managers.values():
+            if hasattr(manager, 'set_managers'):
+                manager.set_managers(self.managers)
+
+    def setup_managers_resources(self):
+        """
+        Load and assign resources to managers.
+        """
+        # Load resources from the resources dictionary
+        self.resource_manager.load_resources(self.resources_dict)
+
+        # Set resources for each managers
+        for manager in self.managers.values():
+            if hasattr(manager, 'set_resources'):
+                manager.set_resources()
+
+    def setup_scenes(self):
+        """
+        Load and configure game scenes.
+        """
+        # Load scene parameters from the dictionary
+        self.scene_manager.load_scenes_parameters(self.scenes_dict)
+
+        # Load additional scenes from the 'scenes' directory
+        self.scene_manager.load_scenes_from_directory("scenes")
 
     def setup_display(self):
         """
@@ -171,76 +196,6 @@ class Game:
         self.FPS = FPS
         self.screen_size = self.screen_width, self.screen_height = SCREEN_SIZE
         self.gameDisplay = self.window_manager.create_window_instance(self.project_title, self.screen_size)
-
-
-    """
-    Loading
-        - load_managers_resources
-        - load_scenes
-    """
-    def load_game(self):
-        """
-        Initial loading for the game.
-        """
-        self.load_managers_resources()
-        self.load_scenes()
-
-    def load_managers_resources(self):
-        """
-        Load resources for game managers.
-        """
-        # Load resources using the ResourceManager
-        self.resource_manager.load_resources(self.resources_dict)
-
-        # Load resources for other dependent managers
-        self.audio_manager.setup_manager(self.managers)
-        self.graphic_manager.setup_manager(self.managers)
-        self.text_manager.load_resources(self.resource_manager)
-
-    def load_scenes(self):
-        """
-        Load game scenes.
-        """
-        self.scene_manager.load_scenes_parameters(self.scenes_dict)
-        self.scene_manager.load_scenes_from_directory("scenes")
-
-
-    """
-    Startup
-        - start_managers
-        - start_debug_mode
-    """
-    def start_game(self):
-        """
-        Initialize game startup procedures.
-        """
-        self.start_managers()
-        self.start_debug_mode()
-
-    def start_managers(self):
-        """
-        Initialize game managers for the initial scene.
-        """
-        # Set the initial scene to "MainMenuScene"
-        self.scene_manager.set_scene("MainMenuScene")
-
-    def start_debug_mode(self):
-        """
-        Initialize debug mode and create debug update and draw lists.
-        """
-        # Create empty debug update and draw lists
-        self.debug_updates = []
-        self.debug_draws = []
-
-        # Initialize debug handlers
-        debug_handlers = [
-            # DebugTemplate()
-        ]
-
-        for debug_handler in debug_handlers:
-            # Add debug update and draw functions to the lists
-            self.debug_updates.append(debug_handler.update)
-            self.debug_draws.append(debug_handler.draw)
 
 
     """
@@ -289,6 +244,7 @@ class Game:
         # Update mouse position based on display_factor
         self.mouse_pos = self.window_manager.get_adjusted_mouse_position()
 
+
     """
     Update
     """
@@ -299,11 +255,6 @@ class Game:
         # Update game components
         self.button_manager.update(self.mouse_pos)
         self.scene_manager.update(self.dt)
-
-        # Debug mode operations
-        if self.debug_mode:
-            for debug_update_func in self.debug_updates:
-                debug_update_func()
 
         # Update the window
         self.window_manager.update(self.clock.get_fps())
@@ -317,10 +268,6 @@ class Game:
         self.button_manager.draw(self.gameDisplay)
         self.scene_manager.draw(self.gameDisplay)
 
-        # Debug mode operations
-        if self.debug_mode:
-            for debug_draw_func in self.debug_draws:
-                debug_draw_func()
 
         # Draw the window
         self.window_manager.draw()
