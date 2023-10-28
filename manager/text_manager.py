@@ -33,7 +33,7 @@ class TextManager:
         Args:
             resource_manager (ResourceManager): The ResourceManager containing loaded text resources.
         """
-        self.text_templates = resource_manager.load_resources_from_manager("text")
+        pass
 
 
     """

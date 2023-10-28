@@ -1,34 +1,34 @@
 # resource_data.py
 
-"""
-Dictionary
-    - DICT_AUDIO
-    - DICT_GRAPHIC
-    - DICT_SCENE
-    - DICT_TEXT
-"""
 DICT_RESOURCES = {
     "music": {
-
+        "debug_music": {"filename": "debug_audio_music.mp3"},
     },
     "sound": {
-
+        "debug_sound": {"filename": "debug_audio_sound.wav"},
     },
     "image": {
-
-    },
-    "image_sequence": {
-
-    },
-    "interface": {
-
-    },
-    "button": {
-
+        "default_single": {"filename": "debug_graphic_manager_single.png"},
     },
     "font": {
-
-    }
+        "liberation_serif": {"filename": "LiberationSerif-Regular.ttf", "size": 24, "color": (255, 255, 255)},
+    },
+    "image_sequence": {
+        "default_sequence": {
+            "files": [{"filename": "debug_graphic_manager_sequence_1.png"},
+                      {"filename": "debug_graphic_manager_sequence_2.png"}],
+            "image_duration": 0.2,
+        },
+    },
+    "interface": {
+        "default_interface": {
+            "color": {"default": (0, 0, 0), "border": (255, 255, 255)},
+            "rect": [50, 50, 400, 300], "hit_rect": [50, 50, 400, 300], "border_size": 2
+        },
+    },
+    "button": {
+        "default_button": {"color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)}, "border_size": 5},
+    },
 }
 
 

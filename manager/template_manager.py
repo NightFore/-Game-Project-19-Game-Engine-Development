@@ -45,19 +45,11 @@ class TemplateManager:
         self.window_manager = self.managers["window_manager"]
 
     def set_resources(self):
-        # Check that resources have unique names
-        all_resource_names = []
-
         for resource_type in self.resource_types_to_load:
             # Load resources for each resource type
-            loaded_resources = self.resource_manager.load_resources_from_manager(resource_type)
+            loaded_resources = self.resource_manager.resources[resource_type]
 
-            # Check if any of the loaded resource names already exist
-            for resource_name in loaded_resources:
-                if resource_name in all_resource_names:
-                    raise ValueError(f"Duplicate resource name '{resource_name}' found in {resource_type}.")
-
-            # Add the loaded resources to the self.resources dictionary
+            # Add the loaded resources to the resources dictionary
             self.resources.update(loaded_resources)
 
 
