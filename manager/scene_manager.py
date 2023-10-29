@@ -68,14 +68,7 @@ class SceneManager(TemplateManager):
                     # Check if the object is a class and a subclass of SceneBase (excluding SceneBase itself)
                     if inspect.isclass(obj) and issubclass(obj, self.instance_class) and obj != self.instance_class:
                         # Create an instance of the scene class
-                        scene_instance = obj()
-
-                        # Check if scene parameters and managers are available
-                        if self.resources is not None and self.managers is not None:
-                            # Configure the scene with scene parameters and managers
-                            scene_instance.set_scene_settings(self.managers, self.resources)
-                        else:
-                            raise ValueError("Scene parameters and managers must be loaded before configuring scenes.")
+                        scene_instance = obj(self.resources, self.managers)
 
                         # Add the scene to the SceneManager
                         self.instances[name] = scene_instance
@@ -192,71 +185,34 @@ class SceneManager(TemplateManager):
 
 
 
-class SceneBase:
+
+class SceneBase(TemplateInstance):
     """
-    SceneBase provides a base for game scenes with buttons.
+    SceneBase provides a base for game scenes.
 
     Attributes:
-        managers (dict): A dictionary containing game managers.
-        button_manager: The manager for buttons.
-        graphic_manager: The manager for graphics.
-        scene_manager: The manager for scenes.
-        scenes_params (dict): A dictionary of scene parameters.
         scene_buttons (dict): A dictionary containing buttons in the scene.
+        scene_texts (dict): A dictionary containing texts in the scene.
 
     Methods:
-    - Scene Setup
-        - set_scene_settings: Set the scene parameters for the scene.
-
-    - Scene Lifecycle
+    - Lifecycle
         - enter: Called when entering the scene.
-            - create_buttons_from_dict: Create buttons based on button information retrieved from the scene_params.
         - exit: Called when exiting the scene.
         - update: Update the scene.
         - draw: Draw the scene.
     """
-    def __init__(self):
+    def __init__(self, data, managers):
         """
         Initialize the SceneBase.
         """
-        self.scene_name = self.__class__.__name__
-
-        # Initialize managers
-        self.managers = None
-        self.button_manager = None
-        self.graphic_manager = None
-        self.scene_manager = None
-        self.text_manager = None
-
-        self.scenes_params = None
+        super().__init__(data, managers)
         self.scene_buttons = {}
         self.scene_texts = []
 
 
     """
-    Setup
-        - set_scene_settings
-    """
-    def set_scene_settings(self, managers, scenes_params):
-        """
-        Set the scene parameters for the scene.
-
-        Args:
-            managers (dict): A dictionary containing game managers.
-            scenes_params (dict): The dictionary of scene parameters.
-        """
-        self.managers = managers
-        self.button_manager = self.managers["button_manager"]
-        self.graphic_manager = self.managers["graphic_manager"]
-        self.scene_manager = self.managers["scene_manager"]
-        self.text_manager = self.managers["text_manager"]
-        self.scenes_params = scenes_params
-
-
-    """
-    Scene Lifecycle
+    Lifecycle
         - enter
-            - create_buttons_from_dict
         - exit
         - update
         - draw
@@ -272,20 +228,14 @@ class SceneBase:
         Called when exiting the scene.
         """
 
-    def update(self, dt):
+    def update(self):
         """
         Update the scene.
-
-        Args:
-            dt (float): Time since last update.
         """
         pass
 
-    def draw(self, screen):
+    def draw(self):
         """
         Draw the scene.
-
-        Args:
-            screen (pygame.Surface): The screen to draw on.
         """
         pass

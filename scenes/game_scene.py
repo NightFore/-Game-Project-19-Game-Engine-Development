@@ -1,8 +1,8 @@
 from manager.scene_manager import SceneBase
 
 class GameScene(SceneBase):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, data, managers):
+        super().__init__(data, managers)
 
     def enter(self):
         super().enter()
@@ -11,7 +11,7 @@ class GameScene(SceneBase):
         super().exit()
 
     def update(self, dt):
-        super().update(dt)
+        super().update()
 
         # Return to the Main Menu
         if self.scene_buttons["game_over"].clicked_and_released:
@@ -22,4 +22,4 @@ class GameScene(SceneBase):
             print("Hello World")
 
     def draw(self, screen):
-        super().draw(screen)
+        super().draw()

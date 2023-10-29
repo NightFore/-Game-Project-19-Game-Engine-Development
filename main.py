@@ -37,10 +37,10 @@ class Game:
         - setup_folders: Define the game's folder paths
         - setup_dict: Load game dictionaries.
         - setup_managers: Create game managers.
+        - setup_display: Configure game display settings.
         - setup_managers_settings: Configure game managers and their settings.
         - setup_managers_resources: Load and assign resources to managers.
         - setup_scenes: Load and configure game scenes.
-        - setup_display: Configure game display settings.
 
     - Game Loop:
         - run: The main game loop that handles game events, updates, and drawing.
@@ -55,7 +55,6 @@ class Game:
         pygame.init()
         pygame.mixer.init()
         random.seed()
-        self.setup_game()
 
         # Set initial game state flags
         self.playing = True
@@ -68,7 +67,8 @@ class Game:
         self.total_play_time = 0
         self.mouse_pos = (0, 0)
 
-        # Set the initial scene to "MainMenuScene"
+        # Launch the game
+        self.setup_game()
         self.scene_manager.set_scene("MainMenuScene")
 
 
@@ -78,10 +78,10 @@ class Game:
         - setup_folders
         - setup_dict
         - setup_managers
+        - setup_display
         - setup_managers_settings
         - setup_managers_resources
         - setup_scenes
-        - setup_display
     """
     def setup_game(self):
         """
@@ -90,10 +90,10 @@ class Game:
         self.setup_folders()
         self.setup_dict()
         self.setup_managers()
+        self.setup_display()
         self.setup_managers_settings()
         self.setup_managers_resources()
         self.setup_scenes()
-        self.setup_display()
 
     def setup_folders(self):
         """
@@ -148,6 +148,15 @@ class Game:
         self.text_manager = self.managers["text_manager"]
         self.window_manager = self.managers["window_manager"]
 
+    def setup_display(self):
+        """
+        Configure game display settings.
+        """
+        self.project_title = PROJECT_TITLE
+        self.FPS = FPS
+        self.screen_size = self.screen_width, self.screen_height = SCREEN_SIZE
+        self.gameDisplay = self.window_manager.create_window_instance(self.project_title, self.screen_size)
+
     def setup_managers_settings(self):
         """
         Configure game managers and their settings.
@@ -178,15 +187,6 @@ class Game:
         """
         # Load additional scenes from the 'scenes' directory
         self.scene_manager.load_scenes_from_directory("scenes")
-
-    def setup_display(self):
-        """
-        Configure game display settings.
-        """
-        self.project_title = PROJECT_TITLE
-        self.FPS = FPS
-        self.screen_size = self.screen_width, self.screen_height = SCREEN_SIZE
-        self.gameDisplay = self.window_manager.create_window_instance(self.project_title, self.screen_size)
 
 
     """

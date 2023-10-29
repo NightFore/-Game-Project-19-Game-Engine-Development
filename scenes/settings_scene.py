@@ -1,8 +1,8 @@
 from manager.scene_manager import SceneBase
 
 class SettingsScene(SceneBase):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, data, managers):
+        super().__init__(data, managers)
 
     def enter(self):
         super().enter()
@@ -13,7 +13,7 @@ class SettingsScene(SceneBase):
         super().exit()
 
     def update(self, dt):
-        super().update(dt)
+        super().update()
 
         # Return to MainMenuScene
         if self.scene_buttons["back"].clicked_and_released:
@@ -32,4 +32,4 @@ class SettingsScene(SceneBase):
             self.window_manager.toggle_fullscreen()
 
     def draw(self, screen):
-        super().draw(screen)
+        super().draw()
