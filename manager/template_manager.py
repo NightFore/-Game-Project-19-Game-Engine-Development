@@ -1,4 +1,4 @@
-import pygame
+# template_manager.py
 
 class TemplateManager:
     """
@@ -11,6 +11,9 @@ class TemplateManager:
         # Initialize dictionaries to store resources and instances
         self.resources = {}
         self.instances = {}
+
+        # Initialize the instance class for this manager
+        self.instance_class = TemplateInstance
 
         # Define resource types to load for this manager
         self.resource_types_to_load = []
@@ -66,7 +69,7 @@ class TemplateManager:
         """
         if template_name in self.resources:
             resource_data = self.resources[template_name]
-            new_instance = TemplateInstance(resource_data, self.managers)
+            new_instance = self.instance_class(resource_data, self.managers)
             self.instances[template_name] = new_instance
             return new_instance
         else:
@@ -104,6 +107,7 @@ class TemplateInstance:
         self.pos = data.get("pos", None)
         self.size = data.get("size", None)
         self.rect = data.get("rect", None)
+        self.border_radius = data.get("border_radius", None)
         self.align = data.get("align", None)
 
         # Text attributes
@@ -113,35 +117,12 @@ class TemplateInstance:
         self.text_rect = None
         self.text_surface = None
 
-        # Border attributes
-        self.border_color = data.get("border_color", None)
-        self.border_size = data.get("border_size", None)
-
-        # Color attributes
-        color_data = data.get("color", None)
-        if color_data:
-            self.color_active = color_data.get("active", (255, 0, 0))
-            self.color_inactive = color_data.get("inactive", (0, 255, 0))
-            self.border_color = color_data.get("border", (0, 0, 255))
-            self.color = self.color_inactive
-        else:
-            self.color = None
-
         # Graphic attributes
         self.graphic = data.get("graphic", None)
-        self.image = data.get("image", None)
-        self.images = data.get("images", None)
-        self.image_duration = data.get("image_duration", None)
-        self.current_image = 0
-        if self.images:
-            self.image = self.images[self.current_image]
-        if self.image:
-            self.rect = self.image.get_rect()
-            self.size = self.rect[2], self.rect[3]
 
         # Time attributes
-        self.time_elapsed = 0
         self.dt = self.game_manager.dt
+        self.time_elapsed = 0
 
         # Screen attribute
         self.screen = self.game_manager.gameDisplay
@@ -218,24 +199,10 @@ class TemplateInstance:
     def update(self):
         self.dt = self.game_manager.dt
         self.time_elapsed += self.dt
-        if self.image_duration:
-            if self.time_elapsed >= self.image_duration:
-                self.time_elapsed = 0
-                self.current_image = (self.current_image + 1) % len(self.images)
-                self.image = self.images[self.current_image]
 
     def draw(self):
         if self.graphic:
             self.graphic.draw(self.screen)
-        else:
-            if self.color:
-                pygame.draw.rect(self.screen, self.color, self.rect)
-
-            if self.border_size:
-                pygame.draw.rect(self.screen, self.border_color, self.rect, self.border_size)
-
-        if self.image:
-            self.screen.blit(self.image, self.pos)
 
         if self.text:
             self.screen.blit(self.text_surface, self.text_rect)

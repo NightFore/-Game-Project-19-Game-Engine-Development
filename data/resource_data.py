@@ -23,11 +23,11 @@ DICT_RESOURCES = {
     "interface": {
         "default_interface": {
             "color": {"default": (0, 0, 0), "border": (255, 255, 255)},
-            "rect": [50, 50, 400, 300], "hit_rect": [50, 50, 400, 300], "border_size": 2
+            "rect": [50, 50, 400, 300], "hit_rect": [50, 50, 400, 300], "border_radius": 2
         },
     },
     "button": {
-        "default_button": {"color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)}, "border_size": 5},
+        "default_button": {"color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)}, "border_radius": 5},
     },
 }
 
