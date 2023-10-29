@@ -4,7 +4,7 @@ import pygame
 
 class TextManager:
     """
-    TextManager handles text resources and rendering text in the game.
+    TextManager manages text resources and rendering text in the game.
 
     Attributes:
         text_templates (dict): A dictionary containing text templates.

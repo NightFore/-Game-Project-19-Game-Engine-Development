@@ -7,7 +7,7 @@ import importlib
 
 class SceneManager:
     """
-    SceneManager handles game scenes and buttons.
+    SceneManager manages game scenes.
 
     Attributes:
         scenes (dict): A dictionary containing loaded game scenes.

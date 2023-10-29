@@ -5,7 +5,7 @@ from manager.template_manager import TemplateManager, TemplateInstance
 
 class GraphicManager(TemplateManager):
     """
-    GraphicManager handles graphic resources and their instances in the game.
+    GraphicManager manages graphic resources and their instances in the game.
     """
     def __init__(self):
         # Initialize the manager as a subclass of TemplateManager

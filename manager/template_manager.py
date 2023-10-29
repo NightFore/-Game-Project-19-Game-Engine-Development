@@ -2,7 +2,7 @@
 
 class TemplateManager:
     """
-    TemplateManager handles resources and their instances in the game.
+    TemplateManager manages resources and their instances in the game.
     """
     def __init__(self):
         # Initialize the manager as a subclass of TemplateManager

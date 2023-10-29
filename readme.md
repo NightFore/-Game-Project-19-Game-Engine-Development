@@ -4,54 +4,47 @@
 - Developer(s): NightFore
 - Release Date: N/A
 - Project Start: August 04, 2023
-- GitHub Page: N/A
+- GitHub Page: https://github.com/NightFore/Game-Project-19-Game-Engine-Development
 
 ## Description
 This project aims to develop a comprehensive game engine with various managers to handle different aspects of game development.
 
 ## Managers
-- AudioManager: Audio resources, music, and sound effects management.
-- GraphicManager: Graphical elements and sprites handling.
-- SceneManager: Game scenes and interfaces management.
-- WindowManager: Display settings, window, and scaling management.
-- ButtonManager: User interface buttons and interactions handling.
+- AudioManager: AudioManager manages music and sound effects in the game.
+- ButtonManager: ButtonManager manages the creation, updating, and rendering of buttons.
+- GraphicManager: GraphicManager manages graphic resources and their instances in the game.
+- ResourceManager: ResourceManager manages the loading and storage of various game resources.
+- SceneManager: SceneManager manages game scenes.
+- TemplateManager: TemplateManager manages resources and their instances in the game.
+- TextManager: TextManager manages text resources and rendering text in the game.
+- WindowManager: WindowManager manages the game window and its display modes.
 
 ## Project Tree
 ```
 project/
-├── main.py
-├── readme.md
-├── data/
+├── build
+│   ├── setup.py
+├── data
 │   ├── constant_data.py
 │   └── resource_data.py
-├── debug/
-│   ├── debug_audio_manager.py
-│   ├── debug_graphic_manager.py
-│   └── debug_resources/
-│   	├── debug_audio_music.mp3
-│   	├── debug_audio_sound.wav
-│   	├── debug_graphic_manager_sequence_1.png
-│   	├── debug_graphic_manager_sequence_2.png
-│   	└── debug_graphic_manager_single.png
-├── handler/
-│   ├── error_handler.py
-│   └── resource_handler.py
-├── manager/
-│   ├── __init__.py
+├── manager
 │   ├── audio_manager.py
 │   ├── button_manager.py
 │   ├── graphic_manager.py
+│   ├── resource_manager.py
 │   ├── scene_manager.py
+│   ├── template_manager.py
+│   ├── text_manager.py
 │   └── window_manager.py
-├── resources/
-│   ├── font/
-│   ├── graphic/
-│   ├── music/
-│   └── sound/
-└── scenes/
-    ├── __init__.py
-    ├── main_menu_scene.py
-    └── game_scene.py
+├── mods
+├── resources
+│   ├── font
+│   ├── graphic
+│   ├── music
+│   └── sound
+├── scenes
+│   └── template_scene.py
+└── main.py
 ```
 
 ## Controls

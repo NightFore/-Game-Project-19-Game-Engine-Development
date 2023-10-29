@@ -6,7 +6,7 @@ from pygame.locals import *
 
 class WindowManager(pygame.Surface):
     """
-    WindowManager handles the game window and its display modes.
+    WindowManager manages the game window and its display modes.
 
     Attributes:
         project_title (str): The title of the game project.
@@ -65,7 +65,7 @@ class WindowManager(pygame.Surface):
     - Input Handling
         - get_adjusted_mouse_position(): Get the adjusted mouse position based on display_factor.
 
-    - Update and Draw
+    - Render
         - update(frame_rate): Update the display with the current frame rate.
         - draw(): Draw the game surface onto the screen.
     """

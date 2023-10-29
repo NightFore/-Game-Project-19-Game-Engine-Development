@@ -5,7 +5,7 @@ from os import path
 
 class ResourceManager:
     """
-    ResourceManager manages the loading and storage of various game resources such as graphics, audio, fonts, and more.
+    ResourceManager manages the loading and storage of various game resources.
 
     Attributes:
         RESOURCE_MAPPING (dict): A dictionary mapping resource types to their respective loading methods and formats.
