@@ -29,6 +29,37 @@ DICT_RESOURCES = {
     "button": {
         "default_button": {"color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)}, "border_radius": 5},
     },
+    "scene": {
+        "MainMenuScene": {
+            "buttons": {
+                "start": {"graphic": "default_button", "rect": (640, 250, 300, 60), "text": "Start", "align": "center"},
+                "settings": {"graphic": "default_button", "rect": (640, 320, 300, 60), "text": "Settings", "align": "center"},
+                "debug_audio": {"graphic": "default_button", "rect": (640, 390, 300, 60), "text": "Debug Audio", "align": "center"},
+                "pause_music": {"graphic": "default_button", "rect": (640, 460, 300, 60), "text": "Pause Music", "align": "center"},
+                "toggle_music": {"graphic": "default_button", "rect": (640, 530, 300, 60), "text": "Toggle Music", "align": "center"},
+                "toggle_zoom": {"graphic": "default_button", "rect": (640, 600, 300, 60), "text": "Toggle Zoom", "align": "center"},
+                "quit_game": {"graphic": "default_button", "rect": (10, 10, 50, 50), "text": "X"},
+            },
+            "texts": [
+                {"model": "liberation_serif", "position": (600, 300), "text": "Hello World!"},
+                {"model": "liberation_serif", "position": (600, 360), "align": "nw", "color": (0, 0, 0), "text": "Hello World 2!"},
+            ],
+        },
+        "GameScene": {
+            "buttons": {
+                "game_over": {"graphic": "default_button", "text": "Game Over", "rect": (400, 300, 200, 60)},
+                "click_me": {"graphic": "default_button", "text": "Click Me!", "rect": (400, 400, 200, 60)},
+            },
+        },
+        "SettingsScene": {
+            "buttons": {
+                "back": {"graphic": "default_button", "text": "Back", "rect": (300, 250, 300, 60)},
+                "volume_up": {"graphic": "default_button", "text": "Volume Up", "rect": (300, 320, 300, 60)},
+                "volume_down": {"graphic": "default_button", "text": "Volume Down", "rect": (300, 390, 300, 60)},
+                "fullscreen": {"graphic": "default_button", "text": "Fullscreen", "rect": (300, 460, 300, 60)}
+            }
+        },
+    }
 }
 
 DICT_SCENES = {

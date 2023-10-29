@@ -74,6 +74,10 @@ class ResourceManager:
             "load_type": None,
             "load_data": None,
         },
+        "scene": {
+            "load_type": None,
+            "load_data": None,
+        },
     }
 
     def __init__(self):

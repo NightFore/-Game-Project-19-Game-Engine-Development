@@ -176,9 +176,6 @@ class Game:
         """
         Load and configure game scenes.
         """
-        # Load scene parameters from the dictionary
-        self.scene_manager.load_scenes_parameters(self.scenes_dict)
-
         # Load additional scenes from the 'scenes' directory
         self.scene_manager.load_scenes_from_directory("scenes")
 
