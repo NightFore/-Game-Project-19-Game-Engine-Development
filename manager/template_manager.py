@@ -94,6 +94,19 @@ class TemplateManager:
         else:
             raise ValueError(f"Template '{template_name}' not found in resource templates.")
 
+    def create_instance_from_data(self, data):
+        """
+        Create an instance (button, text, etc.) from a dictionary of data.
+
+        Args:
+            data (dict): A dictionary containing instance information.
+
+        Returns:
+            The created instance.
+        """
+        new_instance = self.instance_class(data, self.managers)
+        return new_instance
+
     def clear_resources(self):
         """
         Clear all resource instances.
@@ -176,6 +189,10 @@ class TemplateInstance:
         self.screen = self.game_manager.gameDisplay
         self.dt = self.game_manager.dt
         self.time_elapsed = 0
+
+        # WIP
+        if self.graphic:
+            self.graphic.set_rect(self.rect)
 
 
     """
@@ -288,7 +305,8 @@ class TemplateInstance:
 
     def draw(self):
         if self.graphic:
-            self.graphic.draw(self.screen)
+            self.graphic.draw()
 
-        if self.text:
+        # WIP
+        if self.text and False:
             self.screen.blit(self.text_surface, self.text_rect)

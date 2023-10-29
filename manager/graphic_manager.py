@@ -12,7 +12,6 @@ class GraphicManager(TemplateManager):
         super().__init__()
 
         # Initialize dictionaries
-        self.managers = {}
         self.resources = {}
         self.instances = {}
 

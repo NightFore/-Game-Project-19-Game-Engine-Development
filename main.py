@@ -5,7 +5,7 @@ import random
 from os import path
 
 from manager.audio_manager import AudioManager
-from manager.button_manager import ButtonManager
+from manager.button_manager_new_2 import ButtonManager
 from manager.graphic_manager import GraphicManager
 from manager.resource_manager import ResourceManager
 from manager.scene_manager import SceneManager

@@ -1,5 +1,6 @@
 # scene_manager.py
 
+import pygame
 import os
 import inspect
 import importlib
@@ -87,6 +88,10 @@ class SceneManager(TemplateManager):
                 if graphic_name:
                     graphic_instance = self.graphic_manager.create_resource_instance(graphic_name)
                     button_info["graphic"] = graphic_instance
+
+                rect_data = button_info.get("rect")
+                if rect_data:
+                    button_info["rect"] = pygame.Rect(rect_data)
 
 
     """
@@ -182,24 +187,8 @@ class SceneBase(TemplateInstance):
         """
         buttons_dict = self.data[self.scene_name].get("buttons", {})
         for name, button_info in buttons_dict.items():
-            # Create an instance
-            button_instance = self.button_manager.create_button()
-
-            # Extract information
-            graphic = button_info["graphic"]
-            rect = button_info["rect"]
-            text = button_info.get("text", None)
-            align = button_info.get("align", None)
-
-            # Set properties
-            button_instance.set_graphic(graphic)
-            button_instance.set_rect(rect)
-            if text:
-                button_instance.set_text(text)
-            if text:
-                button_instance.set_align(align)
-
-            # Store the instance
+            # Create an instance using the manager
+            button_instance = self.button_manager.create_instance_from_data(button_info)
             self.scene_buttons[name] = button_instance
 
     def create_texts_from_dict(self):
@@ -262,7 +251,7 @@ class SceneBase(TemplateInstance):
 
         # Update each button in the scene
         for button in self.scene_buttons.values():
-            button.update(self.mouse_pos)
+            button.update()
 
         # Update each text in the scene
         for text in self.scene_texts:
@@ -276,7 +265,7 @@ class SceneBase(TemplateInstance):
 
         # Draw each button in the scene
         for button in self.scene_buttons.values():
-            button.draw(self.screen)
+            button.draw()
 
         # Draw each text in the scene
         for text in self.scene_texts:
