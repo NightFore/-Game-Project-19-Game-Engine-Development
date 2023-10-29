@@ -41,8 +41,8 @@ DICT_RESOURCES = {
                 "quit_game": {"graphic": "default_button", "rect": (10, 10, 50, 50), "text": "X"},
             },
             "texts": [
-                {"model": "liberation_serif", "position": (600, 300), "text": "Hello World!"},
-                {"model": "liberation_serif", "position": (600, 360), "align": "nw", "color": (0, 0, 0), "text": "Hello World 2!"},
+                {"font": "liberation_serif", "position": (600, 300), "text": "Hello World!"},
+                {"font": "liberation_serif", "position": (600, 360), "text": "Hello World 2!", "color": (0, 0, 0), "size": 20, "align": "nw"},
             ],
         },
         "GameScene": {
@@ -88,9 +88,9 @@ DICT_SCENES = {
                 "text": "X"},
         },
         "texts": [
-            {"model": "liberation_serif", "position": (600, 300),
+            {"font": "liberation_serif", "position": (600, 300),
              "text": "Hello World!"},
-            {"model": "liberation_serif", "position": (600, 360), "align": "nw", "color": (0, 0, 0),
+            {"font": "liberation_serif", "position": (600, 360), "align": "nw", "color": (0, 0, 0),
              "text": "Hello World 2!"},
         ],
     },

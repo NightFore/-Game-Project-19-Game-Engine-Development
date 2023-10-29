@@ -41,7 +41,7 @@ class TextManager:
         - create_text_instance
         - clear_texts
     """
-    def create_text_instance(self, template_name):
+    def create_text(self, template_name):
         """
         Create a text instance.
 

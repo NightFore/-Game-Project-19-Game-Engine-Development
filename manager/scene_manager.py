@@ -74,6 +74,8 @@ class SceneManager(TemplateManager):
                         if self.resources is not None and self.managers is not None:
                             # Configure the scene with scene parameters and managers
                             scene_instance.set_scene_settings(self.managers, self.resources)
+                        else:
+                            raise ValueError("Scene parameters and managers must be loaded before configuring scenes.")
 
                         # Add the scene to the SceneManager
                         self.instances[name] = scene_instance
@@ -104,11 +106,10 @@ class SceneManager(TemplateManager):
             # Enter the new scene
             self.current_scene.enter()
             self.create_buttons_from_dict(scene_name)
-
+            # self.create_texts_from_dict(scene_name)
 
     def create_buttons_from_dict(self, scene_name):
         """
-        Create buttons based on button information retrieved from the scene_params.
         """
         buttons_dict = self.resources[scene_name].get("buttons", {})
         for name, button_info in buttons_dict.items():
@@ -116,41 +117,52 @@ class SceneManager(TemplateManager):
             button_instance = self.button_manager.create_button()
 
             #
-            graphic = self.graphic_manager.create_resource_instance(button_info["graphic"])
-            button_instance.set_graphic(graphic)
-            button_instance.set_rect(button_info["rect"])
+            graphic = button_info["graphic"]
+            rect = button_info["rect"]
+            text = button_info.get("text", None)
+            align = button_info.get("align", None)
 
             #
-            if "text" in button_info:
-                button_instance.set_text(button_info["text"])
-            if "align" in button_info:
-                button_instance.set_align(button_info["align"])
+            graphic_instance = self.graphic_manager.create_resource_instance(graphic)
+            button_instance.set_graphic(graphic_instance)
+            button_instance.set_rect(rect)
+            if text:
+                button_instance.set_text(text)
+            if text:
+                button_instance.set_align(align)
 
             # Store the instance
-            self.instances[scene_name].scene_buttons[name] = button_instance
-
+            self.current_scene.scene_buttons[name] = button_instance
 
     def create_texts_from_dict(self, scene_name):
+        """
+        """
         texts_dict = self.resources[scene_name].get("texts", {})
         for text_info in texts_dict:
             # Create an instance
-            text_instance = self.text_manager.create_text_instance()
+            text_instance = self.text_manager.create_text()
 
             #
-            text_instance.set_model(text_info["model"])
-            text_instance.set_position(text_info["position"])
-            text_instance.set_text(text_info["text"])
+            pos = text_info["pos"]
+            text = text_info["text"]
+            text_font = text_info["font"]
+            text_size = text_info.get("size", None)
+            text_color = text_info("color", None)
+            align = text_info.get("align", None)
 
             #
-            if "color" in text_info:
-                text_instance.set_color(text_info["color"])
-            if "size" in text_info:
-                text_instance.set_size(text_info["size"])
-            if "align" in text_info:
-                text_instance.set_align(text_info["align"])
+            text_instance.set_pos(pos)
+            text_instance.set_text(text)
+            text_instance.set_text_font(text_font)
+            if text_size:
+                text_instance.set_text_size(text_size)
+            if text_color:
+                text_instance.set_text_color(text_color)
+            if align:
+                text_instance.set_align(align)
 
             # Store the instance
-            self.instances[scene_name].append(text_instance)
+            self.current_scene.scene_texts.append(text_instance)
 
 
     """

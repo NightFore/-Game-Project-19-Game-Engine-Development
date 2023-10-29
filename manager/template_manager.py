@@ -114,8 +114,9 @@ class TemplateInstance:
 
         # Text attributes
         self.text = data.get("text", None)
-        self.text_font = data.get("text_font", None)
-        self.text_color = data.get("text_color", None)
+        self.text_font = data.get("font", None)
+        self.text_size = data.get("size", None)
+        self.text_color = data.get("color", None)
         self.text_rect = None
         self.text_surface = None
 
@@ -171,8 +172,12 @@ class TemplateInstance:
         self.text = text
         self.update_text()
 
-    def set_font(self, text_font):
+    def set_text_font(self, text_font):
         self.text_font = text_font
+        self.update_text()
+
+    def set_text_size(self, text_size):
+        self.text_size = text_size
         self.update_text()
 
     def set_text_color(self, text_color):
