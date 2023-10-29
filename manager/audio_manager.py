@@ -39,10 +39,8 @@ class AudioManager(TemplateManager):
         # Initialize the manager as a subclass of TemplateManager
         super().__init__()
 
-        # Initialize dictionaries to store managers, resources and instances
-        self.managers = {}
+        # Initialize dictionaries
         self.resources = {}
-        self.instances = {}
 
         # Define resource types to load for this manager
         self.resource_types_to_load = ["music", "sound"]

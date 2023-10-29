@@ -11,7 +11,7 @@ class GraphicManager(TemplateManager):
         # Initialize the manager as a subclass of TemplateManager
         super().__init__()
 
-        # Initialize dictionaries to store managers, resources and instances
+        # Initialize dictionaries
         self.managers = {}
         self.resources = {}
         self.instances = {}
@@ -21,9 +21,6 @@ class GraphicManager(TemplateManager):
 
         # Define resource types to load for this manager
         self.resource_types_to_load = ["image", "image_sequence", "interface", "button"]
-
-        # Initialize manager-related attributes
-        self.manager_specific_attribute = None
 
 
 

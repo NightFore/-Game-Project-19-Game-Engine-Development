@@ -7,11 +7,11 @@ DICT_RESOURCES = {
     "sound": {
         "debug_sound": {"filename": "debug_audio_sound.wav"},
     },
-    "image": {
-        "default_single": {"filename": "debug_graphic_manager_single.png"},
-    },
     "font": {
         "liberation_serif": {"filename": "LiberationSerif-Regular.ttf", "size": 24, "color": (255, 255, 255)},
+    },
+    "image": {
+        "default_single": {"filename": "debug_graphic_manager_single.png"},
     },
     "image_sequence": {
         "default_sequence": {

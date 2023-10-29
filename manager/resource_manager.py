@@ -2,8 +2,9 @@
 
 import pygame
 from os import path
+from manager.template_manager import TemplateManager, TemplateInstance
 
-class ResourceManager:
+class ResourceManager(TemplateManager):
     """
     ResourceManager manages the loading and storage of various game resources.
 
@@ -81,6 +82,10 @@ class ResourceManager:
     }
 
     def __init__(self):
+        # Initialize the manager as a subclass of TemplateManager
+        super().__init__()
+
+        # Initialize manager-related attributes
         self.resources = {resource_type: {} for resource_type in self.RESOURCE_MAPPING}
 
 

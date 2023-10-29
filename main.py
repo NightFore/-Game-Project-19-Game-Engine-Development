@@ -8,8 +8,8 @@ from manager.audio_manager import AudioManager
 from manager.button_manager import ButtonManager
 from manager.graphic_manager import GraphicManager
 from manager.resource_manager import ResourceManager
-from manager.text_manager import TextManager
 from manager.scene_manager import SceneManager
+from manager.text_manager import TextManager
 from manager.window_manager import WindowManager
 
 from data.constant_data import PROJECT_TITLE, SCREEN_SIZE, FPS
