@@ -15,14 +15,14 @@ class MainMenuScene(SceneBase):
     def exit(self):
         super().exit()
 
-    def update(self, dt):
+    def update(self):
         super().update()
         self.update_buttons()
-        self.update_graphics(dt)
+        self.update_graphics(self.dt)
 
-    def draw(self, screen):
+    def draw(self):
         super().draw()
-        self.draw_graphics(screen)
+        self.draw_graphics(self.screen)
 
 
     """

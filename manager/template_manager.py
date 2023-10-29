@@ -3,12 +3,29 @@
 class TemplateManager:
     """
     TemplateManager manages resources and their instances in the game.
+
+    Attributes:
+        managers (dict): A dictionary containing game managers.
+        resources (dict): A dictionary containing loaded resources.
+        instances (dict): A dictionary containing resource instances.
+        instance_class: The class used to create resource instances.
+        resource_types_to_load (list): A list of resource types to load for this manager.
+        manager_specific_attribute: An attribute specific to this manager.
+
+    Methods:
+    - Setup
+        - set_managers(managers: dict): Load and set game managers.
+        - set_resources(): Load resources of specified types and store them in the resources dictionary.
+
+    - Management
+        - create_resource_instance(template_name: str): Create a resource instance from a template.
+        - clear_resources(): Clear all resource instances.
     """
     def __init__(self):
         # Initialize the manager as a subclass of TemplateManager
         super().__init__()
 
-        # Initialize dictionaries to store resources and instances
+        # Initialize dictionaries to store managers, resources and instances
         self.managers = {}
         self.resources = {}
         self.instances = {}
@@ -89,6 +106,37 @@ class TemplateManager:
 class TemplateInstance:
     """
     TemplateInstance class for managing instances of resources.
+
+    Attributes:
+        data (dict): Input data for this instance.
+        managers (dict): A dictionary containing game managers.
+        mouse_pos: The current mouse position.
+        screen: The game display surface.
+        dt (float): Time since the last frame update.
+        time_elapsed (float): Time elapsed since instance creation.
+
+    Methods:
+    - Rect Management
+        - set_position(pos: tuple): Set the position of the instance.
+        - set_size(size: tuple): Set the size of the instance.
+        - set_rect(rect: tuple): Set the bounding rectangle of the instance.
+        - set_align(align: str): Set the alignment of the instance within its bounding rectangle.
+        - update_rect(): Update the instance's bounding rectangle.
+
+    - Text Management
+        - set_text(text: str): Set the text associated with the instance.
+        - set_text_font(text_font): Set the font used for rendering text.
+        - set_text_size(text_size: int): Set the size of the text.
+        - set_text_color(text_color: tuple): Set the color of the text.
+        - update_text(): Update the rendered text.
+
+    - Graphic Management
+        - set_graphic(graphic): Set the graphic resource associated with the instance.
+        - update_graphic(): Update the graphic resource.
+
+    - Render
+        - update(): Update the instance.
+        - draw(): Draw the instance.
     """
     def __init__(self, data, managers):
         # Store the input data for this instance.
@@ -123,13 +171,21 @@ class TemplateInstance:
         # Graphic attribute
         self.graphic = data.get("graphic", None)
 
-        # Time attributes
+        # Game attributes
+        self.mouse_pos = self.game_manager.mouse_pos
+        self.screen = self.game_manager.gameDisplay
         self.dt = self.game_manager.dt
         self.time_elapsed = 0
 
-        # Screen attribute
-        self.screen = self.game_manager.gameDisplay
 
+    """
+    Rect Management
+        - set_position
+        - set_size
+        - set_rect
+        - set_align
+        - update_rect
+    """
     def set_position(self, pos):
         self.pos = pos
         self.rect[0], self.rect[1] = pos
@@ -168,6 +224,22 @@ class TemplateInstance:
             self.rect.midleft = self.pos
         self.update_rect()
 
+    def update_rect(self):
+        if self.text:
+            self.text_rect.center = self.rect.center
+        if self.graphic:
+            self.graphic.update_rect()
+            self.graphic.update_text()
+
+
+    """
+    Text Management
+        - set_text
+        - set_text_font
+        - set_text_size
+        - set_text_color
+        - update_text
+    """
     def set_text(self, text):
         self.text = text
         self.update_text()
@@ -184,23 +256,33 @@ class TemplateInstance:
         self.text_color = text_color
         self.update_text()
 
-    def set_graphic(self, graphic):
-        self.graphic = graphic
-
-    def update_rect(self):
-        if self.text:
-            self.text_rect.center = self.rect.center
-        if self.graphic:
-            self.graphic.update_rect()
-            self.graphic.update_text()
-
     def update_text(self):
         if self.text:
             self.text_surface = self.text_font.render(self.text, True, self.text_color)
             self.text_rect = self.text_surface.get_rect()
             self.text_rect.center = self.rect.center
 
+
+    """
+    Graphic Management
+        - set_graphic
+        - update_graphic
+    """
+    def set_graphic(self, graphic):
+        self.graphic = graphic
+        self.update_graphic()
+
+    def update_graphic(self):
+        pass
+
+
+    """
+    Render
+        - update
+        - draw
+    """
     def update(self):
+        self.mouse_pos = self.game_manager.mouse_pos
         self.dt = self.game_manager.dt
         self.time_elapsed += self.dt
 

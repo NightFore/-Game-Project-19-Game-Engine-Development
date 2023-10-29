@@ -39,7 +39,7 @@ class AudioManager(TemplateManager):
         # Initialize the manager as a subclass of TemplateManager
         super().__init__()
 
-        # Initialize dictionaries to store resources and instances
+        # Initialize dictionaries to store managers, resources and instances
         self.managers = {}
         self.resources = {}
         self.instances = {}

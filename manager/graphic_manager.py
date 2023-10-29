@@ -11,7 +11,7 @@ class GraphicManager(TemplateManager):
         # Initialize the manager as a subclass of TemplateManager
         super().__init__()
 
-        # Initialize dictionaries to store resources and instances
+        # Initialize dictionaries to store managers, resources and instances
         self.managers = {}
         self.resources = {}
         self.instances = {}
@@ -54,8 +54,9 @@ class GraphicInstance(TemplateInstance):
             time_elapsed (int): The time elapsed since the last update.
 
     Methods:
-        - update(): Update the graphic instance, including animations.
-        - draw(): Draw the graphic instance on the screen.
+    - Render
+        - update(): Update the graphic instance.
+        - draw(): Draw the graphic instance.
     """
     def __init__(self, data, managers):
         super().__init__(data, managers)
@@ -78,7 +79,15 @@ class GraphicInstance(TemplateInstance):
         self.color_border = self.color_data.get("border", None)
         self.color = self.color_inactive
 
+    """
+    Render
+        - update
+        - draw
+    """
     def update(self):
+        """
+        Update the graphic instance
+        """
         super().update()
 
         # Check if there is an image sequence to animate
@@ -90,6 +99,9 @@ class GraphicInstance(TemplateInstance):
                 self.image = self.images[self.current_image]
 
     def draw(self):
+        """
+        Draw the graphic instance.
+        """
         super().draw()
 
         # Draw a colored rectangle if color is defined

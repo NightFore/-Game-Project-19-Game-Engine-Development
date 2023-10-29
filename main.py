@@ -240,10 +240,7 @@ class Game:
         self.total_play_time += self.dt
 
         # Update game components
-        self.button_manager.update(self.mouse_pos)
-        self.scene_manager.update(self.dt)
-
-        # Update the window
+        self.scene_manager.update()
         self.window_manager.update(self.clock.get_fps())
 
     def draw(self):
@@ -252,10 +249,7 @@ class Game:
         pygame.draw.rect(self.gameDisplay, (255, 0, 0), (100, 100, 200, 150))
 
         # Draw the game scene
-        self.button_manager.draw(self.gameDisplay)
-        self.scene_manager.draw(self.gameDisplay)
-
-        # Draw the window
+        self.scene_manager.draw()
         self.window_manager.draw()
 
     def quit_game(self):

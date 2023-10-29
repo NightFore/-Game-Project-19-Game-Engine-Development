@@ -10,7 +10,7 @@ class GameScene(SceneBase):
     def exit(self):
         super().exit()
 
-    def update(self, dt):
+    def update(self):
         super().update()
 
         # Return to the Main Menu
@@ -21,5 +21,5 @@ class GameScene(SceneBase):
         if self.scene_buttons["click_me"].clicked_and_released:
             print("Hello World")
 
-    def draw(self, screen):
+    def draw(self):
         super().draw()

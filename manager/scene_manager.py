@@ -27,7 +27,7 @@ class SceneManager(TemplateManager):
         # Initialize the manager as a subclass of TemplateManager
         super().__init__()
 
-        # Initialize dictionaries to store resources and instances
+        # Initialize dictionaries to store managers, resources and instances
         self.managers = {}
         self.resources = {}
         self.instances = {}
@@ -163,25 +163,19 @@ class SceneManager(TemplateManager):
         - update
         - draw
     """
-    def update(self, dt):
+    def update(self):
         """
         Update the current scene and buttons.
-
-        Args:
-            dt (float): Time since last update.
         """
         if self.current_scene:
-            self.current_scene.update(dt)
+            self.current_scene.update()
 
-    def draw(self, screen):
+    def draw(self):
         """
         Draw the current scene and buttons on the screen.
-
-        Args:
-            screen (pygame.Surface): The screen to draw on.
         """
         if self.current_scene:
-            self.current_scene.draw(screen)
+            self.current_scene.draw()
 
 
 
@@ -221,7 +215,7 @@ class SceneBase(TemplateInstance):
         """
         Called when entering the scene.
         """
-        pass
+        self.screen = self.game_manager.gameDisplay
 
     def exit(self):
         """
@@ -232,10 +226,21 @@ class SceneBase(TemplateInstance):
         """
         Update the scene.
         """
-        pass
+        self.dt = self.game_manager.dt
+        self.mouse_pos = self.game_manager.mouse_pos
+        for button in self.scene_buttons.values():
+            button.update(self.mouse_pos)
+
+        for text in self.scene_texts:
+            text.update()
 
     def draw(self):
         """
         Draw the scene.
         """
-        pass
+        screen = self.game_manager.gameDisplay
+        for button in self.scene_buttons.values():
+            button.draw(screen)
+
+        for text in self.scene_texts:
+            text.draw()

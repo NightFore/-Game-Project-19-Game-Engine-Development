@@ -12,7 +12,7 @@ class SettingsScene(SceneBase):
     def exit(self):
         super().exit()
 
-    def update(self, dt):
+    def update(self):
         super().update()
 
         # Return to MainMenuScene
@@ -31,5 +31,5 @@ class SettingsScene(SceneBase):
         if self.scene_buttons["fullscreen"].clicked_and_released:
             self.window_manager.toggle_fullscreen()
 
-    def draw(self, screen):
+    def draw(self):
         super().draw()
