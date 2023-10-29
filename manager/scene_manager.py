@@ -1,6 +1,5 @@
 # scene_manager.py
 
-import pygame
 import os
 import inspect
 import importlib
@@ -8,6 +7,7 @@ from manager.template_manager import TemplateManager, TemplateInstance
 
 class SceneManager(TemplateManager):
     """
+    SceneManager manages game scenes.
 
     Attributes:
         current_scene (SceneBase): The currently active game scene.
@@ -20,8 +20,8 @@ class SceneManager(TemplateManager):
         - set_scene(scene_name): Set the currently active game scene.
 
     - Render
-        - update(dt): Update the current scene and buttons.
-        - draw(screen): Draw the current scene and buttons on the screen.
+        - update(): Update the current scene and buttons.
+        - draw(): Draw the current scene and buttons on the screen.
     """
     def __init__(self):
         # Initialize the manager as a subclass of TemplateManager
@@ -91,71 +91,13 @@ class SceneManager(TemplateManager):
             if self.current_scene:
                 # Exit the current scene
                 self.current_scene.exit()
-                self.button_manager.clear_buttons()
 
             # Set the current scene to the specified scene
             self.current_scene = self.instances[scene_name]
 
             # Enter the new scene
             self.current_scene.enter()
-            self.create_buttons_from_dict(scene_name)
-            # self.create_texts_from_dict(scene_name)
 
-    def create_buttons_from_dict(self, scene_name):
-        """
-        """
-        buttons_dict = self.resources[scene_name].get("buttons", {})
-        for name, button_info in buttons_dict.items():
-            # Create an instance
-            button_instance = self.button_manager.create_button()
-
-            #
-            graphic = button_info["graphic"]
-            rect = button_info["rect"]
-            text = button_info.get("text", None)
-            align = button_info.get("align", None)
-
-            #
-            graphic_instance = self.graphic_manager.create_resource_instance(graphic)
-            button_instance.set_graphic(graphic_instance)
-            button_instance.set_rect(rect)
-            if text:
-                button_instance.set_text(text)
-            if text:
-                button_instance.set_align(align)
-
-            # Store the instance
-            self.current_scene.scene_buttons[name] = button_instance
-
-    def create_texts_from_dict(self, scene_name):
-        """
-        """
-        texts_dict = self.resources[scene_name].get("texts", {})
-        for text_info in texts_dict:
-            # Create an instance
-            text_instance = self.text_manager.create_text()
-
-            #
-            pos = text_info["pos"]
-            text = text_info["text"]
-            text_font = text_info["font"]
-            text_size = text_info.get("size", None)
-            text_color = text_info("color", None)
-            align = text_info.get("align", None)
-
-            #
-            text_instance.set_pos(pos)
-            text_instance.set_text(text)
-            text_instance.set_text_font(text_font)
-            if text_size:
-                text_instance.set_text_size(text_size)
-            if text_color:
-                text_instance.set_text_color(text_color)
-            if align:
-                text_instance.set_align(align)
-
-            # Store the instance
-            self.current_scene.scene_texts.append(text_instance)
 
 
     """
@@ -189,6 +131,11 @@ class SceneBase(TemplateInstance):
         scene_texts (dict): A dictionary containing texts in the scene.
 
     Methods:
+    - Management
+        - set_scene(scene_name): Set the currently active game scene.
+        - create_buttons_from_dict(scene_name): Create buttons for the specified scene based on a dictionary of button data.
+        - create_texts_from_dict(scene_name): Create text instances for the specified scene based on a dictionary of text data.
+
     - Lifecycle
         - enter: Called when entering the scene.
         - exit: Called when exiting the scene.
@@ -198,10 +145,79 @@ class SceneBase(TemplateInstance):
     def __init__(self, data, managers):
         """
         Initialize the SceneBase.
+
+        Args:
+            data (dict): Data for initializing the scene.
+            managers (dict): A dictionary containing game managers.
         """
         super().__init__(data, managers)
+        self.scene_name = self.__class__.__name__
         self.scene_buttons = {}
         self.scene_texts = []
+
+
+    """
+    Management
+        - create_buttons_from_dict
+        - create_texts_from_dict
+    """
+    def create_buttons_from_dict(self):
+        """
+        Create buttons for the specified scene based on a dictionary of button data.
+        """
+        buttons_dict = self.data[self.scene_name].get("buttons", {})
+        for name, button_info in buttons_dict.items():
+            # Create an instance
+            button_instance = self.button_manager.create_button()
+
+            # Extract information
+            graphic = button_info["graphic"]
+            rect = button_info["rect"]
+            text = button_info.get("text", None)
+            align = button_info.get("align", None)
+
+            # Set properties
+            graphic_instance = self.graphic_manager.create_resource_instance(graphic)
+            button_instance.set_graphic(graphic_instance)
+            button_instance.set_rect(rect)
+            if text:
+                button_instance.set_text(text)
+            if text:
+                button_instance.set_align(align)
+
+            # Store the instance
+            self.scene_buttons[name] = button_instance
+
+    def create_texts_from_dict(self):
+        """
+        Create text instances for the specified scene based on a dictionary of text data.
+        """
+        texts_dict = self.data[self.scene_name].get("texts", {})
+        for text_info in texts_dict:
+            # Create an instance
+            text_instance = self.text_manager.create_text()
+
+            # Extract information
+            pos = text_info["pos"]
+            text = text_info["text"]
+            text_font = text_info["font"]
+            text_size = text_info.get("size", None)
+            text_color = text_info("color", None)
+            align = text_info.get("align", None)
+
+            # Set properties
+            text_instance.set_pos(pos)
+            text_instance.set_text(text)
+            text_instance.set_text_font(text_font)
+            if text_size:
+                text_instance.set_text_size(text_size)
+            if text_color:
+                text_instance.set_text_color(text_color)
+            if align:
+                text_instance.set_align(align)
+
+            # Store the instance
+            self.scene_texts.append(text_instance)
 
 
     """
@@ -215,22 +231,26 @@ class SceneBase(TemplateInstance):
         """
         Called when entering the scene.
         """
-        self.screen = self.game_manager.gameDisplay
+        self.create_buttons_from_dict()
+        # self.create_texts_from_dict()
 
     def exit(self):
         """
         Called when exiting the scene.
         """
+        self.button_manager.clear_buttons()
 
     def update(self):
         """
         Update the scene.
         """
-        self.dt = self.game_manager.dt
-        self.mouse_pos = self.game_manager.mouse_pos
+        super().update()
+
+        # Update each button in the scene
         for button in self.scene_buttons.values():
             button.update(self.mouse_pos)
 
+        # Update each text in the scene
         for text in self.scene_texts:
             text.update()
 
@@ -238,9 +258,12 @@ class SceneBase(TemplateInstance):
         """
         Draw the scene.
         """
-        screen = self.game_manager.gameDisplay
-        for button in self.scene_buttons.values():
-            button.draw(screen)
+        super().draw()
 
+        # Draw each button in the scene
+        for button in self.scene_buttons.values():
+            button.draw(self.screen)
+
+        # Draw each text in the scene
         for text in self.scene_texts:
             text.draw()
