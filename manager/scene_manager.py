@@ -15,6 +15,7 @@ class SceneManager(TemplateManager):
     Methods:
     - Setup
         - load_scenes_from_directory(directory): Load game scenes from Python files in the specified directory and add them to the SceneManager.
+        - load_buttons_graphics(): Pre-load graphic instances for buttons in all scenes.
 
     - Management
         - set_scene(scene_name): Set the currently active game scene.
@@ -45,6 +46,7 @@ class SceneManager(TemplateManager):
     """
     Setup
         - load_scenes_from_directory
+        - load_buttons_graphics
     """
     def load_scenes_from_directory(self, directory):
         """
@@ -72,6 +74,19 @@ class SceneManager(TemplateManager):
 
                         # Add the scene to the SceneManager
                         self.instances[name] = scene_instance
+
+    def load_buttons_graphics(self):
+        """
+        Pre-load graphic instances for buttons in all scenes.
+        """
+        for scene_name, scene_data in self.resources.items():
+            buttons_data = scene_data.get("buttons", {})
+
+            for button_name, button_info in buttons_data.items():
+                graphic_name = button_info.get("graphic")
+                if graphic_name:
+                    graphic_instance = self.graphic_manager.create_resource_instance(graphic_name)
+                    button_info["graphic"] = graphic_instance
 
 
     """
@@ -177,8 +192,7 @@ class SceneBase(TemplateInstance):
             align = button_info.get("align", None)
 
             # Set properties
-            graphic_instance = self.graphic_manager.create_resource_instance(graphic)
-            button_instance.set_graphic(graphic_instance)
+            button_instance.set_graphic(graphic)
             button_instance.set_rect(rect)
             if text:
                 button_instance.set_text(text)
