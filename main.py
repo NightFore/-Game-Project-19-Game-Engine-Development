@@ -6,7 +6,7 @@ from os import path
 
 from manager.audio_manager import AudioManager
 from manager.button_manager import ButtonManager
-from manager.graphic_manager_new import GraphicManager
+from manager.graphic_manager import GraphicManager
 from manager.resource_manager import ResourceManager
 from manager.text_manager import TextManager
 from manager.scene_manager import SceneManager

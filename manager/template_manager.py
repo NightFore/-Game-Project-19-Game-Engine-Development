@@ -24,7 +24,8 @@ class TemplateManager:
 
     """
     Setup
-        - load_resources
+        - set_managers
+        - set_resources
     """
     def set_managers(self, managers):
         """
@@ -117,7 +118,7 @@ class TemplateInstance:
         self.text_rect = None
         self.text_surface = None
 
-        # Graphic attributes
+        # Graphic attribute
         self.graphic = data.get("graphic", None)
 
         # Time attributes
@@ -184,17 +185,14 @@ class TemplateInstance:
         if self.text:
             self.text_rect.center = self.rect.center
         if self.graphic:
-            self.update_graphic()
+            self.graphic.update_rect()
+            self.graphic.update_text()
 
     def update_text(self):
         if self.text:
             self.text_surface = self.text_font.render(self.text, True, self.text_color)
             self.text_rect = self.text_surface.get_rect()
             self.text_rect.center = self.rect.center
-
-    def update_graphic(self):
-        self.graphic.update_rect()
-        self.graphic.update_text()
 
     def update(self):
         self.dt = self.game_manager.dt
