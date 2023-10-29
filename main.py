@@ -13,7 +13,7 @@ from manager.scene_manager import SceneManager
 from manager.window_manager import WindowManager
 
 from data.constant_data import PROJECT_TITLE, SCREEN_SIZE, FPS
-from data.resource_data import DICT_RESOURCES, DICT_SCENES
+from data.resource_data import DICT_RESOURCES
 
 class GameManager:
     """
@@ -36,7 +36,6 @@ class GameManager:
     - Setup:
         - setup_game: Initialize the game's setup, including folders, dictionaries, managers, and display.
         - setup_folders: Define the game's folder paths
-        - setup_dict: Load game dictionaries.
         - setup_managers: Create game managers.
         - setup_display: Configure game display settings.
         - setup_managers_settings: Configure game managers and their settings.
@@ -77,7 +76,6 @@ class GameManager:
     Setup
         - setup_game
         - setup_folders
-        - setup_dict
         - setup_managers
         - setup_display
         - setup_managers_settings
@@ -89,7 +87,6 @@ class GameManager:
         Initial setup for the game.
         """
         self.setup_folders()
-        self.setup_dict()
         self.setup_managers()
         self.setup_display()
         self.setup_managers_settings()
@@ -119,13 +116,6 @@ class GameManager:
             "image": self.graphic_folder,
             "image_sequence": self.graphic_folder,
         }
-
-    def setup_dict(self):
-        """
-        Load game dictionaries.
-        """
-        self.resources_dict = DICT_RESOURCES
-        self.scenes_dict = DICT_SCENES
 
     def setup_managers(self):
         """
@@ -175,6 +165,7 @@ class GameManager:
         Load and assign resources to managers.
         """
         # Load resources from the resources dictionary
+        self.resources_dict = DICT_RESOURCES
         self.resource_manager.load_resources(self.resources_dict)
 
         # Set resources for each managers
