@@ -15,21 +15,22 @@ from manager.window_manager import WindowManager
 from data.constant_data import PROJECT_TITLE, SCREEN_SIZE, FPS
 from data.resource_data import DICT_RESOURCES, DICT_SCENES
 
-class Game:
+class GameManager:
     """
     The Game class manages the initialization, setup, loading, and execution of a game using the Pygame framework.
 
     Attributes:
-        total_play_time (float): The total play time of the game in seconds.
-        clock (pygame.time.Clock): The Pygame clock used for controlling the game's frame rate.
         playing (bool): A flag that indicates if the game is currently running.
         paused (bool): A flag that indicates if the game is in a paused state.
         debug_mode (bool): A flag that indicates if the game is running in debug mode.
+        clock (pygame.time.Clock): The Pygame clock used for controlling the game's frame rate.
+        dt (float): The time passed since the last frame update, in seconds.
+        total_play_time (float): The total play time of the game in seconds.
+        mouse_pos (tuple): The adjusted position of the mouse based on display_factor.
         project_title (str): The title of the game project.
         FPS (int): The desired frames per second for the game's execution.
         screen_size (tuple): The dimensions of the game window (width, height).
         gameDisplay (pygame.Surface): The Pygame surface representing the game's display window.
-        mouse_pos (tuple): The adjusted position of the mouse based on display_factor.
 
     Methods:
     - Setup:
@@ -258,6 +259,6 @@ class Game:
         pygame.quit()
         quit()
 
-game = Game()
+game = GameManager()
 while True:
     game.run()
