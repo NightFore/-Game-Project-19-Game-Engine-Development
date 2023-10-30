@@ -66,11 +66,7 @@ class ButtonInstance(TemplateInstance):
         self.clicked = False
         self.clicked_and_released = False
 
-        # Set the rect for the graphic and text instances
-        self.graphic_instance.set_rect(self.rect)
-        self.text_instance.set_rect(self.rect)
-        self.text_instance.set_text(self.text)
-
+        self.test = 0
 
     """
     Render
@@ -82,6 +78,8 @@ class ButtonInstance(TemplateInstance):
         Update the button.
         """
         super().update()
+
+
 
         # Check if the mouse is over the button.
         if self.rect.collidepoint(self.mouse_pos):

@@ -126,22 +126,23 @@ class TemplateInstance:
             - managers (dict): A dictionary containing game managers.
             - mouse_pos (tuple): The current mouse position.
             - screen (pygame.Surface): The game display surface.
-            - dt (float): The time elapsed since the last frame update.
+            - dt (float): Time since the last frame update.
             - time_elapsed (float): A time-tracking variable.
 
         - Rect Attributes:
             - pos (tuple): The position (x, y) of the instance.
             - size (tuple): The size (width, height) of the instance.
-            - rect (pygame.Rect): The rectangular area that defines the instance's position and size.
             - align (str): The alignment of the instance within its bounding rectangle.
 
         - Text Attributes:
             - text (str): The text associated with the instance.
-            - text_font (str): The name of the font resource associated with the text.
             - text_size (int): The size of the text.
-            - text_color (tuple): The color of the text.
-            - text_rect (pygame.Rect): The bounding rectangle for the rendered text.
-            - text_surface (pygame.Surface): The surface where the text is rendered.
+            - font_color (tuple): The color of the text.
+
+        - Resources Attributes:
+            - rect (pygame.Rect): The rectangular area that defines the instance's position and size.
+            - font (str): The name of the font resource associated with the text.
+            - graphic (str): The name of the graphic resource associated with the instance.
 
         - Instance Attributes:
             - graphic_instance: The graphic instance associated with the instance.
@@ -157,9 +158,9 @@ class TemplateInstance:
 
     - Text Management
         - set_text(text: str): Set the text associated with the instance.
-        - set_text_font(text_font): Set the font used for rendering text.
+        - set_font(font): Set the font used for rendering text.
         - set_text_size(text_size: int): Set the size of the text.
-        - set_text_color(text_color: tuple): Set the color of the text.
+        - set_font_color(font_color: tuple): Set the color of the text.
         - update_text(): Update the rendered text.
 
     - Graphic Management
@@ -191,17 +192,25 @@ class TemplateInstance:
         self.rect = instance_data.get("rect", None)
         self.align = instance_data.get("align", None)
 
+        if self.rect:
+            self.pos = self.rect[0], self.rect[1]
+            self.size = self.rect[2], self.rect[3]
+        if self.align:
+            self.set_align(self.align)
+
         # Text attributes
         self.text = instance_data.get("text", None)
-        self.text_font = instance_data.get("font", None)
-        self.text_size = instance_data.get("size", None)
-        self.text_color = instance_data.get("color", None)
-        self.text_rect = None
-        self.text_surface = None
+        self.text_instance = instance_data.get("text_instance", None)
 
-        # Instance attributes
+        if self.text_instance:
+            self.text_instance.set_rect(self.rect)
+            self.text_instance.set_text(self.text)
+
+        # Graphic attributes
         self.graphic_instance = instance_data.get("graphic_instance", None)
-        self.text_instance = instance_data.get("font_instance", None)
+
+        if self.graphic_instance:
+            self.graphic_instance.set_rect(self.rect)
 
         # Game attributes
         self.mouse_pos = self.game_manager.mouse_pos
@@ -209,25 +218,24 @@ class TemplateInstance:
         self.dt = self.game_manager.dt
         self.time_elapsed = 0
 
-        if self.align:
-            self.set_align(self.align)
-
 
     """
-    Rect Management
+    Management
         - set_position
         - set_size
         - set_rect
         - set_align
-        - update_rect
+        - set_text
     """
     def set_position(self, pos):
         self.pos = pos
-        self.rect[0], self.rect[1] = pos
+        if self.rect:
+            self.rect[0], self.rect[1] = self.pos
 
     def set_size(self, size):
         self.size = size
-        self.rect[2], self.rect[3] = size
+        if self.rect:
+            self.rect[2], self.rect[3] = self.size
 
     def set_rect(self, rect):
         self.rect = rect
@@ -237,67 +245,30 @@ class TemplateInstance:
     def set_align(self, align):
         self.align = align
         if self.align == "center":
-            self.rect.center = self.rect[0], self.rect[1]
+            self.rect.center = self.pos
         if self.align == "nw":
-            self.rect.topleft = self.rect[0], self.rect[1]
+            self.rect.topleft = self.pos
         if self.align == "ne":
-            self.rect.topright = self.rect[0], self.rect[1]
+            self.rect.topright = self.pos
         if self.align == "sw":
-            self.rect.bottomleft = self.rect[0], self.rect[1]
+            self.rect.bottomleft = self.pos
         if self.align == "se":
-            self.rect.bottomright = self.rect[0], self.rect[1]
+            self.rect.bottomright = self.pos
         if self.align == "n":
-            self.rect.midtop = self.rect[0], self.rect[1]
+            self.rect.midtop = self.pos
         if self.align == "s":
-            self.rect.midbottom = self.rect[0], self.rect[1]
+            self.rect.midbottom = self.pos
         if self.align == "e":
-            self.rect.midright = self.rect[0], self.rect[1]
+            self.rect.midright = self.pos
         if self.align == "w":
-            self.rect.midleft = self.rect[0], self.rect[1]
+            self.rect.midleft = self.pos
 
-
-    """
-    Text Management
-        - set_text
-        - set_text_font
-        - set_text_size
-        - set_text_color
-        - update_text
-    """
     def set_text(self, text):
         self.text = text
-        self.update_text()
 
-    def set_text_font(self, text_font):
-        self.text_font = text_font
-        self.update_text()
+        if self.text_instance:
+            self.text_instance.set_text(text)
 
-    def set_text_size(self, text_size):
-        self.text_size = text_size
-        self.update_text()
-
-    def set_text_color(self, text_color):
-        self.text_color = text_color
-        self.update_text()
-
-    def update_text(self):
-        if self.text:
-            self.text_surface = self.text_font.render(self.text, True, self.text_color)
-            self.text_rect = self.text_surface.get_rect()
-            self.text_rect.center = self.rect.center
-
-
-    """
-    Graphic Management
-        - set_graphic
-        - update_graphic
-    """
-    def set_graphic(self, graphic):
-        self.graphic_instance = graphic
-        self.update_graphic()
-
-    def update_graphic(self):
-        pass
 
 
     """

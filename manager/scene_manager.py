@@ -84,15 +84,15 @@ class SceneManager(TemplateManager):
             buttons_data = scene_data.get("buttons", {})
 
             for button_name, button_info in buttons_data.items():
-                graphic_name = button_info.get("graphic")
+                graphic_name = button_info.get("graphic_name")
                 if graphic_name:
                     graphic_instance = self.graphic_manager.create_resource_instance(graphic_name)
                     button_info["graphic_instance"] = graphic_instance
 
-                font_name = button_info.get("font")
+                font_name = button_info.get("font_name")
                 if font_name:
-                    font_instance = self.text_manager.create_resource_instance(font_name)
-                    button_info["font_instance"] = font_instance
+                    text_instance = self.text_manager.create_resource_instance(font_name)
+                    button_info["text_instance"] = text_instance
 
                 rect_data = button_info.get("rect")
                 if rect_data:
@@ -247,7 +247,7 @@ class SceneBase(TemplateInstance):
         """
         Called when exiting the scene.
         """
-        self.button_manager.clear_buttons()
+        self.button_manager.clear_resources()
 
     def update(self):
         """

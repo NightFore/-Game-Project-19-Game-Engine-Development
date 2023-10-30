@@ -41,6 +41,18 @@ class TextInstance(TemplateInstance):
     def __init__(self, data, managers):
         super().__init__(data, managers)
 
+        self.font = data.get("font", None)
+        self.font_size = data.get("size", None)
+        self.font_color = data.get("color", None)
+
+    def set_text(self, text):
+        self.text = str(text)
+        self.text_surface = self.font.render(self.text, True, self.font_color)
+        self.text_rect = self.text_surface.get_rect()
+        self.text_rect.center = self.rect.center
+
+
+
     """
     Render
         - update
@@ -51,10 +63,6 @@ class TextInstance(TemplateInstance):
         Update the text instance
         """
         super().update()
-
-        self.text_surface = self.text_font.render(self.text, True, self.text_color)
-        self.text_rect = self.text_surface.get_rect()
-        self.text_rect.center = self.rect.center
 
     def draw(self):
         """
