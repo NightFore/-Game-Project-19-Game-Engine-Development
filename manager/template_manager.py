@@ -1,5 +1,7 @@
 # template_manager.py
 
+import pygame
+
 class TemplateManager:
     """
     TemplateManager manages resources and their instances in the game.
@@ -140,8 +142,8 @@ class TemplateInstance:
             - graphic_instance: The graphic instance associated with the instance.
 
         - Game Attributes:
-            - mouse_pos (tuple): The current mouse position.
             - screen (pygame.Surface): The game display surface.
+            - mouse_pos (tuple): The current mouse position.
             - dt (float): Time since the last frame update.
             - time_elapsed (float): A time-tracking variable.
 
@@ -183,38 +185,23 @@ class TemplateInstance:
         self.text_manager = self.managers["text_manager"]
         self.window_manager = self.managers["window_manager"]
 
-        # Rect attributes
         self.pos = instance_data.get("pos", None)
         self.size = instance_data.get("size", None)
         self.rect = instance_data.get("rect", None)
-        self.align = instance_data.get("align", None)
-
-        if self.rect:
-            self.rect = self.rect.copy()
-            self.pos = self.rect[0], self.rect[1]
-            self.size = self.rect[2], self.rect[3]
-        if self.align:
-            self.set_align(self.align)
-
-        # Text attributes
         self.text = instance_data.get("text", None)
+        self.align = instance_data.get("align", None)
+        self.graphic_instance = instance_data.get("graphic_instance", None)
         self.text_instance = instance_data.get("text_instance", None)
 
-        if self.text_instance:
-            self.text_instance.set_rect(self.rect)
-            self.text_instance.set_text(self.text)
-
-        # Graphic attributes
-        self.graphic_instance = instance_data.get("graphic_instance", None)
-
-        if self.graphic_instance:
-            self.graphic_instance.set_rect(self.rect)
-
         # Game attributes
-        self.mouse_pos = self.game_manager.mouse_pos
         self.screen = self.game_manager.gameDisplay
+        self.mouse_pos = self.game_manager.mouse_pos
         self.dt = self.game_manager.dt
         self.time_elapsed = 0
+
+        if self.rect:
+            self.set_rect(self.rect.copy())
+            self.update_rect()
 
 
     """
@@ -223,22 +210,25 @@ class TemplateInstance:
         - set_size
         - set_rect
         - set_align
-        - set_text
     """
-    def set_position(self, pos):
-        self.pos = pos
-        if self.rect:
-            self.rect[0], self.rect[1] = self.pos
+    def set_pos(self, pos):
+        self.pos = self.rect[0], self.rect[1] = pos
+        self.update_rect()
 
     def set_size(self, size):
-        self.size = size
-        if self.rect:
-            self.rect[2], self.rect[3] = self.size
+        self.size = self.rect[2], self.rect[3] = size
+        self.update_rect()
 
     def set_rect(self, rect):
-        self.rect = rect
+        self.rect = pygame.Rect(rect)
         self.pos = self.rect[0], self.rect[1]
         self.size = self.rect[2], self.rect[3]
+        self.update_rect()
+
+    def set_text(self, text):
+        self.text = text
+        if self.text_instance:
+            self.text_instance.set_text(text)
 
     def set_align(self, align):
         self.align = align
@@ -261,11 +251,14 @@ class TemplateInstance:
         if self.align == "w":
             self.rect.midleft = self.pos
 
-    def set_text(self, text):
-        self.text = text
-
+    def update_rect(self):
+        if self.align:
+            self.set_align(self.align)
+        if self.graphic_instance:
+            self.graphic_instance.set_rect(self.rect)
         if self.text_instance:
-            self.text_instance.set_text(text)
+            self.text_instance.set_rect(self.rect)
+            self.text_instance.set_text(self.text)
 
 
     """

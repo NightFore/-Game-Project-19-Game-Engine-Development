@@ -16,7 +16,7 @@ class SceneManager(TemplateManager):
     Methods:
     - Setup
         - load_scenes_from_directory(directory): Load game scenes from Python files in the specified directory and add them to the SceneManager.
-        - load_buttons_graphics(): Pre-load graphic instances for buttons in all scenes.
+        - load_buttons_data(): Pre-load data for buttons in all scenes.
 
     - Management
         - set_scene(scene_name): Set the currently active game scene.
@@ -47,7 +47,7 @@ class SceneManager(TemplateManager):
     """
     Setup
         - load_scenes_from_directory
-        - load_buttons_graphics
+        - load_buttons_data
     """
     def load_scenes_from_directory(self, directory):
         """
@@ -97,21 +97,6 @@ class SceneManager(TemplateManager):
                 rect_data = button_info.get("rect")
                 if rect_data:
                     button_info["rect"] = pygame.Rect(rect_data)
-
-    def load_texts_data(self):
-        """
-        Pre-load data for texts in all scenes.
-        """
-        for scene_name, scene_data in self.resources.items():
-            texts_data = scene_data.get("texts", {})
-
-            for text_name, text_info in texts_data.items():
-                font_name = text_info.get("font_name")
-                if font_name:
-                    text_instance = self.text_manager.create_resource_instance(font_name)
-                    text_info["text_instance"] = text_instance
-
-
 
 
     """

@@ -44,11 +44,10 @@ class ButtonInstance(TemplateInstance):
 
         Inherited from TemplateInstance (Text Attributes):
             - text (str): The text associated with the instance.
-            - text_font (str): The name of the font resource associated with the text.
-
-        Inherited from TemplateInstance (Instance Attributes):
-            - graphic_instance: The graphic instance associated with the instance.
             - text_instance: The text instance associated with the instance.
+
+        Inherited from TemplateInstance (Graphic Attributes):
+            - graphic_instance: The graphic instance associated with the instance.
 
         Inherited from TemplateInstance (General Attributes):
             - mouse_pos (tuple): The current mouse position.
@@ -59,14 +58,13 @@ class ButtonInstance(TemplateInstance):
         - update(): Update the button.
         - draw(): Draw the button.
     """
-    def __init__(self, data, managers):
-        super().__init__(data, managers)
+    def __init__(self, instance_data, managers):
+        super().__init__(instance_data, managers)
 
         # Initialize button state variables
         self.clicked = False
         self.clicked_and_released = False
 
-        self.test = 0
 
     """
     Render
@@ -78,8 +76,6 @@ class ButtonInstance(TemplateInstance):
         Update the button.
         """
         super().update()
-
-
 
         # Check if the mouse is over the button.
         if self.rect.collidepoint(self.mouse_pos):

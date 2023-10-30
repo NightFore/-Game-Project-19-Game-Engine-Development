@@ -76,6 +76,7 @@ class GraphicInstance(TemplateInstance):
         self.color = self.color_inactive
         self.border_radius = data.get("border_radius", None)
 
+
     """
     Render
         - update
@@ -111,4 +112,4 @@ class GraphicInstance(TemplateInstance):
 
         # Draw the image if it exists
         if self.image:
-            self.screen.blit(self.image, self.pos)
+            self.screen.blit(self.image, self.rect)

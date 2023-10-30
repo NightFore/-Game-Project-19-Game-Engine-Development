@@ -46,7 +46,7 @@ class TextInstance(TemplateInstance):
         self.font_color = data.get("color", None)
 
     def set_text(self, text):
-        self.text = str(text)
+        self.text = text
         self.text_surface = self.font.render(self.text, True, self.font_color)
         self.text_rect = self.text_surface.get_rect()
         self.text_rect.center = self.rect.center

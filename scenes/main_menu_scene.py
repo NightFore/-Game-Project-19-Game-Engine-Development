@@ -37,8 +37,8 @@ class MainMenuScene(SceneBase):
     def init_graphics(self):
         self.single_graphic = self.graphic_manager.create_resource_instance("default_single")
         self.sequence_animation = self.graphic_manager.create_resource_instance("default_sequence")
-        self.single_graphic.set_position((100, 100))
-        self.sequence_animation.set_position((300, 100))
+        self.single_graphic.set_pos((100, 100))
+        self.sequence_animation.set_pos((300, 100))
 
     def update_buttons(self):
         if self.scene_buttons["start"].clicked_and_released:
