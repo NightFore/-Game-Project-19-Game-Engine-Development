@@ -176,13 +176,14 @@ class TemplateInstance:
         # Text attributes
         self.text = data.get("text", None)
         self.text_font = data.get("font", None)
+        self.font_instance = data.get("font_instance", None)
         self.text_size = data.get("size", None)
         self.text_color = data.get("color", None)
         self.text_rect = None
         self.text_surface = None
 
         # Graphic attribute
-        self.graphic = data.get("graphic", None)
+        self.graphic = data.get("graphic_instance", None)
 
         # Game attributes
         self.mouse_pos = self.game_manager.mouse_pos
@@ -195,6 +196,9 @@ class TemplateInstance:
             self.set_align(self.align)
         if self.graphic:
             self.graphic.set_rect(self.rect)
+        if self.font_instance:
+            self.font_instance.set_rect(self.rect)
+            self.font_instance.set_text(self.text)
 
 
     """
@@ -305,10 +309,15 @@ class TemplateInstance:
         self.dt = self.game_manager.dt
         self.time_elapsed += self.dt
 
+        if self.graphic:
+            self.graphic.update()
+
+        if self.font_instance:
+            self.font_instance.update()
+
     def draw(self):
         if self.graphic:
             self.graphic.draw()
 
-        # WIP
-        if self.text and False:
-            self.text.draw()
+        if self.font_instance:
+            self.font_instance.draw()

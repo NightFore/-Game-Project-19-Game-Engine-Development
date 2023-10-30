@@ -22,7 +22,7 @@ class ButtonManager(TemplateManager):
 
 class ButtonInstance(TemplateInstance):
     """
-    Button class for creating interactive buttons.
+    ButtonInstance class for managing instances of buttons.
 
     Attributes:
         clicked (bool): Indicates whether the button has been clicked.

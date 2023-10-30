@@ -87,11 +87,17 @@ class SceneManager(TemplateManager):
                 graphic_name = button_info.get("graphic")
                 if graphic_name:
                     graphic_instance = self.graphic_manager.create_resource_instance(graphic_name)
-                    button_info["graphic"] = graphic_instance
+                    button_info["graphic_instance"] = graphic_instance
+
+                font_name = button_info.get("font")
+                if font_name:
+                    font_instance = self.text_manager.create_resource_instance(font_name)
+                    button_info["font_instance"] = font_instance
 
                 rect_data = button_info.get("rect")
                 if rect_data:
                     button_info["rect"] = pygame.Rect(rect_data)
+
 
 
     """

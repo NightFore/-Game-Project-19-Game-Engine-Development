@@ -309,7 +309,8 @@ class ResourceManager(TemplateManager):
         """
         font_path = data["file_path"]
         font_size = data["size"]
-        return pygame.font.Font(font_path, font_size)
+        data["font"] = pygame.font.Font(font_path, font_size)
+        return data
 
     # GraphicManager
     def load_image(self, data):
