@@ -133,12 +133,9 @@ class TemplateInstance:
             - rect (pygame.Rect): The rectangular area that defines the instance's position and size.
             - align (str): The alignment of the instance within its bounding rectangle.
 
-        - Text Attributes:
+        - Instance Attributes:
             - text (str): The text associated with the instance.
             - text_instance: The text instance associated with the instance.
-
-        - Graphic Attributes:
-            - graphic (str): The name of the graphic resource associated with the instance.
             - graphic_instance: The graphic instance associated with the instance.
 
         - Game Attributes:
@@ -148,23 +145,12 @@ class TemplateInstance:
             - time_elapsed (float): A time-tracking variable.
 
     Methods:
-    - Rect Management
-        - set_position(pos: tuple): Set the position of the instance.
+    - Management
+        - set_pos(pos: tuple): Set the position of the instance.
         - set_size(size: tuple): Set the size of the instance.
         - set_rect(rect: tuple): Set the bounding rectangle of the instance.
         - set_align(align: str): Set the alignment of the instance within its bounding rectangle.
         - update_rect(): Update the instance's bounding rectangle.
-
-    - Text Management
-        - set_text(text: str): Set the text associated with the instance.
-        - set_font(font): Set the font used for rendering text.
-        - set_text_size(text_size: int): Set the size of the text.
-        - set_font_color(font_color: tuple): Set the color of the text.
-        - update_text(): Update the rendered text.
-
-    - Graphic Management
-        - set_graphic(graphic): Set the graphic resource associated with the instance.
-        - update_graphic(): Update the graphic resource.
 
     - Render
         - update(): Update the instance.
@@ -185,13 +171,16 @@ class TemplateInstance:
         self.text_manager = self.managers["text_manager"]
         self.window_manager = self.managers["window_manager"]
 
+        # Rect attributes
         self.pos = instance_data.get("pos", None)
         self.size = instance_data.get("size", None)
         self.rect = instance_data.get("rect", None)
-        self.text = instance_data.get("text", None)
         self.align = instance_data.get("align", None)
-        self.graphic_instance = instance_data.get("graphic_instance", None)
+
+        # Instance attributes
+        self.text = instance_data.get("text", None)
         self.text_instance = instance_data.get("text_instance", None)
+        self.graphic_instance = instance_data.get("graphic_instance", None)
 
         # Game attributes
         self.screen = self.game_manager.gameDisplay
@@ -199,17 +188,18 @@ class TemplateInstance:
         self.dt = self.game_manager.dt
         self.time_elapsed = 0
 
+        # Initialize instance-specific attributes
         if self.rect:
             self.set_rect(self.rect.copy())
-            self.update_rect()
 
 
     """
     Management
-        - set_position
+        - set_pos
         - set_size
         - set_rect
         - set_align
+        - update_rect
     """
     def set_pos(self, pos):
         self.pos = self.rect[0], self.rect[1] = pos
@@ -224,11 +214,6 @@ class TemplateInstance:
         self.pos = self.rect[0], self.rect[1]
         self.size = self.rect[2], self.rect[3]
         self.update_rect()
-
-    def set_text(self, text):
-        self.text = text
-        if self.text_instance:
-            self.text_instance.set_text(text)
 
     def set_align(self, align):
         self.align = align
@@ -258,7 +243,6 @@ class TemplateInstance:
             self.graphic_instance.set_rect(self.rect)
         if self.text_instance:
             self.text_instance.set_rect(self.rect)
-            self.text_instance.set_text(self.text)
 
 
     """

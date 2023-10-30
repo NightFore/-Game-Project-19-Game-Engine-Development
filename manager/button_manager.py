@@ -42,18 +42,19 @@ class ButtonInstance(TemplateInstance):
             - rect (pygame.Rect): The rectangular area that defines the instance's position and size.
             - align (str): The alignment of the instance within its bounding rectangle.
 
-        Inherited from TemplateInstance (Text Attributes):
+        Inherited from TemplateInstance (Instance Attributes):
             - text (str): The text associated with the instance.
             - text_instance: The text instance associated with the instance.
-
-        Inherited from TemplateInstance (Graphic Attributes):
             - graphic_instance: The graphic instance associated with the instance.
 
-        Inherited from TemplateInstance (General Attributes):
-            - mouse_pos (tuple): The current mouse position.
+        Inherited from TemplateInstance (Game Attributes):
             - screen (pygame.Surface): The game display surface.
+            - mouse_pos (tuple): The current mouse position.
 
     Methods:
+    - Management
+        - set_text(text: str): Set the text associated with the instance.
+
     - Render
         - update(): Update the button.
         - draw(): Draw the button.
@@ -64,6 +65,19 @@ class ButtonInstance(TemplateInstance):
         # Initialize button state variables
         self.clicked = False
         self.clicked_and_released = False
+
+        # Initialize text
+        self.set_text(self.text)
+
+
+    """
+    Management
+        - set_text
+    """
+    def set_text(self, text):
+        self.text = text
+        if self.text_instance:
+            self.text_instance.set_text(text)
 
 
     """
