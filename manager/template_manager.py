@@ -191,6 +191,8 @@ class TemplateInstance:
         self.time_elapsed = 0
 
         # WIP
+        if self.align:
+            self.set_align(self.align)
         if self.graphic:
             self.graphic.set_rect(self.rect)
 
@@ -222,27 +224,27 @@ class TemplateInstance:
     def set_align(self, align):
         self.align = align
         if self.align == "center":
-            self.rect.center = self.pos
+            self.rect.center = self.rect[0], self.rect[1]
         if self.align == "nw":
-            self.rect.topleft = self.pos
+            self.rect.topleft = self.rect[0], self.rect[1]
         if self.align == "ne":
-            self.rect.topright = self.pos
+            self.rect.topright = self.rect[0], self.rect[1]
         if self.align == "sw":
-            self.rect.bottomleft = self.pos
+            self.rect.bottomleft = self.rect[0], self.rect[1]
         if self.align == "se":
-            self.rect.bottomright = self.pos
+            self.rect.bottomright = self.rect[0], self.rect[1]
         if self.align == "n":
-            self.rect.midtop = self.pos
+            self.rect.midtop = self.rect[0], self.rect[1]
         if self.align == "s":
-            self.rect.midbottom = self.pos
+            self.rect.midbottom = self.rect[0], self.rect[1]
         if self.align == "e":
-            self.rect.midright = self.pos
+            self.rect.midright = self.rect[0], self.rect[1]
         if self.align == "w":
-            self.rect.midleft = self.pos
+            self.rect.midleft = self.rect[0], self.rect[1]
         self.update_rect()
 
     def update_rect(self):
-        if self.text:
+        if self.text and False:
             self.text_rect.center = self.rect.center
         if self.graphic:
             self.graphic.update_rect()
