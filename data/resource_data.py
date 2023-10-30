@@ -23,7 +23,7 @@ DICT_RESOURCES = {
     "interface": {
         "default_interface": {
             "color": {"default": (0, 0, 0), "border": (255, 255, 255)},
-            "rect": [50, 50, 400, 300], "hit_rect": [50, 50, 400, 300], "border_radius": 2
+            "rect": (50, 50, 400, 300), "hit_rect": (50, 50, 400, 300), "border_radius": 2
         },
     },
     "button": {
@@ -63,7 +63,7 @@ DICT_RESOURCES = {
             },
             "texts": [
                 {"font": "liberation_serif", "position": (600, 300), "text": "Hello World!"},
-                {"font": "liberation_serif", "position": (600, 360), "text": "Hello World 2!", "color": (0, 0, 0), "size": 20, "align": "nw"},
+                {"font": "liberation_serif", "position": (600, 360), "text": "Hello World 2!"},
             ],
         },
         "GameScene": {

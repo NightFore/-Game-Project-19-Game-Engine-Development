@@ -124,29 +124,26 @@ class TemplateInstance:
         Inherited from GameManager:
             - instance_data (dict): Input data for this instance.
             - managers (dict): A dictionary containing game managers.
-            - mouse_pos (tuple): The current mouse position.
-            - screen (pygame.Surface): The game display surface.
-            - dt (float): Time since the last frame update.
-            - time_elapsed (float): A time-tracking variable.
 
         - Rect Attributes:
             - pos (tuple): The position (x, y) of the instance.
             - size (tuple): The size (width, height) of the instance.
+            - rect (pygame.Rect): The rectangular area that defines the instance's position and size.
             - align (str): The alignment of the instance within its bounding rectangle.
 
         - Text Attributes:
             - text (str): The text associated with the instance.
-            - text_size (int): The size of the text.
-            - font_color (tuple): The color of the text.
-
-        - Resources Attributes:
-            - rect (pygame.Rect): The rectangular area that defines the instance's position and size.
-            - font (str): The name of the font resource associated with the text.
-            - graphic (str): The name of the graphic resource associated with the instance.
-
-        - Instance Attributes:
-            - graphic_instance: The graphic instance associated with the instance.
             - text_instance: The text instance associated with the instance.
+
+        - Graphic Attributes:
+            - graphic (str): The name of the graphic resource associated with the instance.
+            - graphic_instance: The graphic instance associated with the instance.
+
+        - Game Attributes:
+            - mouse_pos (tuple): The current mouse position.
+            - screen (pygame.Surface): The game display surface.
+            - dt (float): Time since the last frame update.
+            - time_elapsed (float): A time-tracking variable.
 
     Methods:
     - Rect Management
@@ -193,6 +190,7 @@ class TemplateInstance:
         self.align = instance_data.get("align", None)
 
         if self.rect:
+            self.rect = self.rect.copy()
             self.pos = self.rect[0], self.rect[1]
             self.size = self.rect[2], self.rect[3]
         if self.align:
@@ -268,7 +266,6 @@ class TemplateInstance:
 
         if self.text_instance:
             self.text_instance.set_text(text)
-
 
 
     """

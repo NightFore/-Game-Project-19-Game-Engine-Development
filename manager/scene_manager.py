@@ -98,6 +98,20 @@ class SceneManager(TemplateManager):
                 if rect_data:
                     button_info["rect"] = pygame.Rect(rect_data)
 
+    def load_texts_data(self):
+        """
+        Pre-load data for texts in all scenes.
+        """
+        for scene_name, scene_data in self.resources.items():
+            texts_data = scene_data.get("texts", {})
+
+            for text_name, text_info in texts_data.items():
+                font_name = text_info.get("font_name")
+                if font_name:
+                    text_instance = self.text_manager.create_resource_instance(font_name)
+                    text_info["text_instance"] = text_instance
+
+
 
 
     """
@@ -201,31 +215,11 @@ class SceneBase(TemplateInstance):
         """
         Create text instances for the specified scene based on a dictionary of text data.
         """
+
         texts_dict = self.instance_data[self.scene_name].get("texts", {})
         for text_info in texts_dict:
-            # Create an instance
-            text_instance = self.text_manager.create_text()
-
-            # Extract information
-            pos = text_info["pos"]
-            text = text_info["text"]
-            text_font = text_info["font"]
-            text_size = text_info.get("size", None)
-            text_color = text_info("color", None)
-            align = text_info.get("align", None)
-
-            # Set properties
-            text_instance.set_pos(pos)
-            text_instance.set_text(text)
-            text_instance.set_text_font(text_font)
-            if text_size:
-                text_instance.set_text_size(text_size)
-            if text_color:
-                text_instance.set_text_color(text_color)
-            if align:
-                text_instance.set_align(align)
-
-            # Store the instance
+            # Create an instance using the manager
+            text_instance = self.text_manager.create_instance_from_data(text_info)
             self.scene_texts.append(text_instance)
 
 
