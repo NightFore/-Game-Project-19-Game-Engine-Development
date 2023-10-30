@@ -2,7 +2,7 @@
 
 import pygame
 from os import path
-from manager.template_manager import TemplateManager, TemplateInstance
+from manager.template_manager import TemplateManager
 
 class ResourceManager(TemplateManager):
     """
@@ -336,7 +336,8 @@ class ResourceManager(TemplateManager):
     Validation
         - validate_file
     """
-    def validate_file(self, file_path, resource_type, resource_name, supported_formats):
+    @staticmethod
+    def validate_file(file_path, resource_type, resource_name, supported_formats):
         """
         Validate a file's path and format for a specific resource.
 

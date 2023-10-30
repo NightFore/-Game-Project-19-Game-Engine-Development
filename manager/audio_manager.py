@@ -16,8 +16,8 @@ class AudioManager(TemplateManager):
     Methods:
     - Settings
         - set_music_volume(volume: float or int): Set the music volume.
-        - increment_music_volume(increment: float or int): Increment the music volume.
         - set_sound_volume(volume: float or int): Set the volume for all loaded sound effects.
+        - increment_music_volume(increment: float or int): Increment the music volume.
         - increment_sound_volume(increment: float or int): Increment the sound volume.
         - set_music_loop(loop: int): Set the loop behavior for playing music.
 
@@ -55,8 +55,8 @@ class AudioManager(TemplateManager):
     """
     Settings
         - set_music_volume
-        - increment_music_volume
         - set_sound_volume
+        - increment_music_volume
         - increment_sound_volume
         - set_music_loop
     """
@@ -78,23 +78,6 @@ class AudioManager(TemplateManager):
         self.music_volume = volume
         pygame.mixer.music.set_volume(self.music_volume)
 
-    def increment_music_volume(self, increment):
-        """
-        Increment the music volume.
-
-        Args:
-            increment (float or int): The amount to increment the volume (can be positive or negative).
-
-        Raises:
-            TypeError: If the increment is not a float or int.
-        """
-        # Validate the increment
-        self.validate_increment(increment)
-
-        # Set the volume for the currently playing music
-        self.music_volume = max(0.0, min(1.0, self.music_volume + increment))
-        self.set_music_volume(self.music_volume)
-
     def set_sound_volume(self, volume):
         """
         Set the volume for all loaded sound effects.
@@ -113,6 +96,23 @@ class AudioManager(TemplateManager):
         self.sound_volume = volume
         for sound in self.resources.values():
             sound.set_volume(self.sound_volume)
+
+    def increment_music_volume(self, increment):
+        """
+        Increment the music volume.
+
+        Args:
+            increment (float or int): The amount to increment the volume (can be positive or negative).
+
+        Raises:
+            TypeError: If the increment is not a float or int.
+        """
+        # Validate the increment
+        self.validate_increment(increment)
+
+        # Set the volume for the currently playing music
+        self.music_volume = max(0.0, min(1.0, self.music_volume + increment))
+        self.set_music_volume(self.music_volume)
 
     def increment_sound_volume(self, increment):
         """
@@ -169,7 +169,7 @@ class AudioManager(TemplateManager):
             ValueError: If the specified 'name' is not found in the AudioManager's audio resources.
         """
         # Validate the audio resource existence
-        self.validate_audio_resource(name, "music")
+        self.validate_audio_resource(name, "music", self.resources)
 
         # Check if any music is currently playing
         current_music = pygame.mixer.music.get_busy()
@@ -195,7 +195,7 @@ class AudioManager(TemplateManager):
             ValueError: If the specified 'name' is not found in the AudioManager's audio resources.
         """
         # Validate the audio resource existence
-        self.validate_audio_resource(name, "sound")
+        self.validate_audio_resource(name, "sound", self.resources)
 
         # Play the sound effect
         self.resources[name].play()
@@ -287,16 +287,18 @@ class AudioManager(TemplateManager):
         if loop not in [-1, 0]:
             raise ValueError("The 'loop' argument must be -1 for looping indefinitely or 0 for no looping.")
 
-    def validate_audio_resource(self, name, resource_type):
+    @staticmethod
+    def validate_audio_resource(name, resource_type, resources):
         """
         Validate if the specified 'name' exists in the AudioManager's audio resources.
 
         Args:
             name (str): The name of the audio resource to validate.
             resource_type (str): The type of audio resource ("music" or "sound").
+            resources (dict): The dictionary of audio resources managed by the AudioManager.
 
         Raises:
             ValueError: If the specified 'name' is not found in the AudioManager's audio resources.
         """
-        if name not in self.resources:
+        if name not in resources:
             raise ValueError(f"{resource_type.capitalize()} '{name}' does not exist in the AudioManager's audio resources.")

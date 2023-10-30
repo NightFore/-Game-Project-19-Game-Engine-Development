@@ -309,4 +309,4 @@ class TemplateInstance:
 
         # WIP
         if self.text and False:
-            self.screen.blit(self.text_surface, self.text_rect)
+            self.text.draw()
