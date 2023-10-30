@@ -36,6 +36,10 @@ class ButtonInstance(TemplateInstance):
     def __init__(self, data, managers):
         super().__init__(data, managers)
 
+        self.graphic_instance.set_rect(self.rect)
+        self.text_instance.set_rect(self.rect)
+        self.text_instance.set_text(self.text)
+
         self.clicked = False
         self.clicked_and_released = False
 
@@ -65,12 +69,12 @@ class ButtonInstance(TemplateInstance):
                     self.clicked_and_released = False
                 self.clicked = False
             # Change the button's color to the active state
-            self.graphic.color = self.graphic.color_active
+            self.graphic_instance.color = self.graphic_instance.color_active
         else:
             # Mouse is not over the button, reset the button state and color
             self.clicked = False
             self.clicked_and_released = False
-            self.graphic.color = self.graphic.color_inactive
+            self.graphic_instance.color = self.graphic_instance.color_inactive
 
     def draw(self):
         """

@@ -76,9 +76,9 @@ class SceneManager(TemplateManager):
                         # Add the scene to the SceneManager
                         self.instances[name] = scene_instance
 
-    def load_buttons_graphics(self):
+    def load_buttons_data(self):
         """
-        Pre-load graphic instances for buttons in all scenes.
+        Pre-load data for buttons in all scenes.
         """
         for scene_name, scene_data in self.resources.items():
             buttons_data = scene_data.get("buttons", {})

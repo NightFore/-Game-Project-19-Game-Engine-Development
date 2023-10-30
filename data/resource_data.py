@@ -1,15 +1,15 @@
 # resource_data.py
 
 DICT_RESOURCES = {
+    # AudioManager
     "music": {
         "debug_music": {"filename": "debug_audio_music.mp3"},
     },
     "sound": {
         "debug_sound": {"filename": "debug_audio_sound.wav"},
     },
-    "font": {
-        "liberation_serif": {"filename": "LiberationSerif-Regular.ttf", "size": 24, "color": (255, 255, 255)},
-    },
+
+    # GraphicManager
     "image": {
         "default_single": {"filename": "debug_graphic_manager_single.png"},
     },
@@ -29,6 +29,13 @@ DICT_RESOURCES = {
     "button": {
         "default_button": {"color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)}, "border_radius": 5},
     },
+
+    # TextManager
+    "font": {
+        "liberation_serif": {"filename": "LiberationSerif-Regular.ttf", "size": 24, "color": (255, 255, 255)},
+    },
+
+    # SceneManager
     "scene": {
         "MainMenuScene": {
             "buttons": {

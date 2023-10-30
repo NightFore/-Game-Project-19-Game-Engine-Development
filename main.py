@@ -34,13 +34,13 @@ class GameManager:
 
     Methods:
     - Setup:
-        - setup_game: Initialize the game's setup, including folders, dictionaries, managers, and display.
-        - setup_folders: Define the game's folder paths
-        - setup_managers: Create game managers.
-        - setup_display: Configure game display settings.
-        - setup_managers_settings: Configure game managers and their settings.
-        - setup_managers_resources: Load and assign resources to managers.
-        - setup_scenes: Load and configure game scenes.
+        - setup_game: Initialize the game environment.
+        - setup_folders: Set up resource folders.
+        - setup_managers: Initialize game managers.
+        - setup_managers_settings: Set up manager settings.
+        - setup_managers_resources: Load and set resources for managers.
+        - setup_display: Configure display settings.
+        - setup_scenes: Load game scenes and button graphics.
 
     - Game Loop:
         - run: The main game loop that handles game events, updates, and drawing.
@@ -77,49 +77,50 @@ class GameManager:
         - setup_game
         - setup_folders
         - setup_managers
-        - setup_display
         - setup_managers_settings
         - setup_managers_resources
+        - setup_display
         - setup_scenes
     """
     def setup_game(self):
         """
-        Initial setup for the game.
+        Initialize the game environment.
         """
         self.setup_folders()
         self.setup_managers()
-        self.setup_display()
         self.setup_managers_settings()
         self.setup_managers_resources()
+        self.setup_display()
         self.setup_scenes()
 
     def setup_folders(self):
         """
-        Define the game's folder paths
+        Set up resource folders.
         """
+        # Get the directory of the current script file
         self.game_folder = path.dirname(__file__)
 
         # Define the base resources folder
         self.resources_folder = path.join(self.game_folder, "resources")
 
         # Define individual resource folders
-        self.font_folder = path.join(self.resources_folder, "font")
-        self.graphic_folder = path.join(self.resources_folder, "graphic")
         self.music_folder = path.join(self.resources_folder, "music")
         self.sound_folder = path.join(self.resources_folder, "sound")
+        self.graphic_folder = path.join(self.resources_folder, "graphic")
+        self.font_folder = path.join(self.resources_folder, "font")
 
         # Define resource type folders (see ResourceManagers)
         self.resource_type_folders = {
             "music": self.music_folder,
             "sound": self.sound_folder,
-            "font": self.font_folder,
             "image": self.graphic_folder,
             "image_sequence": self.graphic_folder,
+            "font": self.font_folder,
         }
 
     def setup_managers(self):
         """
-        Create game managers.
+        Initialize game managers.
         """
         self.managers = {
             "game_manager": self,
@@ -139,49 +140,49 @@ class GameManager:
         self.text_manager = self.managers["text_manager"]
         self.window_manager = self.managers["window_manager"]
 
-    def setup_display(self):
-        """
-        Configure game display settings.
-        """
-        self.project_title = PROJECT_TITLE
-        self.FPS = FPS
-        self.screen_size = self.screen_width, self.screen_height = SCREEN_SIZE
-        self.gameDisplay = self.window_manager.create_window_instance(self.project_title, self.screen_size)
-
     def setup_managers_settings(self):
         """
-        Configure game managers and their settings.
+        Set up manager settings.
         """
         # Set resource folders for the ResourceManager
         self.resource_manager.set_resource_folders(self.resource_type_folders)
 
-        # Set managers for all game managers
+        # Set managers dictionary for all managers that require it
         for manager in self.managers.values():
             if hasattr(manager, 'set_managers'):
                 manager.set_managers(self.managers)
 
     def setup_managers_resources(self):
         """
-        Load and assign resources to managers.
+        Load and set resources for managers.
         """
         # Load resources from the resources dictionary
         self.resources_dict = DICT_RESOURCES
         self.resource_manager.load_resources(self.resources_dict)
 
-        # Set resources for each managers
+        # Set resources dictionary for all managers that require it
         for manager in self.managers.values():
             if hasattr(manager, 'set_resources'):
                 manager.set_resources()
 
+    def setup_display(self):
+        """
+        Configure display settings.
+        """
+        self.project_title = PROJECT_TITLE
+        self.FPS = FPS
+        self.screen_size = self.screen_width, self.screen_height = SCREEN_SIZE
+        self.gameDisplay = self.window_manager.create_window_instance(self.project_title, self.screen_size)
+
     def setup_scenes(self):
         """
-        Load and configure game scenes.
+        Load game scenes and button data.
         """
-        # Load additional scenes from the 'scenes' directory
+        # Load scenes from the 'scenes' directory
         self.scene_manager.load_scenes_from_directory("scenes")
 
         # Load button graphics for scenes
-        self.scene_manager.load_buttons_graphics()
+        self.scene_manager.load_buttons_data()
 
 
     """
@@ -195,6 +196,7 @@ class GameManager:
     def run(self):
         while self.playing:
             self.dt = self.clock.tick(self.FPS) / 1000
+            self.total_play_time += self.dt
             self.events()
             if not self.paused:
                 self.update()
@@ -231,19 +233,16 @@ class GameManager:
         self.mouse_pos = self.window_manager.get_adjusted_mouse_position()
 
     def update(self):
-        # Calculate the total play time of the game
-        self.total_play_time += self.dt
-
         # Update game components
         self.scene_manager.update()
         self.window_manager.update(self.clock.get_fps())
 
     def draw(self):
-        # Testing
+        # Debug
         self.gameDisplay.fill((30, 30, 30))
         pygame.draw.rect(self.gameDisplay, (255, 0, 0), (100, 100, 200, 150))
 
-        # Draw the game scene
+        # Draw the game components
         self.scene_manager.draw()
         self.window_manager.draw()
 

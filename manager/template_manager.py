@@ -172,33 +172,26 @@ class TemplateInstance:
         self.rect = data.get("rect", None)
         self.border_radius = data.get("border_radius", None)
         self.align = data.get("align", None)
+        if self.align:
+            self.set_align(self.align)
 
         # Text attributes
         self.text = data.get("text", None)
         self.text_font = data.get("font", None)
-        self.font_instance = data.get("font_instance", None)
         self.text_size = data.get("size", None)
         self.text_color = data.get("color", None)
         self.text_rect = None
         self.text_surface = None
 
-        # Graphic attribute
-        self.graphic = data.get("graphic_instance", None)
+        # Instance attributes
+        self.graphic_instance = data.get("graphic_instance", None)
+        self.text_instance = data.get("font_instance", None)
 
         # Game attributes
         self.mouse_pos = self.game_manager.mouse_pos
         self.screen = self.game_manager.gameDisplay
         self.dt = self.game_manager.dt
         self.time_elapsed = 0
-
-        # WIP
-        if self.align:
-            self.set_align(self.align)
-        if self.graphic:
-            self.graphic.set_rect(self.rect)
-        if self.font_instance:
-            self.font_instance.set_rect(self.rect)
-            self.font_instance.set_text(self.text)
 
 
     """
@@ -212,18 +205,15 @@ class TemplateInstance:
     def set_position(self, pos):
         self.pos = pos
         self.rect[0], self.rect[1] = pos
-        self.update_rect()
 
     def set_size(self, size):
         self.size = size
         self.rect[2], self.rect[3] = size
-        self.update_rect()
 
     def set_rect(self, rect):
         self.rect = rect
         self.pos = self.rect[0], self.rect[1]
         self.size = self.rect[2], self.rect[3]
-        self.update_rect()
 
     def set_align(self, align):
         self.align = align
@@ -245,14 +235,6 @@ class TemplateInstance:
             self.rect.midright = self.rect[0], self.rect[1]
         if self.align == "w":
             self.rect.midleft = self.rect[0], self.rect[1]
-        self.update_rect()
-
-    def update_rect(self):
-        if self.text and False:
-            self.text_rect.center = self.rect.center
-        if self.graphic:
-            self.graphic.update_rect()
-            self.graphic.update_text()
 
 
     """
@@ -292,7 +274,7 @@ class TemplateInstance:
         - update_graphic
     """
     def set_graphic(self, graphic):
-        self.graphic = graphic
+        self.graphic_instance = graphic
         self.update_graphic()
 
     def update_graphic(self):
@@ -309,15 +291,15 @@ class TemplateInstance:
         self.dt = self.game_manager.dt
         self.time_elapsed += self.dt
 
-        if self.graphic:
-            self.graphic.update()
+        if self.graphic_instance:
+            self.graphic_instance.update()
 
-        if self.font_instance:
-            self.font_instance.update()
+        if self.text_instance:
+            self.text_instance.update()
 
     def draw(self):
-        if self.graphic:
-            self.graphic.draw()
+        if self.graphic_instance:
+            self.graphic_instance.draw()
 
-        if self.font_instance:
-            self.font_instance.draw()
+        if self.text_instance:
+            self.text_instance.draw()
