@@ -15,8 +15,8 @@ class AudioManager(TemplateManager):
             - loop (int): The number of repetitions for playing music (-1 for looping indefinitely, 0 for no looping).
 
         Inherited from TemplateManager:
-            - resources (dict): A dictionary of resource templates.
-            - resource_types_to_load (list): A list of resource types to load.
+            - resources (dict): A dictionary containing loaded audio resources.
+            - resource_types_to_load (list): A list of resource types to load for this manager.
 
     Methods:
     - Settings

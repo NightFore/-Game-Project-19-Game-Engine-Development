@@ -191,7 +191,7 @@ class SceneBase(TemplateInstance):
         """
         Create buttons for the specified scene based on a dictionary of button data.
         """
-        buttons_dict = self.data[self.scene_name].get("buttons", {})
+        buttons_dict = self.instance_data[self.scene_name].get("buttons", {})
         for name, button_info in buttons_dict.items():
             # Create an instance using the manager
             button_instance = self.button_manager.create_instance_from_data(button_info)
@@ -201,7 +201,7 @@ class SceneBase(TemplateInstance):
         """
         Create text instances for the specified scene based on a dictionary of text data.
         """
-        texts_dict = self.data[self.scene_name].get("texts", {})
+        texts_dict = self.instance_data[self.scene_name].get("texts", {})
         for text_info in texts_dict:
             # Create an instance
             text_instance = self.text_manager.create_text()

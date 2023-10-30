@@ -74,6 +74,7 @@ class GraphicInstance(TemplateInstance):
         self.color_inactive = self.color_data.get("inactive", None)
         self.color_border = self.color_data.get("border", None)
         self.color = self.color_inactive
+        self.border_radius = data.get("border_radius", None)
 
     """
     Render

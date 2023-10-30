@@ -94,17 +94,17 @@ class TemplateManager:
         else:
             raise ValueError(f"Template '{template_name}' not found in resource templates.")
 
-    def create_instance_from_data(self, data):
+    def create_instance_from_data(self, instance_data):
         """
         Create an instance (button, text, etc.) from a dictionary of data.
 
         Args:
-            data (dict): A dictionary containing instance information.
+            instance_data (dict): A dictionary containing instance information.
 
         Returns:
             The created instance.
         """
-        new_instance = self.instance_class(data, self.managers)
+        new_instance = self.instance_class(instance_data, self.managers)
         return new_instance
 
     def clear_resources(self):
@@ -121,12 +121,31 @@ class TemplateInstance:
     TemplateInstance class for managing instances of resources.
 
     Attributes:
-        data (dict): Input data for this instance.
-        managers (dict): A dictionary containing game managers.
-        mouse_pos: The current mouse position.
-        screen: The game display surface.
-        dt (float): Time since the last frame update.
-        time_elapsed (float): Time elapsed since instance creation.
+        Inherited from GameManager:
+            - instance_data (dict): Input data for this instance.
+            - managers (dict): A dictionary containing game managers.
+            - mouse_pos (tuple): The current mouse position.
+            - screen (pygame.Surface): The game display surface.
+            - dt (float): The time elapsed since the last frame update.
+            - time_elapsed (float): A time-tracking variable.
+
+        - Rect Attributes:
+            - pos (tuple): The position (x, y) of the instance.
+            - size (tuple): The size (width, height) of the instance.
+            - rect (pygame.Rect): The rectangular area that defines the instance's position and size.
+            - align (str): The alignment of the instance within its bounding rectangle.
+
+        - Text Attributes:
+            - text (str): The text associated with the instance.
+            - text_font (str): The name of the font resource associated with the text.
+            - text_size (int): The size of the text.
+            - text_color (tuple): The color of the text.
+            - text_rect (pygame.Rect): The bounding rectangle for the rendered text.
+            - text_surface (pygame.Surface): The surface where the text is rendered.
+
+        - Instance Attributes:
+            - graphic_instance: The graphic instance associated with the instance.
+            - text_instance: The text instance associated with the instance.
 
     Methods:
     - Rect Management
@@ -151,9 +170,9 @@ class TemplateInstance:
         - update(): Update the instance.
         - draw(): Draw the instance.
     """
-    def __init__(self, data, managers):
-        # Store the input data for this instance.
-        self.data = data
+    def __init__(self, instance_data, managers):
+        # Store the input data specific to this instance.
+        self.instance_data = instance_data
 
         # Set the managers used for this instance.
         self.managers = managers
@@ -167,31 +186,31 @@ class TemplateInstance:
         self.window_manager = self.managers["window_manager"]
 
         # Rect attributes
-        self.pos = data.get("pos", None)
-        self.size = data.get("size", None)
-        self.rect = data.get("rect", None)
-        self.border_radius = data.get("border_radius", None)
-        self.align = data.get("align", None)
-        if self.align:
-            self.set_align(self.align)
+        self.pos = instance_data.get("pos", None)
+        self.size = instance_data.get("size", None)
+        self.rect = instance_data.get("rect", None)
+        self.align = instance_data.get("align", None)
 
         # Text attributes
-        self.text = data.get("text", None)
-        self.text_font = data.get("font", None)
-        self.text_size = data.get("size", None)
-        self.text_color = data.get("color", None)
+        self.text = instance_data.get("text", None)
+        self.text_font = instance_data.get("font", None)
+        self.text_size = instance_data.get("size", None)
+        self.text_color = instance_data.get("color", None)
         self.text_rect = None
         self.text_surface = None
 
         # Instance attributes
-        self.graphic_instance = data.get("graphic_instance", None)
-        self.text_instance = data.get("font_instance", None)
+        self.graphic_instance = instance_data.get("graphic_instance", None)
+        self.text_instance = instance_data.get("font_instance", None)
 
         # Game attributes
         self.mouse_pos = self.game_manager.mouse_pos
         self.screen = self.game_manager.gameDisplay
         self.dt = self.game_manager.dt
         self.time_elapsed = 0
+
+        if self.align:
+            self.set_align(self.align)
 
 
     """
