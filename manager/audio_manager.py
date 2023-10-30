@@ -8,10 +8,15 @@ class AudioManager(TemplateManager):
     AudioManager manages music and sound effects in the game.
 
     Attributes:
-        music_volume (float): The volume of the currently playing music (0.0 to 1.0).
-        sound_volume (float): The volume for all loaded sound effects (0.0 to 1.0).
-        loop (int): The number of repetitions for playing music (-1 for looping indefinitely, 0 for no looping).
-        current_music_name (str): The name of the currently playing music.
+        Specific to AudioManager:
+            - current_music_name (str): The name of the currently playing music.
+            - music_volume (float): The volume of the currently playing music (0.0 to 1.0).
+            - sound_volume (float): The volume for all loaded sound effects (0.0 to 1.0).
+            - loop (int): The number of repetitions for playing music (-1 for looping indefinitely, 0 for no looping).
+
+        Inherited from TemplateManager:
+            - resources (dict): A dictionary of resource templates.
+            - resource_types_to_load (list): A list of resource types to load.
 
     Methods:
     - Settings
@@ -46,10 +51,10 @@ class AudioManager(TemplateManager):
         self.resource_types_to_load = ["music", "sound"]
 
         # Initialize manager-related attributes
+        self.current_music_name = None
         self.music_volume = 1.0
         self.sound_volume = 1.0
         self.loop = -1
-        self.current_music_name = None
 
 
     """
