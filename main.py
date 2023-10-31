@@ -13,7 +13,7 @@ from manager.text_manager import TextManager
 from manager.window_manager import WindowManager
 
 from data.constant_data import PROJECT_TITLE, SCREEN_SIZE, FPS
-from data.resource_data import DICT_RESOURCES
+from data.resource_data import DICT_FILES, DICT_DATA, DICT_SCENES
 
 class GameManager:
     """
@@ -157,13 +157,14 @@ class GameManager:
         Load and set resources for managers.
         """
         # Load resources from the resources dictionary
-        self.resources_dict = DICT_RESOURCES
-        self.resource_manager.load_resources(self.resources_dict)
+        self.resource_dict = [DICT_FILES, DICT_DATA, DICT_SCENES]
+        for resource_dict in self.resource_dict:
+            self.resource_manager.load_resources(resource_dict)
 
-        # Set resources dictionary for all managers that require it
-        for manager in self.managers.values():
-            if hasattr(manager, 'set_resources'):
-                manager.set_resources()
+            # Set resources dictionary for all managers that require it
+            for manager in self.managers.values():
+                if hasattr(manager, 'set_resources'):
+                    manager.set_resources()
 
     def setup_display(self):
         """

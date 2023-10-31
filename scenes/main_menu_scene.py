@@ -40,6 +40,10 @@ class MainMenuScene(SceneBase):
         self.single_graphic.set_pos((100, 100))
         self.sequence_animation.set_pos((300, 100))
 
+        self.test = self.text_manager.create_resource_instance("liberation_serif")
+        self.test.set_pos((900, 600))
+        self.test.set_text("Test")
+
     def update_buttons(self):
         if self.scene_buttons["start"].clicked_and_released:
             self.scene_manager.set_scene("GameScene")
@@ -59,10 +63,12 @@ class MainMenuScene(SceneBase):
     def update_graphics(self, dt):
         self.single_graphic.update()
         self.sequence_animation.update()
+        self.test.update()
 
     def draw_graphics(self, screen):
         self.single_graphic.draw()
         self.sequence_animation.draw()
+        self.test.draw()
 
 
     """

@@ -1,6 +1,22 @@
 # resource_data.py
-
-DICT_RESOURCES = {
+"""
+DICT_FILES
+    AudioManager
+        - music
+        - sound
+    GraphicManager
+        - image
+        - image_sequence
+    TextManager
+        - font
+DICT_DATA
+    ButtonManager
+        - button
+DICT_INSTANCES
+    SceneManager
+        - scene
+"""
+DICT_FILES = {
     # AudioManager
     "music": {
         "debug_music": {"filename": "debug_audio_music.mp3"},
@@ -20,77 +36,44 @@ DICT_RESOURCES = {
             "image_duration": 1,
         },
     },
-    "interface": {
-        "default_interface": {
-            "color": {"default": (0, 0, 0), "border": (255, 255, 255)},
-            "rect": (50, 50, 400, 300), "hit_rect": (50, 50, 400, 300), "border_radius": 2
-        },
-    },
-    "button": {
-        "default_button": {"color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)}, "border_radius": 5},
-    },
 
     # TextManager
     "font": {
         "liberation_serif": {"filename": "LiberationSerif-Regular.ttf", "size": 24, "color": (255, 255, 255)},
     },
 
+}
+
+DICT_DATA = {
+    # ButtonManager
+    "button": {
+        "default": {
+            "font_name": "liberation_serif", "size": (300, 60), "border_radius": 5, "align": "center",
+            "color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
+        },
+        "icon": {
+            "font_name": "liberation_serif", "size": (50, 50), "border_radius": 5, "align": "nw",
+            "color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
+        },
+    },
+}
+
+DICT_SCENES = {
     # SceneManager
     "scene": {
         "MainMenuScene": {
             "buttons": {
-                "start": {
-                    "graphic_name": "default_button", "font_name": "liberation_serif",
-                    "rect": (640, 250, 300, 60), "text": "Start", "align": "center"},
-                "settings": {
-                    "graphic_name": "default_button", "font_name": "liberation_serif",
-                    "rect": (640, 320, 300, 60), "text": "Settings", "align": "center"},
-                "debug_audio": {
-                    "graphic_name": "default_button", "font_name": "liberation_serif",
-                    "rect": (640, 390, 300, 60), "text": "Debug Audio", "align": "center"},
-                "pause_music": {
-                    "graphic_name": "default_button", "font_name": "liberation_serif",
-                    "rect": (640, 460, 300, 60), "text": "Pause Music", "align": "center"},
-                "toggle_music": {
-                    "graphic_name": "default_button", "font_name": "liberation_serif",
-                    "rect": (640, 530, 300, 60), "text": "Toggle Music", "align": "center"},
-                "toggle_zoom": {
-                    "graphic_name": "default_button", "font_name": "liberation_serif",
-                    "rect": (640, 600, 300, 60), "text": "Toggle Zoom", "align": "center"},
-                "quit_game": {
-                    "graphic_name": "default_button", "font_name": "liberation_serif",
-                    "rect": (10, 10, 50, 50), "text": "X"},
+                "start": {"button": "default", "pos": (640, 250), "text": "Start"},
+                "settings": {"button": "default", "pos": (640, 320), "text": "Settings"},
+                "debug_audio": {"button": "default", "pos": (640, 390), "text": "Debug Audio"},
+                "pause_music": {"button": "default", "pos": (640, 460), "text": "Pause Music"},
+                "toggle_music": {"button": "default", "pos": (640, 530), "text": "Toggle Music"},
+                "toggle_zoom": {"button": "default", "pos": (640, 600), "text": "Toggle Zoom"},
+                "quit_game": {"button": "icon", "pos": (10, 10), "text": "X"},
             },
-            "texts": [
-                {"font": "liberation_serif", "position": (600, 300), "text": "Hello World!"},
-                {"font": "liberation_serif", "position": (600, 360), "text": "Hello World 2!"},
-            ],
-        },
-        "GameScene": {
-            "buttons": {
-                "game_over": {
-                    "graphic_name": "default_button", "font_name": "liberation_serif",
-                    "text": "Game Over", "rect": (400, 300, 200, 60)},
-                "click_me": {
-                    "graphic_name": "default_button", "font_name": "liberation_serif",
-                    "text": "Click Me!", "rect": (400, 400, 200, 60)},
+            "texts": {
+                "text_001": {"font": "liberation_serif", "pos": (600, 300), "text": "Hello World!"},
             },
-        },
-        "SettingsScene": {
-            "buttons": {
-                "back": {
-                    "graphic_name": "default_button", "font_name": "liberation_serif",
-                    "text": "Back", "rect": (300, 250, 300, 60)},
-                "volume_up": {
-                    "graphic_name": "default_button", "font_name": "liberation_serif",
-                    "text": "Volume Up", "rect": (300, 320, 300, 60)},
-                "volume_down": {
-                    "graphic_name": "default_button", "font_name": "liberation_serif",
-                    "text": "Volume Down", "rect": (300, 390, 300, 60)},
-                "fullscreen": {
-                    "graphic_name": "default_button", "font_name": "liberation_serif",
-                    "text": "Fullscreen", "rect": (300, 460, 300, 60)}
-            }
         },
     }
 }

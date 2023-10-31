@@ -37,6 +37,7 @@ class ResourceManager(TemplateManager):
         - validate_file: Validate a file's path and format for a specific resource.
     """
     RESOURCE_MAPPING = {
+        # AudioManager
         "music": {
             "load_type": "load_file",
             "load_data": "load_music",
@@ -49,12 +50,7 @@ class ResourceManager(TemplateManager):
             "format": {".mp3", ".wav", ".ogg"},
             "folder": None
         },
-        "font": {
-            "load_type": "load_file",
-            "load_data": "load_font",
-            "format": {".ttf"},
-            "folder": None
-        },
+        # GraphicManager
         "image": {
             "load_type": "load_file",
             "load_data": "load_image",
@@ -67,14 +63,19 @@ class ResourceManager(TemplateManager):
             "format": {".png", ".jpg", ".jpeg", ".gif"},
             "folder": None,
         },
-        "interface": {
-            "load_type": None,
-            "load_data": None,
+        # TextManager
+        "font": {
+            "load_type": "load_file",
+            "load_data": "load_font",
+            "format": {".ttf"},
+            "folder": None
         },
+        # ButtonManager
         "button": {
             "load_type": None,
             "load_data": None,
         },
+        # SceneManager
         "scene": {
             "load_type": None,
             "load_data": None,
@@ -168,6 +169,8 @@ class ResourceManager(TemplateManager):
         """
         # Step 1-1: Get the type information from RESOURCE_MAPPING
         type_info = self.RESOURCE_MAPPING.get(resource_type)
+        if type_info is None:
+            raise ValueError(f"Resource type '{resource_type}' does not exist in RESOURCE_MAPPING")
 
         # Step 1-2: Get resource folder and supported formats from type_info (if applicable)
         resource_folder = type_info.get("folder", None)

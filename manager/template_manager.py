@@ -202,8 +202,10 @@ class TemplateInstance:
         - update_rect
     """
     def set_pos(self, pos):
-        self.pos = self.rect[0], self.rect[1] = pos
-        self.update_rect()
+        self.pos = pos
+        if self.rect:
+            self.rect[0], self.rect[1] = pos
+            self.update_rect()
 
     def set_size(self, size):
         self.size = self.rect[2], self.rect[3] = size

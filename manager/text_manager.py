@@ -56,7 +56,13 @@ class TextInstance(TemplateInstance):
         self.text_rect = self.text_surface.get_rect()
 
     def update_rect(self):
-        self.text_rect.center = self.rect.center
+        # If 'rect' is provided (text_instance of another object), the 'text_rect' is centered within it.
+        if self.rect:
+            self.text_rect.center = self.rect.center
+        # Otherwise, if only 'pos' is available, 'text_rect' is centered based on 'pos'.
+        else:
+            self.text_rect.center = self.pos
+
 
 
     """
