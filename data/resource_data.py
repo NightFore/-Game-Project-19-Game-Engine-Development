@@ -26,6 +26,16 @@ DICT_FILES = {
     },
 
     # GraphicManager
+    "rect": {
+        "default_rect": {
+            "size": (300, 50), "border_radius": 5,
+            "color_data": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
+        },
+        "default_icon": {
+            "size": (50, 50), "border_radius": 5,
+            "color_data": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
+        }
+    },
     "image": {
         "default_single": {"filename": "debug_graphic_manager_single.png"},
     },
@@ -36,17 +46,7 @@ DICT_FILES = {
             "image_duration": 1,
         },
     },
-
-    "interface": {
-        "default_rect": {
-            "size": (300, 50), "border_radius": 5,
-            "color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
-        },
-        "default_icon": {
-            "size": (50, 50), "border_radius": 5,
-            "color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
-        }
-    },
+    # "button_image": {"exit": {"image_data": {"active": "placeholder_active.png", "inactive": "placeholder_inactive.png"}}},
 
     # TextManager
     "font": {

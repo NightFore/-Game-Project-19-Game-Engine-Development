@@ -8,11 +8,11 @@ class ButtonManager(TemplateManager):
     ButtonManager manages buttons and their instances in the game.
 
     Attributes:
-        managers (dict): A dictionary containing game managers.
-        resources (dict): A dictionary containing loaded resources.
-        instances (dict): A dictionary containing resource instances.
-        instance_class: The class used to create resource instances.
-        resource_types_to_load (list): A list of resource types to load for this manager.
+    - managers (dict): A dictionary containing game managers.
+    - resources (dict): A dictionary containing loaded resources.
+    - instances (dict): A dictionary containing resource instances.
+    - instance_class: The class used to create resource instances.
+    - resource_types_to_load (list): A list of resource types to load for this manager.
     """
     def __init__(self):
         # Initialize the manager as a subclass of TemplateManager
@@ -36,18 +36,14 @@ class ButtonInstance(TemplateInstance):
     """
     ButtonInstance class for managing instances of buttons.
 
-    Args:
-        instance_data (dict): A dictionary containing instance-specific data.
-        managers (dict): A dictionary containing various game managers.
-
     Attributes:
-        clicked (bool): A flag indicating if the button has been clicked.
-        clicked_and_released (bool): A flag indicating if the button has been clicked and released.
-        pos (tuple): The position of the button.
-        text (str): The text displayed on the button.
-        align (str): The alignment of the button.
-        graphic_instance (GraphicInstance): The graphic instance associated with the button.
-        text_instance (TextInstance): The text instance associated with the button.
+    - clicked (bool): A flag indicating if the button has been clicked.
+    - clicked_and_released (bool): A flag indicating if the button has been clicked and released.
+    - pos (tuple): The position of the button.
+    - text (str): The text displayed on the button.
+    - align (str): The alignment of the button.
+    - graphic_instance (GraphicInstance): The graphic instance associated with the button.
+    - text_instance (TextInstance): The text instance associated with the button.
 
     Methods:
     - Management
@@ -60,14 +56,13 @@ class ButtonInstance(TemplateInstance):
     def __init__(self, instance_data, managers):
         super().__init__(instance_data, managers)
 
-        # Initialize button state variables
+        # Initialize state variables
         self.clicked = False
         self.clicked_and_released = False
 
         # Initialize instance variables
         self.pos = None
         self.text = None
-        self.align = instance_data.get("align", None)
 
         # Create a text instance if a font_name is provided
         font_name = instance_data.get("font_name", None)
@@ -77,6 +72,10 @@ class ButtonInstance(TemplateInstance):
         # Create a graphic instance based on graphic_name
         graphic_name = instance_data.get("graphic_name", None)
         self.graphic_instance = self.graphic_manager.create_resource_instance(graphic_name)
+
+        # Set the alignment for the graphic instance
+        self.align = instance_data.get("align", None)
+        self.graphic_instance.set_align(self.align)
 
 
     """
@@ -113,7 +112,6 @@ class ButtonInstance(TemplateInstance):
         """
         super().update()
 
-
         # Check if the mouse is over the button.
         if self.graphic_instance.rect.collidepoint(self.mouse_pos):
             if pygame.mouse.get_pressed()[0]:
@@ -128,12 +126,12 @@ class ButtonInstance(TemplateInstance):
                     self.clicked_and_released = False
                 self.clicked = False
             # Change the button's color to the active state
-            self.graphic_instance.color = self.graphic_instance.color_active
+            self.graphic_instance.set_state(True)
         else:
             # Mouse is not over the button, reset the button state and color
             self.clicked = False
             self.clicked_and_released = False
-            self.graphic_instance.color = self.graphic_instance.color_inactive
+            self.graphic_instance.set_state(False)
 
     def draw(self):
         """

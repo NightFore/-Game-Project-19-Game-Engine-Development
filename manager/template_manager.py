@@ -219,6 +219,9 @@ class TemplateInstance:
 
     def set_align(self, align):
         self.align = align
+        self.update_rect()
+
+    def update_rect(self):
         if self.align == "center":
             self.rect.center = self.pos
         if self.align == "nw":
@@ -237,14 +240,6 @@ class TemplateInstance:
             self.rect.midright = self.pos
         if self.align == "w":
             self.rect.midleft = self.pos
-
-    def update_rect(self):
-        if self.align:
-            self.set_align(self.align)
-        if self.graphic_instance:
-            self.graphic_instance.set_rect(self.rect)
-        if self.text_instance:
-            self.text_instance.set_rect(self.rect)
 
 
     """
