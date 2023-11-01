@@ -58,17 +58,22 @@ class GraphicInstance(TemplateInstance):
     - current_image (int): The index of the current image in the sequence.
     - time_elapsed (int): The time elapsed since the last update.
 
+    Inherited Attributes from TemplateInstance:
+    - screen (pygame.Surface): The game display surface.
+    - dt (float): Time since the last frame update.
+
     Methods:
     - Management
         - set_pos(pos): Set the position of the graphic.
-        - set_state(state): Set the state (active or inactive) of the graphic.
+        - set_state(bool): Set the state (active or inactive) of the graphic.
 
     - Inherited from TemplateInstance
-        - update_rect: Update the rect of the graphic.
+        - set_align(str): Set the alignment of the instance within its bounding rectangle.
+        - update_rect(): Update the instance's bounding rectangle.
 
     - Render
-        - update(): Update the graphic.
-        - draw(): Draw the graphic.
+        - update(): Update the instance.
+        - draw(): Draw the instance.
     """
     def __init__(self, instance_data, managers):
         super().__init__(instance_data, managers)
@@ -145,13 +150,14 @@ class GraphicInstance(TemplateInstance):
     """
     def update(self):
         """
-        Update the graphic instance
+        Update the instance.
         """
         super().update()
 
         # Check if there is an image sequence to animate
         if self.graphic_type == "image_sequence":
             # Cycle through images in the sequence
+            self.time_elapsed += self.dt
             if self.time_elapsed >= self.image_duration:
                 self.time_elapsed = 0
                 self.current_image = (self.current_image + 1) % len(self.images)
@@ -159,7 +165,7 @@ class GraphicInstance(TemplateInstance):
 
     def draw(self):
         """
-        Draw the graphic instance.
+        Draw the instance.
         """
         super().draw()
 

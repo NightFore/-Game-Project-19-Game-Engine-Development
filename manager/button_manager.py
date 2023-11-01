@@ -45,13 +45,21 @@ class ButtonInstance(TemplateInstance):
     - graphic_instance (GraphicInstance): The graphic instance associated with the button.
     - text_instance (TextInstance): The text instance associated with the button.
 
+    Inherited Attributes from TemplateInstance:
+    - mouse_pos (tuple): The current position of the mouse cursor.
+
     Methods:
     - Management
         - set_pos(pos): Set the position of the button.
         - set_text(text): Set the text of the button.
+
+    - Inherited from TemplateInstance
+        - set_align(str): Set the alignment of the instance within its bounding rectangle.
+        - update_rect(): Update the instance's bounding rectangle.
+
     - Render
-        - update(): Update the button's state.
-        - draw(): Draw the button.
+        - update(): Update the instance.
+        - draw(): Draw the instance.
     """
     def __init__(self, instance_data, managers):
         super().__init__(instance_data, managers)
@@ -91,6 +99,7 @@ class ButtonInstance(TemplateInstance):
         self.graphic_instance.set_pos(pos)
         if self.text_instance:
             self.text_instance.set_pos(pos)
+        self.update_rect()
 
     def set_text(self, text):
         """
@@ -108,7 +117,7 @@ class ButtonInstance(TemplateInstance):
     """
     def update(self):
         """
-        Update the button.
+        Update the instance.
         """
         super().update()
 
@@ -135,6 +144,6 @@ class ButtonInstance(TemplateInstance):
 
     def draw(self):
         """
-        Draw the button.
+        Draw the instance.
         """
         super().draw()

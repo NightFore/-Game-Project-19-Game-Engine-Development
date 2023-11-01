@@ -7,12 +7,12 @@ class TemplateManager:
     TemplateManager manages resources and their instances in the game.
 
     Attributes:
-        managers (dict): A dictionary containing game managers.
-        resources (dict): A dictionary containing loaded resources.
-        instances (dict): A dictionary containing resource instances.
-        instance_class: The class used to create resource instances.
-        resource_types_to_load (list): A list of resource types to load for this manager.
-        manager_specific_attribute: An attribute specific to this manager.
+    - managers (dict): A dictionary containing game managers.
+    - resources (dict): A dictionary containing loaded resources.
+    - instances (dict): A dictionary containing resource instances.
+    - instance_class: The class used to create resource instances.
+    - resource_types_to_load (list): A list of resource types to load for this manager.
+    - manager_specific_attribute: An attribute specific to this manager.
 
     Methods:
     - Setup
@@ -122,34 +122,18 @@ class TemplateInstance:
     """
     TemplateInstance class for managing instances of resources.
 
-    Attributes:
-        Inherited from GameManager:
-            - instance_data (dict): Input data for this instance.
-            - managers (dict): A dictionary containing game managers.
+    Inherited Attributes from GameManager:
+    - instance_data (dict): Input data for this instance.
+    - managers (dict): A dictionary containing game managers.
 
-        - Rect Attributes:
-            - pos (tuple): The position (x, y) of the instance.
-            - size (tuple): The size (width, height) of the instance.
-            - rect (pygame.Rect): The rectangular area that defines the instance's position and size.
-            - align (str): The alignment of the instance within its bounding rectangle.
-
-        - Instance Attributes:
-            - text (str): The text associated with the instance.
-            - text_instance: The text instance associated with the instance.
-            - graphic_instance: The graphic instance associated with the instance.
-
-        - Game Attributes:
-            - screen (pygame.Surface): The game display surface.
-            - mouse_pos (tuple): The current mouse position.
-            - dt (float): Time since the last frame update.
-            - time_elapsed (float): A time-tracking variable.
+    Game Attributes:
+    - screen (pygame.Surface): The game display surface.
+    - mouse_pos (tuple): The current mouse position.
+    - dt (float): Time since the last frame update.
 
     Methods:
     - Management
-        - set_pos(pos: tuple): Set the position of the instance.
-        - set_size(size: tuple): Set the size of the instance.
-        - set_rect(rect: tuple): Set the bounding rectangle of the instance.
-        - set_align(align: str): Set the alignment of the instance within its bounding rectangle.
+        - set_align(str): Set the alignment of the instance within its bounding rectangle.
         - update_rect(): Update the instance's bounding rectangle.
 
     - Render
@@ -171,52 +155,17 @@ class TemplateInstance:
         self.text_manager = self.managers["text_manager"]
         self.window_manager = self.managers["window_manager"]
 
-        # Rect attributes
-        self.pos = instance_data.get("pos", None)
-        self.size = instance_data.get("size", None)
-        self.rect = instance_data.get("rect", None)
-        self.align = instance_data.get("align", None)
-
-        # Instance attributes
-        self.text = instance_data.get("text", None)
-        self.text_instance = instance_data.get("text_instance", None)
-        self.graphic_instance = instance_data.get("graphic_instance", None)
-
         # Game attributes
         self.screen = self.game_manager.gameDisplay
         self.mouse_pos = self.game_manager.mouse_pos
         self.dt = self.game_manager.dt
-        self.time_elapsed = 0
-
-        # Initialize instance-specific attributes
-        if self.rect:
-            self.set_rect(self.rect.copy())
 
 
     """
     Management
-        - set_pos
-        - set_size
-        - set_rect
         - set_align
         - update_rect
     """
-    def set_pos(self, pos):
-        self.pos = pos
-        if self.rect:
-            self.rect[0], self.rect[1] = pos
-            self.update_rect()
-
-    def set_size(self, size):
-        self.size = self.rect[2], self.rect[3] = size
-        self.update_rect()
-
-    def set_rect(self, rect):
-        self.rect = pygame.Rect(rect)
-        self.pos = self.rect[0], self.rect[1]
-        self.size = self.rect[2], self.rect[3]
-        self.update_rect()
-
     def set_align(self, align):
         self.align = align
         self.update_rect()
@@ -250,17 +199,6 @@ class TemplateInstance:
     def update(self):
         self.mouse_pos = self.game_manager.mouse_pos
         self.dt = self.game_manager.dt
-        self.time_elapsed += self.dt
-
-        if self.graphic_instance:
-            self.graphic_instance.update()
-
-        if self.text_instance:
-            self.text_instance.update()
 
     def draw(self):
-        if self.graphic_instance:
-            self.graphic_instance.draw()
-
-        if self.text_instance:
-            self.text_instance.draw()
+        pass

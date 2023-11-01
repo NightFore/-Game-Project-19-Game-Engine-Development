@@ -6,6 +6,12 @@ from manager.template_manager import TemplateManager, TemplateInstance
 class TextManager(TemplateManager):
     """
     TextManager manages text resources and their instances in the game.
+
+    Attributes:
+    - resources (dict): A dictionary containing loaded resources.
+    - instances (dict): A dictionary containing resource instances.
+    - instance_class: The class used to create resource instances.
+    - resource_types_to_load (list): A list of resource types to load for this manager.
     """
     def __init__(self):
         # Initialize the manager as a subclass of TemplateManager
@@ -29,40 +35,82 @@ class TextInstance(TemplateInstance):
     TextInstance represents an instance of a text resource.
 
     Attributes:
-        Specific to TextInstance:
+    - pos (tuple): The position (x, y) of the text.
+    - text (str): The text content to be displayed.
+    - text_surface (Surface): The surface containing the rendered text.
+    - text_rect (Rect): The rectangle that defines the boundaries of the text.
 
-        Inherited from TemplateInstance:
+    Font Attributes:
+    - font (Font): The font used for rendering the text.
+    - font_size (int): The font size.
+    - font_color (tuple): The color of the text.
+    - font_path (str): The file path to the font.
+
+    Inherited Attributes from TemplateInstance:
+    - screen (pygame.Surface): The game display surface.
 
     Methods:
+    - Management
+        - set_text(text): Set the text content.
+        - set_size(size): Set the font size.
+        - update_text: Update the rendered text and its rectangle.
+        - update_rect: Update the position of the text rectangle.
+
     - Render
-        - update(): Update the graphic instance.
-        - draw(): Draw the graphic instance.
+        - update(): Update the instance.
+        - draw(): Draw the instance.
     """
     def __init__(self, data, managers):
         super().__init__(data, managers)
 
+        # Initialize instance variables
+        self.pos = None
+        self.text = None
+        self.text_surface = None
+        self.text_rect = None
+
+        # Font attributes
         self.font = data.get("font", None)
         self.font_size = data.get("size", None)
         self.font_color = data.get("color", None)
-        self.update_text()
+        self.font_path = data.get("file_path", None)
 
+
+    """
+    Management
+        - set_text
+        - set_size
+        - update_text
+        - update_rect
+    """
     def set_text(self, text):
+        """
+        Set the text content to be displayed.
+        """
         self.text = text
         self.update_text()
-        self.update_rect()
+
+    def set_size(self, size):
+        """
+        Set the font size.
+        """
+        self.font_size = size
+        self.font = pygame.font.Font(self.font_path, self.font_size)
+        self.update_text()
 
     def update_text(self):
+        """
+        Update the rendered text and its rectangle.
+        """
         self.text_surface = self.font.render(self.text, True, self.font_color)
         self.text_rect = self.text_surface.get_rect()
+        self.update_rect()
 
     def update_rect(self):
-        # If 'rect' is provided (text_instance of another object), the 'text_rect' is centered within it.
-        if self.rect:
-            self.text_rect.center = self.rect.center
-        # Otherwise, if only 'pos' is available, 'text_rect' is centered based on 'pos'.
-        else:
-            self.text_rect.center = self.pos
-
+        """
+        Update the position of the text rectangle.
+        """
+        self.text_rect.center = self.pos
 
 
     """
@@ -72,14 +120,15 @@ class TextInstance(TemplateInstance):
     """
     def update(self):
         """
-        Update the text instance
+        Update the instance.
         """
         super().update()
 
     def draw(self):
         """
-        Draw the text instance.
+        Draw the instance.
         """
         super().draw()
 
-        self.screen.blit(self.text_surface, self.text_rect)
+        if self.text_surface:
+            self.screen.blit(self.text_surface, self.text_rect)
