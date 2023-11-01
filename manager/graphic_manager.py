@@ -19,7 +19,7 @@ class GraphicManager(TemplateManager):
         self.instance_class = GraphicInstance
 
         # Define resource types to load for this manager
-        self.resource_types_to_load = ["image", "image_sequence", "interface", "button"]
+        self.resource_types_to_load = ["image", "image_sequence", "interface"]
 
 
 

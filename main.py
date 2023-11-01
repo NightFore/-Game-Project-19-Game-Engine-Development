@@ -13,7 +13,7 @@ from manager.text_manager import TextManager
 from manager.window_manager import WindowManager
 
 from data.constant_data import PROJECT_TITLE, SCREEN_SIZE, FPS
-from data.resource_data import DICT_FILES, DICT_DATA, DICT_SCENES
+from data.resource_data import DICT_FILES, DICT_DATA, DICT_INSTANCES
 
 class GameManager:
     """
@@ -157,7 +157,7 @@ class GameManager:
         Load and set resources for managers.
         """
         # Load resources from the resources dictionary
-        self.resource_dict = [DICT_FILES, DICT_DATA, DICT_SCENES]
+        self.resource_dict = [DICT_FILES, DICT_DATA, DICT_INSTANCES]
         for resource_dict in self.resource_dict:
             self.resource_manager.load_resources(resource_dict)
 

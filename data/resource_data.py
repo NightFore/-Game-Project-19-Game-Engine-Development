@@ -37,42 +37,43 @@ DICT_FILES = {
         },
     },
 
+    "interface": {
+        "default_rect": {
+            "size": (300, 50), "border_radius": 5,
+            "color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
+        },
+        "default_icon": {
+            "size": (50, 50), "border_radius": 5,
+            "color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
+        }
+    },
+
     # TextManager
     "font": {
         "liberation_serif": {"filename": "LiberationSerif-Regular.ttf", "size": 24, "color": (255, 255, 255)},
     },
-
 }
 
 DICT_DATA = {
     # ButtonManager
     "button": {
-        "default": {
-            "font_name": "liberation_serif", "size": (300, 60), "border_radius": 5, "align": "center",
-            "color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
-        },
-        "icon": {
-            "font_name": "liberation_serif", "size": (50, 50), "border_radius": 5, "align": "nw",
-            "color": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
-        },
+        "button_rect": {"font_name": "liberation_serif", "graphic_name": "default_rect", "align": "center"},
+        "button_image": {"font_name": "liberation_serif", "graphic_name": "image", "align": "nw"},
     },
 }
 
-DICT_SCENES = {
+DICT_INSTANCES = {
     # SceneManager
     "scene": {
         "MainMenuScene": {
             "buttons": {
-                "start": {"button": "default", "pos": (640, 250), "text": "Start"},
-                "settings": {"button": "default", "pos": (640, 320), "text": "Settings"},
-                "debug_audio": {"button": "default", "pos": (640, 390), "text": "Debug Audio"},
-                "pause_music": {"button": "default", "pos": (640, 460), "text": "Pause Music"},
-                "toggle_music": {"button": "default", "pos": (640, 530), "text": "Toggle Music"},
-                "toggle_zoom": {"button": "default", "pos": (640, 600), "text": "Toggle Zoom"},
-                "quit_game": {"button": "icon", "pos": (10, 10), "text": "X"},
-            },
-            "texts": {
-                "text_001": {"font": "liberation_serif", "pos": (600, 300), "text": "Hello World!"},
+                "start": {"button": "button_rect", "pos": (640, 250), "text": "Start"},
+                "settings": {"button": "button_rect", "pos": (640, 320), "text": "Settings"},
+                "debug_audio": {"button": "button_rect", "pos": (640, 390), "text": "Debug Audio"},
+                "pause_music": {"button": "button_rect", "pos": (640, 460), "text": "Pause Music"},
+                "toggle_music": {"button": "button_rect", "pos": (640, 530), "text": "Toggle Music"},
+                "toggle_zoom": {"button": "button_rect", "pos": (640, 600), "text": "Toggle Zoom"},
+                "quit_game": {"button": "button_image", "pos": (10, 10), "text": "X"},
             },
         },
     }

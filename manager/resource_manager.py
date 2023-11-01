@@ -63,6 +63,10 @@ class ResourceManager(TemplateManager):
             "format": {".png", ".jpg", ".jpeg", ".gif"},
             "folder": None,
         },
+        "interface": {
+            "load_type": None,
+            "load_data": None,
+        },
         # TextManager
         "font": {
             "load_type": "load_file",

@@ -219,7 +219,7 @@ class SceneBase(TemplateInstance):
         """
         Called when entering the scene.
         """
-        self.create_buttons_from_dict()
+        # self.create_buttons_from_dict()
         # self.create_texts_from_dict()
 
     def exit(self):
