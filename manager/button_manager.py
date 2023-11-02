@@ -86,6 +86,9 @@ class ButtonInstance(TemplateInstance):
         self.align = instance_data.get("align", None)
         self.graphic_instance.set_align(self.align)
 
+        # Set the rect for the text instance
+        self.text_instance.set_rect(self.graphic_instance.rect)
+
 
     """
     Management:
@@ -99,8 +102,7 @@ class ButtonInstance(TemplateInstance):
         self.pos = pos
         self.graphic_instance.set_pos(pos)
         if self.text_instance:
-            self.text_instance.set_pos(pos)
-        self.update_rect()
+            self.text_instance.set_rect(self.graphic_instance.rect)
 
     def set_text(self, text):
         """
@@ -121,6 +123,10 @@ class ButtonInstance(TemplateInstance):
         Update the instance.
         """
         super().update()
+
+        self.graphic_instance.update()
+        if self.text_instance:
+            self.text_instance.update()
 
         # Check if the mouse is over the button.
         if self.graphic_instance.rect.collidepoint(self.mouse_pos):
@@ -148,3 +154,7 @@ class ButtonInstance(TemplateInstance):
         Draw the instance.
         """
         super().draw()
+
+        self.graphic_instance.draw()
+        if self.text_instance:
+            self.text_instance.draw()

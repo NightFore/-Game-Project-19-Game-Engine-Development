@@ -62,7 +62,7 @@ DICT_DATA = {
     # ButtonManager
     "button": {
         "button_rect": {"font_name": "liberation_serif", "graphic_name": "default_rect", "align": "center"},
-        "button_image": {"font_name": "liberation_serif", "graphic_name": "image", "align": "nw"},
+        "button_image": {"font_name": "liberation_serif", "graphic_name": "default_single", "align": "nw"},
     },
 }
 
@@ -80,6 +80,18 @@ DICT_INSTANCES = {
                 "toggle_music": {"button": "button_rect", "pos": (640, 530), "text": "Toggle Music"},
                 "toggle_zoom": {"button": "button_rect", "pos": (640, 600), "text": "Toggle Zoom"},
                 "quit_game": {"button": "button_image", "pos": (10, 10), "text": "X"},
+            },
+        },
+        "GameScene": {
+            "buttons": {
+            },
+        },
+        "SettingsScene": {
+            "buttons": {
+            },
+        },
+        "TemplateScene": {
+            "buttons": {
             },
         },
     }

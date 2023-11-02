@@ -9,32 +9,32 @@ class ResourceManager(TemplateManager):
     ResourceManager manages the loading and storage of various game resources.
 
     Attributes:
-        RESOURCE_MAPPING (dict): A dictionary mapping resource types to their respective loading methods and formats.
-        resources (dict): A unified dictionary to store resources of different types.
+        - RESOURCE_MAPPING (dict): A dictionary mapping resource types to their respective loading methods and formats.
+        - resources (dict): A unified dictionary to store resources of different types.
 
     Methods:
-    - Setup
-        - set_resource_folders: Set resource folders for specific resource types.
+        Setup:
+            - set_resource_folders: Set resource folders for specific resource types.
 
-    - Resource Acquisition
-        - load_resources: Load multiple resources from a dictionary.
-        - load_resource: Load a resource based on its type and specific data.
-        - get_info: Get information about a specific resource.
+        Resource Acquisition:
+            - load_resources: Load multiple resources from a dictionary.
+            - load_resource: Load a resource based on its type and specific data.
+            - get_info: Get information about a specific resource.
 
-    - Resource Type Preparation (load_data)
-        - load_files: Load multiple files, update the resource data with a list of file paths, and return the updated data.
-        - load_file: Load a single file, update the resource data with the file path, and return the updated data.
-        - load_path: Load a single file, validate the file, and return the file path if valid.
+        Resource Type Preparation (load_data):
+            - load_files: Load multiple files, update the resource data with a list of file paths, and return the updated data.
+            - load_file: Load a single file, update the resource data with the file path, and return the updated data.
+            - load_path: Load a single file, validate the file, and return the file path if valid.
 
-    - Resource Loading Methods (load_type)
-        - load_music: Load music and return the path to the loaded music file.
-        - load_sound: Load a sound and return the loaded sound object.
-        - load_font: Load a font and return a Font object.
-        - load_image: Load an image and return the data with the loaded image.
-        - load_image_sequence: Load an image sequence and return the data with the loaded images.
+        Resource Loading Methods (load_type):
+            - load_music: Load music and return the path to the loaded music file.
+            - load_sound: Load a sound and return the loaded sound object.
+            - load_font: Load a font and return a Font object.
+            - load_image: Load an image and return the data with the loaded image.
+            - load_image_sequence: Load an image sequence and return the data with the loaded images.
 
-    - Validation
-        - validate_file: Validate a file's path and format for a specific resource.
+        Validation:
+            - validate_file: Validate a file's path and format for a specific resource.
     """
     RESOURCE_MAPPING = {
         # AudioManager
@@ -50,6 +50,7 @@ class ResourceManager(TemplateManager):
             "format": {".mp3", ".wav", ".ogg"},
             "folder": None
         },
+
         # GraphicManager
         "image": {
             "load_type": "load_file",
@@ -63,10 +64,8 @@ class ResourceManager(TemplateManager):
             "format": {".png", ".jpg", ".jpeg", ".gif"},
             "folder": None,
         },
-        "interface": {
-            "load_type": None,
-            "load_data": None,
-        },
+        "rect": {},
+
         # TextManager
         "font": {
             "load_type": "load_file",
@@ -74,16 +73,12 @@ class ResourceManager(TemplateManager):
             "format": {".ttf"},
             "folder": None
         },
+
         # ButtonManager
-        "button": {
-            "load_type": None,
-            "load_data": None,
-        },
+        "button": {},
+
         # SceneManager
-        "scene": {
-            "load_type": None,
-            "load_data": None,
-        },
+        "scene": {},
     }
 
     def __init__(self):
@@ -95,7 +90,7 @@ class ResourceManager(TemplateManager):
 
 
     """
-    Setup
+    Setup:
         - set_resource_folders
     """
     def set_resource_folders(self, resource_folders):
@@ -116,7 +111,7 @@ class ResourceManager(TemplateManager):
 
 
     """
-    Resource Acquisition
+    Resource Acquisition:
         - load_resources
         - load_resource
         - get_info
@@ -206,7 +201,7 @@ class ResourceManager(TemplateManager):
 
 
     """
-    Resource Type Loading (load_type)
+    Resource Type Loading (load_type):
         - load_files
         - load_file
         - load_path
@@ -283,15 +278,12 @@ class ResourceManager(TemplateManager):
 
 
     """
-    Resource Data Loading (load_data)
-        - AudioManager
-            - load_music
-            - load_sound
-        - FontManager
-            - load_font
-        - GraphicManager
-            - load_image
-            - load_image_sequence
+    Resource Data Loading (load_data):
+        - load_music
+        - load_sound
+        - load_font
+        - load_image
+        - load_image_sequence
     """
     # AudioManager
     def load_music(self, data):
@@ -341,7 +333,7 @@ class ResourceManager(TemplateManager):
 
 
     """
-    Validation
+    Validation:
         - validate_file
     """
     @staticmethod

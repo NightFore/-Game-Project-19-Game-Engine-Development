@@ -37,10 +37,10 @@ class GraphicInstance(TemplateInstance):
     Attributes:
         Specific to GraphicInstance:
             - graphic_type (str): The type of the graphic instance.
-            - pos (tuple): The position (x, y) of the graphic.
-            - rect (Rect): The rectangle that defines the boundaries of the graphic.
-            - align (str): The alignment of the graphic.
-            - current_state (bool): The current state (active or inactive) of the graphic.
+            - pos (tuple): The position (x, y) of the instance.
+            - rect (Rect): The rectangle that defines the boundaries of the instance.
+            - align (str): The alignment of the instance.
+            - current_state (bool): The current state (active or inactive) of the instance.
 
             Rect Attributes:
                 - size (tuple): The size (width, height).

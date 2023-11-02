@@ -167,16 +167,17 @@ class SceneBase(TemplateInstance):
         - update: Update the scene.
         - draw: Draw the scene.
     """
-    def __init__(self, data, managers):
+    def __init__(self, instance_data, managers):
         """
         Initialize the SceneBase.
 
         Args:
-            data (dict): Data for initializing the scene.
+            instance_data (dict): Data for initializing the scene.
             managers (dict): A dictionary containing game managers.
         """
-        super().__init__(data, managers)
+        super().__init__(instance_data, managers)
         self.scene_name = self.__class__.__name__
+        self.scene_data = self.instance_data[self.scene_name]
         self.scene_buttons = {}
         self.scene_texts = []
 
@@ -235,12 +236,12 @@ class SceneBase(TemplateInstance):
         super().update()
 
         # Update each button in the scene
-        for button in self.scene_buttons.values():
-            button.update()
+        for button_instance in self.scene_buttons.values():
+            button_instance.update()
 
         # Update each text in the scene
-        for text in self.scene_texts:
-            text.update()
+        for text_instance in self.scene_texts:
+            text_instance.update()
 
     def draw(self):
         """
@@ -249,9 +250,9 @@ class SceneBase(TemplateInstance):
         super().draw()
 
         # Draw each button in the scene
-        for button in self.scene_buttons.values():
-            button.draw()
+        for button_instance in self.scene_buttons.values():
+            button_instance.draw()
 
         # Draw each text in the scene
-        for text in self.scene_texts:
-            text.draw()
+        for text_instance in self.scene_texts:
+            text_instance.draw()

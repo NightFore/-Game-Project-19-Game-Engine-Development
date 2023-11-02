@@ -37,6 +37,7 @@ class TextInstance(TemplateInstance):
     Attributes:
         Specific to TextInstance:
             - pos (tuple): The position (x, y) of the instance.
+            - rect (Rect): The rectangle that defines the boundaries of the instance.
             - text (str): The text content to be displayed.
             - text_surface (Surface): The surface containing the rendered text.
             - text_rect (Rect): The rectangle that defines the boundaries of the text.
@@ -67,6 +68,7 @@ class TextInstance(TemplateInstance):
 
         # Initialize instance variables
         self.pos = None
+        self.rect = None
         self.text = None
         self.text_surface = None
         self.text_rect = None
@@ -80,6 +82,8 @@ class TextInstance(TemplateInstance):
 
     """
     Management:
+        - set_pos
+        - set_rect
         - set_text
         - set_font_size
         - update_text
@@ -90,6 +94,13 @@ class TextInstance(TemplateInstance):
         Set the position of the instance.
         """
         self.pos = pos
+        self.update_rect()
+
+    def set_rect(self, rect):
+        """
+        Set the rect of the instance.
+        """
+        self.rect = rect
         self.update_rect()
 
     def set_text(self, text):
@@ -119,7 +130,11 @@ class TextInstance(TemplateInstance):
         """
         Update the position of the text rectangle.
         """
-        self.text_rect.center = self.pos
+        if self.text_rect:
+            if self.rect:
+                self.text_rect.center = self.rect.center
+            else:
+                self.text_rect.center = self.pos
 
 
     """
