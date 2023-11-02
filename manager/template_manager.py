@@ -122,23 +122,24 @@ class TemplateInstance:
     """
     TemplateInstance class for managing instances of resources.
 
-    Inherited Attributes from GameManager:
-    - instance_data (dict): Input data for this instance.
-    - managers (dict): A dictionary containing game managers.
+    Attributes:
+        Inherited Attributes from TemplateManager:
+            - instance_data (dict): Input data for this instance.
+            - managers (dict): A dictionary containing game managers.
 
-    Game Attributes:
-    - screen (pygame.Surface): The game display surface.
-    - mouse_pos (tuple): The current mouse position.
-    - dt (float): Time since the last frame update.
+        Inherited Attributes from GameManager:
+            - screen (pygame.Surface): The game display surface.
+            - mouse_pos (tuple): The current mouse position.
+            - dt (float): Time since the last frame update.
 
     Methods:
-    - Management
-        - set_align(str): Set the alignment of the instance within its bounding rectangle.
-        - update_rect(): Update the instance's bounding rectangle.
+        Management:
+            - set_align(str): Set the alignment of the instance within its bounding rectangle.
+            - update_rect(): Update the instance's bounding rectangle.
 
-    - Render
-        - update(): Update the instance.
-        - draw(): Draw the instance.
+        Render:
+            - update(): Update the instance.
+            - draw(): Draw the instance.
     """
     def __init__(self, instance_data, managers):
         # Store the input data specific to this instance.
@@ -162,7 +163,7 @@ class TemplateInstance:
 
 
     """
-    Management
+    Management:
         - set_align
         - update_rect
     """
@@ -192,7 +193,7 @@ class TemplateInstance:
 
 
     """
-    Render
+    Render:
         - update
         - draw
     """

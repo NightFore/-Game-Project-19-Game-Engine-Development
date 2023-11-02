@@ -35,45 +35,47 @@ class GraphicInstance(TemplateInstance):
     GraphicInstance represents an instance of a graphic resource.
 
     Attributes:
-    - graphic_type (str): The type of the graphic instance.
-    - pos (tuple): The position (x, y) of the graphic.
-    - rect (Rect): The rectangle that defines the boundaries of the graphic.
-    - align (str): The alignment of the graphic.
-    - current_state (bool): The current state (active or inactive) of the graphic.
+        Specific to GraphicInstance:
+            - graphic_type (str): The type of the graphic instance.
+            - pos (tuple): The position (x, y) of the graphic.
+            - rect (Rect): The rectangle that defines the boundaries of the graphic.
+            - align (str): The alignment of the graphic.
+            - current_state (bool): The current state (active or inactive) of the graphic.
 
-    Rect Attributes:
-    - size (tuple): The size (width, height).
-    - border_radius (int): The border radius of the graphic.
-    - color_active (tuple): The active color of the graphic.
-    - color_inactive (tuple): The inactive color of the graphic.
-    - color_border (tuple): The border color of the graphic.
-    - color (tuple): The current color of the graphic.
+            Rect Attributes:
+                - size (tuple): The size (width, height).
+                - border_radius (int): The border radius of the graphic.
+                - color_active (tuple): The active color of the graphic.
+                - color_inactive (tuple): The inactive color of the graphic.
+                - color_border (tuple): The border color of the graphic.
+                - color (tuple): The current color of the graphic.
 
-    Image Attributes:
-    - image (Surface): The current displayed image.
+            Image Attributes:
+                - image (Surface): The current displayed image.
 
-    Image Sequence Attributes:
-    - images (list): A list of images for image sequences.
-    - image_duration (int): The duration (in seconds) between image changes in a sequence.
-    - current_image (int): The index of the current image in the sequence.
-    - time_elapsed (int): The time elapsed since the last update.
+            Image Sequence Attributes:
+                - images (list): A list of images for image sequences.
+                - image_duration (int): The duration (in seconds) between image changes in a sequence.
+                - current_image (int): The index of the current image in the sequence.
+                - time_elapsed (int): The time elapsed since the last update.
 
-    Inherited Attributes from TemplateInstance:
-    - screen (pygame.Surface): The game display surface.
-    - dt (float): Time since the last frame update.
+        Inherited Attributes from TemplateInstance:
+            - screen (pygame.Surface): The game display surface.
+            - dt (float): Time since the last frame update.
 
     Methods:
-    - Management
-        - set_pos(pos): Set the position of the graphic.
-        - set_state(bool): Set the state (active or inactive) of the graphic.
+        Management:
+            - set_pos(tuple): Set the position of the instance.
+            - set_size(tuple): Set the size of the instance.
+            - set_state(bool): Set the state (active or inactive) of the instance.
 
-    - Inherited from TemplateInstance
-        - set_align(str): Set the alignment of the instance within its bounding rectangle.
-        - update_rect(): Update the instance's bounding rectangle.
+        Inherited from TemplateInstance:
+            - set_align(str): Set the alignment of the instance within its bounding rectangle.
+            - update_rect(): Update the instance's bounding rectangle.
 
-    - Render
-        - update(): Update the instance.
-        - draw(): Draw the instance.
+        Render:
+            - update(): Update the instance.
+            - draw(): Draw the instance.
     """
     def __init__(self, instance_data, managers):
         super().__init__(instance_data, managers)
@@ -120,20 +122,28 @@ class GraphicInstance(TemplateInstance):
 
 
     """
-    Management
+    Management:
         - set_pos
         - set_state
     """
     def set_pos(self, pos):
         """
-        Set the position of the graphic.
+        Set the position of the instance.
         """
         self.pos = self.rect[0], self.rect[1] = pos
         self.update_rect()
 
+    def set_size(self, size):
+        """
+        Set the size of the instance.
+        """
+        if self.graphic_type == "rect":
+            self.size = self.rect[2], self.rect[3] = size
+            self.update_rect()
+
     def set_state(self, state):
         """
-        Set the state (active or inactive) of the graphic.
+        Set the state (active or inactive) of the instance.
         """
         self.current_state = state
         if state:
@@ -144,7 +154,7 @@ class GraphicInstance(TemplateInstance):
                 self.color = self.color_inactive
 
     """
-    Render
+    Render:
         - update
         - draw
     """

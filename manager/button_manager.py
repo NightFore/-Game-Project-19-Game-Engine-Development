@@ -37,29 +37,30 @@ class ButtonInstance(TemplateInstance):
     ButtonInstance class for managing instances of buttons.
 
     Attributes:
-    - clicked (bool): A flag indicating if the button has been clicked.
-    - clicked_and_released (bool): A flag indicating if the button has been clicked and released.
-    - pos (tuple): The position of the button.
-    - text (str): The text displayed on the button.
-    - align (str): The alignment of the button.
-    - graphic_instance (GraphicInstance): The graphic instance associated with the button.
-    - text_instance (TextInstance): The text instance associated with the button.
+        Specific to ButtonInstance:
+            - clicked (bool): A flag indicating if the button has been clicked.
+            - clicked_and_released (bool): A flag indicating if the button has been clicked and released.
+            - pos (tuple): The position of the instance.
+            - text (str): The text content to be displayed.
+            - align (str): The alignment of the instance.
+            - graphic_instance (GraphicInstance): The graphic instance associated with the instance.
+            - text_instance (TextInstance): The text instance associated with the instance.
 
-    Inherited Attributes from TemplateInstance:
-    - mouse_pos (tuple): The current position of the mouse cursor.
+        Inherited Attributes from TemplateInstance:
+            - mouse_pos (tuple): The current position of the mouse cursor.
 
     Methods:
-    - Management
-        - set_pos(pos): Set the position of the button.
-        - set_text(text): Set the text of the button.
+        Management:
+            - set_pos(tuple): Set the position of the instance.
+            - set_text(str): Set the text of the instance.
 
-    - Inherited from TemplateInstance
-        - set_align(str): Set the alignment of the instance within its bounding rectangle.
-        - update_rect(): Update the instance's bounding rectangle.
+        Inherited from TemplateInstance:
+            - set_align(str): Set the alignment of the instance within its bounding rectangle.
+            - update_rect(): Update the instance's bounding rectangle.
 
-    - Render
-        - update(): Update the instance.
-        - draw(): Draw the instance.
+        Render:
+            - update(): Update the instance.
+            - draw(): Draw the instance.
     """
     def __init__(self, instance_data, managers):
         super().__init__(instance_data, managers)
@@ -87,13 +88,13 @@ class ButtonInstance(TemplateInstance):
 
 
     """
-    Management
+    Management:
         - set_pos
         - set_text
     """
     def set_pos(self, pos):
         """
-        Set the position of the button.
+        Set the position of the instance.
         """
         self.pos = pos
         self.graphic_instance.set_pos(pos)
@@ -103,7 +104,7 @@ class ButtonInstance(TemplateInstance):
 
     def set_text(self, text):
         """
-        Set the text of the button.
+        Set the text of the instance.
         """
         self.text = text
         if self.text_instance:
@@ -111,7 +112,7 @@ class ButtonInstance(TemplateInstance):
 
 
     """
-    Render
+    Render:
         - update
         - draw
     """

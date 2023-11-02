@@ -1,12 +1,14 @@
 # resource_data.py
+
 """
-DICT_FILES
+DICT_RESOURCES
     AudioManager
         - music
         - sound
     GraphicManager
         - image
         - image_sequence
+        - rect
     TextManager
         - font
 DICT_DATA
@@ -16,7 +18,8 @@ DICT_INSTANCES
     SceneManager
         - scene
 """
-DICT_FILES = {
+
+DICT_RESOURCES = {
     # AudioManager
     "music": {
         "debug_music": {"filename": "debug_audio_music.mp3"},
@@ -26,16 +29,6 @@ DICT_FILES = {
     },
 
     # GraphicManager
-    "rect": {
-        "default_rect": {
-            "size": (300, 50), "border_radius": 5,
-            "color_data": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
-        },
-        "default_icon": {
-            "size": (50, 50), "border_radius": 5,
-            "color_data": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
-        }
-    },
     "image": {
         "default_single": {"filename": "debug_graphic_manager_single.png"},
     },
@@ -46,13 +39,24 @@ DICT_FILES = {
             "image_duration": 1,
         },
     },
-    # "button_image": {"exit": {"image_data": {"active": "placeholder_active.png", "inactive": "placeholder_inactive.png"}}},
+    "rect": {
+        "default_rect": {
+            "size": (300, 50), "border_radius": 5,
+            "color_data": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
+        },
+        "default_icon": {
+            "size": (50, 50), "border_radius": 5,
+            "color_data": {"active": (0, 255, 0), "inactive": (255, 0, 0), "border": (0, 0, 255)},
+        }
+    },
 
     # TextManager
     "font": {
         "liberation_serif": {"filename": "LiberationSerif-Regular.ttf", "size": 24, "color": (255, 255, 255)},
     },
 }
+
+
 
 DICT_DATA = {
     # ButtonManager
@@ -61,6 +65,8 @@ DICT_DATA = {
         "button_image": {"font_name": "liberation_serif", "graphic_name": "image", "align": "nw"},
     },
 }
+
+
 
 DICT_INSTANCES = {
     # SceneManager

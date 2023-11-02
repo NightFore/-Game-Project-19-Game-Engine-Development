@@ -35,30 +35,32 @@ class TextInstance(TemplateInstance):
     TextInstance represents an instance of a text resource.
 
     Attributes:
-    - pos (tuple): The position (x, y) of the text.
-    - text (str): The text content to be displayed.
-    - text_surface (Surface): The surface containing the rendered text.
-    - text_rect (Rect): The rectangle that defines the boundaries of the text.
+        Specific to TextInstance:
+            - pos (tuple): The position (x, y) of the instance.
+            - text (str): The text content to be displayed.
+            - text_surface (Surface): The surface containing the rendered text.
+            - text_rect (Rect): The rectangle that defines the boundaries of the text.
 
-    Font Attributes:
-    - font (Font): The font used for rendering the text.
-    - font_size (int): The font size.
-    - font_color (tuple): The color of the text.
-    - font_path (str): The file path to the font.
+            Font Attributes:
+                - font (Font): The font used for rendering the text.
+                - font_size (int): The font size.
+                - font_color (tuple): The color of the text.
+                - font_path (str): The file path to the font.
 
-    Inherited Attributes from TemplateInstance:
-    - screen (pygame.Surface): The game display surface.
+        Inherited Attributes from TemplateInstance:
+            - screen (pygame.Surface): The game display surface.
 
     Methods:
-    - Management
-        - set_text(text): Set the text content.
-        - set_size(size): Set the font size.
-        - update_text: Update the rendered text and its rectangle.
-        - update_rect: Update the position of the text rectangle.
+        Management:
+            - set_pos(tuple): Set the position of the instance.
+            - set_text(text): Set the text content.
+            - set_font_size(size): Set the font size.
+            - update_text: Update the rendered text and its rectangle.
+            - update_rect: Update the position of the text rectangle.
 
-    - Render
-        - update(): Update the instance.
-        - draw(): Draw the instance.
+        Render:
+            - update(): Update the instance.
+            - draw(): Draw the instance.
     """
     def __init__(self, data, managers):
         super().__init__(data, managers)
@@ -77,12 +79,19 @@ class TextInstance(TemplateInstance):
 
 
     """
-    Management
+    Management:
         - set_text
-        - set_size
+        - set_font_size
         - update_text
         - update_rect
     """
+    def set_pos(self, pos):
+        """
+        Set the position of the instance.
+        """
+        self.pos = pos
+        self.update_rect()
+
     def set_text(self, text):
         """
         Set the text content to be displayed.
@@ -90,7 +99,7 @@ class TextInstance(TemplateInstance):
         self.text = text
         self.update_text()
 
-    def set_size(self, size):
+    def set_font_size(self, size):
         """
         Set the font size.
         """
@@ -114,7 +123,7 @@ class TextInstance(TemplateInstance):
 
 
     """
-    Render
+    Render:
         - update
         - draw
     """

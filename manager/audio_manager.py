@@ -19,26 +19,26 @@ class AudioManager(TemplateManager):
             - resource_types_to_load (list): A list of resource types to load for this manager.
 
     Methods:
-    - Settings
-        - set_music_volume(volume: float or int): Set the music volume.
-        - set_sound_volume(volume: float or int): Set the volume for all loaded sound effects.
-        - increment_music_volume(increment: float or int): Increment the music volume.
-        - increment_sound_volume(increment: float or int): Increment the sound volume.
-        - set_music_loop(loop: int): Set the loop behavior for playing music.
+        Settings:
+            - set_music_volume(volume: float or int): Set the music volume.
+            - set_sound_volume(volume: float or int): Set the volume for all loaded sound effects.
+            - increment_music_volume(increment: float or int): Increment the music volume.
+            - increment_sound_volume(increment: float or int): Increment the sound volume.
+            - set_music_loop(loop: int): Set the loop behavior for playing music.
 
-    - Management
-        - play_music(name: str): Play the music associated with the given name.
-        - play_sound(name: str): Play the sound effect associated with the given name.
-        - stop_music(): Stop the currently playing music.
-        - pause_music(): Pause the currently playing music.
-        - unpause_music(): Unpause the currently paused music.
-        - toggle_music(): Toggle the music state between paused and playing.
+        Management:
+            - play_music(name: str): Play the music associated with the given name.
+            - play_sound(name: str): Play the sound effect associated with the given name.
+            - stop_music(): Stop the currently playing music.
+            - pause_music(): Pause the currently playing music.
+            - unpause_music(): Unpause the currently paused music.
+            - toggle_music(): Toggle the music state between paused and playing.
 
-    - Validation
-        - validate_volume(volume: float or int): Validate volume value (type and range).
-        - validate_music_loop(loop: int): Validate the loop behavior for playing music.
-        - validate_increment(increment: float or int): Validate the volume increment value (type).
-        - validate_audio_resource(name: str, resource_type: str): Validate the existence of the audio resource.
+        Validation:
+            - validate_volume(volume: float or int): Validate volume value (type and range).
+            - validate_music_loop(loop: int): Validate the loop behavior for playing music.
+            - validate_increment(increment: float or int): Validate the volume increment value (type).
+            - validate_audio_resource(name: str, resource_type: str): Validate the existence of the audio resource.
     """
     def __init__(self):
         # Initialize the manager as a subclass of TemplateManager
@@ -58,7 +58,7 @@ class AudioManager(TemplateManager):
 
 
     """
-    Settings
+    Settings:
         - set_music_volume
         - set_sound_volume
         - increment_music_volume
@@ -155,7 +155,7 @@ class AudioManager(TemplateManager):
 
 
     """
-    Management
+    Management:
         - play_music
         - play_sound
         - stop_music
@@ -238,7 +238,7 @@ class AudioManager(TemplateManager):
 
 
     """
-    Validation
+    Validation:
         - validate_volume
         - validate_music_loop
         - validate_increment
