@@ -10,6 +10,7 @@ class MainMenuScene(SceneBase):
     """
     def enter(self):
         super().enter()
+        self.init_texts()
 
     def exit(self):
         super().exit()
@@ -25,6 +26,9 @@ class MainMenuScene(SceneBase):
     """
     Scene Logic
     """
+    def init_texts(self):
+        self.scene_texts["project_title"].set_text(self.game_manager.project_title)
+
     def update_buttons(self):
         if self.scene_buttons["start"].clicked_and_released:
             self.scene_manager.set_scene("GameScene")

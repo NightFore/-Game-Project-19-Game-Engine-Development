@@ -52,7 +52,8 @@ DICT_RESOURCES = {
 
     # TextManager
     "font": {
-        "liberation_serif": {"filename": "LiberationSerif-Regular.ttf", "size": 24, "color": (255, 255, 255)},
+        "font_title": {"filename": "LiberationSerif-Regular.ttf", "size": 36, "color": (255, 255, 255), "align": "center"},
+        "font_body": {"filename": "LiberationSerif-Regular.ttf", "size": 24, "color": (255, 255, 255), "align": "center"},
     },
 }
 
@@ -61,9 +62,9 @@ DICT_RESOURCES = {
 DICT_INSTANCES = {
     # ButtonManager
     "button": {
-        "button_interface": {"graphic_name": "default_rect", "font_name": "liberation_serif", "align": "center"},
-        "button_icon": {"graphic_name": "default_icon", "font_name": "liberation_serif", "align": "nw"},
-        "button_image": {"graphic_name": "default_single", "font_name": "liberation_serif", "align": "nw"},
+        "button_interface": {"graphic": "default_rect", "font": "font_body", "align": "center"},
+        "button_icon": {"graphic": "default_icon", "font": "font_body", "align": "nw"},
+        "button_image": {"graphic": "default_single", "font": "font_body", "align": "nw"},
     },
 }
 
@@ -83,8 +84,11 @@ DICT_SCENES = {
                 "quit_game": {"button": "button_icon", "pos": (10, 10), "text": "X"},
             },
             "graphics": {
-                "test_single": {"graphic": "default_single", "pos": (10, 100), "align": "nw"},
-                "test_sequence": {"graphic": "default_sequence", "pos": (640, 100), "align": "center"}
+                "single": {"graphic": "default_single", "pos": (10, 100), "align": "nw"},
+                "sequence": {"graphic": "default_sequence", "pos": (640, 150), "align": "center"}
+            },
+            "texts": {
+                "project_title": {"font": "font_title", "pos": (640, 50), "text": "Placeholder", "align": "center"},
             }
         },
         "GameScene": {

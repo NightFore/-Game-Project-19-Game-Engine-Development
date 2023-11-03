@@ -37,10 +37,10 @@ class TextInstance(TemplateInstance):
     Attributes:
         Specific to TextInstance:
             - pos (tuple): The position (x, y) of the instance.
-            - rect (Rect): The rectangle that defines the boundaries of the instance.
             - text (str): The text content to be displayed.
             - text_surface (Surface): The surface containing the rendered text.
             - text_rect (Rect): The rectangle that defines the boundaries of the text.
+            - align (str): The alignment of the instance.
 
             Font Attributes:
                 - font (Font): The font used for rendering the text.
@@ -54,6 +54,7 @@ class TextInstance(TemplateInstance):
     Methods:
         Rect Management:
             - set_pos(tuple): Set the position of the instance.
+            - set_align(str): Set the alignment of the instance within its bounding rectangle.
             - update_rect: Update the instance's bounding rectangle.
 
         Text Management:
@@ -65,27 +66,33 @@ class TextInstance(TemplateInstance):
             - update(): Update the instance.
             - draw(): Draw the instance.
     """
-    def __init__(self, data, managers):
+    def __init__(self, instance_data, managers):
         # Call the constructor of the parent class (TemplateInstance)
-        super().__init__(data, managers)
+        super().__init__(instance_data, managers)
 
         # Initialize instance variables
-        self.pos = None
-        self.rect = None
-        self.text = None
-        self.text_surface = None
-        self.text_rect = None
+        self.pos = (0, 0)
+        self.text = ""
 
         # Font attributes
-        self.font = data.get("font", None)
-        self.font_size = data.get("size", None)
-        self.font_color = data.get("color", None)
-        self.font_path = data.get("file_path", None)
+        self.font = instance_data.get("font", None)
+        self.font_size = instance_data.get("size", None)
+        self.font_color = instance_data.get("color", None)
+        self.font_path = instance_data.get("file_path", None)
+
+        # Set the initial text_surface and text_rect
+        self.text_surface = self.font.render(self.text, True, self.font_color)
+        self.text_rect = self.text_surface.get_rect()
+
+        # Set the initial alignment
+        self.align = instance_data.get("align", None)
+        self.set_align(self.align)
 
 
     """
     Rect Management:
         - set_pos
+        - set_align
         - update_rect
     """
     def set_pos(self, pos):
@@ -95,12 +102,35 @@ class TextInstance(TemplateInstance):
         self.pos = pos
         self.update_rect()
 
+    def set_align(self, align):
+        """
+        Set the alignment of the instance within its bounding rectangle.
+        """
+        self.align = align
+        self.update_rect()
+
     def update_rect(self):
         """
-        Update the instance's bounding rectangle
+        Update the instance's bounding rectangle.
         """
-        if self.text_rect:
+        if self.align == "center":
             self.text_rect.center = self.pos
+        if self.align == "nw":
+            self.text_rect.topleft = self.pos
+        if self.align == "ne":
+            self.text_rect.topright = self.pos
+        if self.align == "sw":
+            self.text_rect.bottomleft = self.pos
+        if self.align == "se":
+            self.text_rect.bottomright = self.pos
+        if self.align == "n":
+            self.text_rect.midtop = self.pos
+        if self.align == "s":
+            self.text_rect.midbottom = self.pos
+        if self.align == "e":
+            self.text_rect.midright = self.pos
+        if self.align == "w":
+            self.text_rect.midleft = self.pos
 
 
     """

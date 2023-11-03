@@ -139,6 +139,7 @@ class SceneBase(TemplateInstance):
         Management:
             - initialize_scene_buttons(): Initialize and create button instances for the current scene.
             - initialize_scene_graphics(): Initialize and create graphic instances for the current scene.
+            - initialize_scene_texts(): Initialize and create text instances for the current scene.
 
         Lifecycle:
             - enter(): Called when entering the scene.
@@ -155,12 +156,14 @@ class SceneBase(TemplateInstance):
         self.scene_data = self.instance_data[self.scene_name]
         self.scene_buttons = {}
         self.scene_graphics = {}
+        self.scene_texts = {}
 
 
     """
     Management
         - initialize_scene_buttons
         - initialize_scene_graphics
+        - initialize_scene_texts
     """
     def initialize_scene_buttons(self):
         """
@@ -210,6 +213,31 @@ class SceneBase(TemplateInstance):
                 # Add the graphic instance to the scene_graphics dictionary
                 self.scene_graphics[graphic_name] = graphic_instance
 
+    def initialize_scene_texts(self):
+        """
+        Initialize and create text instances for the current scene.
+        """
+        # Get the text data for the current scene
+        text_dict = self.scene_data.get("texts", {})
+
+        # Iterate through the text data
+        for text_name, text_data in text_dict.items():
+            font_resource = text_data.get("font", None)
+            text_pos = text_data.get("pos", (0, 0))
+            text_text = text_data.get("text", "")
+            text_align = text_data.get("align", None)
+
+            # Check if a valid text resource is specified
+            if font_resource:
+                # Create a text instance
+                text_instance = self.text_manager.create_resource_instance(font_resource)
+                text_instance.set_pos(text_pos)
+                text_instance.set_text(text_text)
+                text_instance.set_align(text_align)
+
+                # Add the text instance to the scene_texts dictionary
+                self.scene_texts[text_name] = text_instance
+
 
     """
     Lifecycle
@@ -224,6 +252,7 @@ class SceneBase(TemplateInstance):
         """
         self.initialize_scene_buttons()
         self.initialize_scene_graphics()
+        self.initialize_scene_texts()
 
     def exit(self):
         """
@@ -247,6 +276,10 @@ class SceneBase(TemplateInstance):
         for graphic_instance in self.scene_graphics.values():
             graphic_instance.update()
 
+        # Update each text in the scene
+        for text_instance in self.scene_texts.values():
+            text_instance.update()
+
     def draw(self):
         """
         Draw the scene.
@@ -260,3 +293,7 @@ class SceneBase(TemplateInstance):
         # Draw each graphic in the scene
         for graphic_instance in self.scene_graphics.values():
             graphic_instance.draw()
+
+        # Draw each text in the scene
+        for text_instance in self.scene_texts.values():
+            text_instance.draw()

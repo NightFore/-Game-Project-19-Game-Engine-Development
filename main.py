@@ -12,7 +12,7 @@ from manager.scene_manager import SceneManager
 from manager.text_manager import TextManager
 from manager.window_manager import WindowManager
 
-from data.constant_data import PROJECT_TITLE, SCREEN_SIZE, FPS
+from data.constant_data import WINDOW_TITLE, PROJECT_TITLE, SCREEN_SIZE, FPS
 from data.resource_data import DICT_RESOURCES, DICT_INSTANCES, DICT_SCENES
 
 class GameManager:
@@ -170,10 +170,11 @@ class GameManager:
         """
         Configure display settings.
         """
+        self.window_title = WINDOW_TITLE
         self.project_title = PROJECT_TITLE
         self.FPS = FPS
         self.screen_size = self.screen_width, self.screen_height = SCREEN_SIZE
-        self.gameDisplay = self.window_manager.create_window_instance(self.project_title, self.screen_size)
+        self.gameDisplay = self.window_manager.create_window_instance(self.window_title, self.screen_size)
 
     def setup_scenes(self):
         """

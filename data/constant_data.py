@@ -1,7 +1,8 @@
 # constant_data.py
 
 # Project Settings
-PROJECT_TITLE = "[Game Project 19] Game Engine Development"
+WINDOW_TITLE = "[Game Project 19] Game Engine Development"
+PROJECT_TITLE = "Game Engine Development"
 SCREEN_SIZE = (1280, 720)
 FPS = 60
 

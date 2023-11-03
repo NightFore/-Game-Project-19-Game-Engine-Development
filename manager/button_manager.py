@@ -65,14 +65,14 @@ class ButtonInstance(TemplateInstance):
         self.clicked = False
         self.clicked_and_released = False
 
-        # Create a graphic instance based on graphic_name
-        graphic_name = instance_data.get("graphic_name", None)
-        self.graphic_instance = self.graphic_manager.create_resource_instance(graphic_name)
+        # Create a graphic instance based on graphic
+        graphic = instance_data.get("graphic", None)
+        self.graphic_instance = self.graphic_manager.create_resource_instance(graphic)
 
-        # Create a text instance if a font_name is provided
-        font_name = instance_data.get("font_name", None)
-        if font_name:
-            self.text_instance = self.text_manager.create_resource_instance(font_name)
+        # Create a text instance if a font is provided
+        font = instance_data.get("font", None)
+        if font:
+            self.text_instance = self.text_manager.create_resource_instance(font)
 
         # Set the initial instance settings
         align = instance_data.get("align", None)
