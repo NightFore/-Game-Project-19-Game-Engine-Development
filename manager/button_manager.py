@@ -40,8 +40,6 @@ class ButtonInstance(TemplateInstance):
         Specific to ButtonInstance:
             - clicked (bool): A flag indicating if the button has been clicked.
             - clicked_and_released (bool): A flag indicating if the button has been clicked and released.
-            - pos (tuple): The position of the instance.
-            - text (str): The text content to be displayed.
             - align (str): The alignment of the instance.
             - graphic_instance (GraphicInstance): The graphic instance associated with the instance.
             - text_instance (TextInstance): The text instance associated with the instance.
@@ -52,11 +50,8 @@ class ButtonInstance(TemplateInstance):
     Methods:
         Management:
             - set_pos(tuple): Set the position of the instance.
-            - set_text(str): Set the text of the instance.
-
-        Inherited from TemplateInstance:
             - set_align(str): Set the alignment of the instance within its bounding rectangle.
-            - update_rect(): Update the instance's bounding rectangle.
+            - set_text(str): Set the text of the instance.
 
         Render:
             - update(): Update the instance.
@@ -69,46 +64,47 @@ class ButtonInstance(TemplateInstance):
         self.clicked = False
         self.clicked_and_released = False
 
-        # Initialize instance variables
-        self.pos = None
-        self.text = None
+        # Create a graphic instance based on graphic_name
+        graphic_name = instance_data.get("graphic_name", None)
+        self.graphic_instance = self.graphic_manager.create_resource_instance(graphic_name)
 
         # Create a text instance if a font_name is provided
         font_name = instance_data.get("font_name", None)
         if font_name:
             self.text_instance = self.text_manager.create_resource_instance(font_name)
 
-        # Create a graphic instance based on graphic_name
-        graphic_name = instance_data.get("graphic_name", None)
-        self.graphic_instance = self.graphic_manager.create_resource_instance(graphic_name)
-
-        # Set the alignment for the graphic instance
-        self.align = instance_data.get("align", None)
-        self.graphic_instance.set_align(self.align)
-
-        # Set the rect for the text instance
-        self.text_instance.set_rect(self.graphic_instance.rect)
+        # Set the initial instance settings
+        align = instance_data.get("align", None)
+        self.graphic_instance.set_align(align)
+        self.text_instance.set_pos(self.graphic_instance.rect.center)
 
 
     """
     Management:
         - set_pos
+        - set_align
         - set_text
     """
     def set_pos(self, pos):
         """
         Set the position of the instance.
         """
-        self.pos = pos
         self.graphic_instance.set_pos(pos)
         if self.text_instance:
-            self.text_instance.set_rect(self.graphic_instance.rect)
+            self.text_instance.set_pos(self.graphic_instance.rect.center)
+
+    def set_align(self, align):
+        """
+        Set the alignment of the instance within its bounding rectangle.
+        """
+        self.graphic_instance.set_align(align)
+        if self.text_instance:
+            self.text_instance.set_pos(self.graphic_instance.rect.center)
 
     def set_text(self, text):
         """
         Set the text of the instance.
         """
-        self.text = text
         if self.text_instance:
             self.text_instance.set_text(text)
 

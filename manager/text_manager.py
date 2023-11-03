@@ -52,12 +52,14 @@ class TextInstance(TemplateInstance):
             - screen (pygame.Surface): The game display surface.
 
     Methods:
-        Management:
+        Rect Management:
             - set_pos(tuple): Set the position of the instance.
+            - update_rect: Update the instance's bounding rectangle.
+
+        Text Management:
             - set_text(text): Set the text content.
             - set_font_size(size): Set the font size.
             - update_text: Update the rendered text and its rectangle.
-            - update_rect: Update the position of the text rectangle.
 
         Render:
             - update(): Update the instance.
@@ -81,12 +83,8 @@ class TextInstance(TemplateInstance):
 
 
     """
-    Management:
+    Rect Management:
         - set_pos
-        - set_rect
-        - set_text
-        - set_font_size
-        - update_text
         - update_rect
     """
     def set_pos(self, pos):
@@ -96,13 +94,20 @@ class TextInstance(TemplateInstance):
         self.pos = pos
         self.update_rect()
 
-    def set_rect(self, rect):
+    def update_rect(self):
         """
-        Set the rect of the instance.
+        Update the instance's bounding rectangle
         """
-        self.rect = rect
-        self.update_rect()
+        if self.text_rect:
+            self.text_rect.center = self.pos
 
+
+    """
+    Text Management:
+        - set_text
+        - set_font_size
+        - update_text
+    """
     def set_text(self, text):
         """
         Set the text content to be displayed.
@@ -126,16 +131,6 @@ class TextInstance(TemplateInstance):
         self.text_rect = self.text_surface.get_rect()
         self.update_rect()
 
-    def update_rect(self):
-        """
-        Update the position of the text rectangle.
-        """
-        if self.text_rect:
-            if self.rect:
-                self.text_rect.center = self.rect.center
-            else:
-                self.text_rect.center = self.pos
-
 
     """
     Render:
@@ -154,5 +149,5 @@ class TextInstance(TemplateInstance):
         """
         super().draw()
 
-        if self.text_surface:
+        if self.text_rect:
             self.screen.blit(self.text_surface, self.text_rect)

@@ -13,7 +13,7 @@ from manager.text_manager import TextManager
 from manager.window_manager import WindowManager
 
 from data.constant_data import PROJECT_TITLE, SCREEN_SIZE, FPS
-from data.resource_data import DICT_RESOURCES, DICT_DATA, DICT_INSTANCES
+from data.resource_data import DICT_RESOURCES, DICT_INSTANCES, DICT_SCENES
 
 class GameManager:
     """
@@ -157,7 +157,7 @@ class GameManager:
         Load and set resources for managers.
         """
         # Load resources from the resources dictionary
-        self.resource_dict = [DICT_RESOURCES, DICT_DATA, DICT_INSTANCES]
+        self.resource_dict = [DICT_RESOURCES, DICT_INSTANCES, DICT_SCENES]
         for resource_dict in self.resource_dict:
             self.resource_manager.load_resources(resource_dict)
 
@@ -194,14 +194,26 @@ class GameManager:
         - draw
         - quit_game
     """
+
     def run(self):
         while self.playing:
+            # Calculate the time since the last frame (in seconds)
             self.dt = self.clock.tick(self.FPS) / 1000
+
+            # Increment the total play time
             self.total_play_time += self.dt
+
+            # Handle user events
             self.events()
+
+            # Update the game state if not paused
             if not self.paused:
                 self.update()
+
+            # Render the current frame
             self.draw()
+
+        # Quit the game when the main loop ends
         self.quit_game()
 
     def events(self):

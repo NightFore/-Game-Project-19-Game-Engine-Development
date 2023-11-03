@@ -11,10 +11,10 @@ DICT_RESOURCES
         - rect
     TextManager
         - font
-DICT_DATA
+DICT_INSTANCES
     ButtonManager
         - button
-DICT_INSTANCES
+DICT_SCENES
     SceneManager
         - scene
 """
@@ -58,7 +58,7 @@ DICT_RESOURCES = {
 
 
 
-DICT_DATA = {
+DICT_INSTANCES = {
     # ButtonManager
     "button": {
         "button_rect": {"font_name": "liberation_serif", "graphic_name": "default_rect", "align": "center"},
@@ -68,7 +68,7 @@ DICT_DATA = {
 
 
 
-DICT_INSTANCES = {
+DICT_SCENES = {
     # SceneManager
     "scene": {
         "MainMenuScene": {

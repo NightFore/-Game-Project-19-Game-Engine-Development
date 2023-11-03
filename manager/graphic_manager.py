@@ -43,12 +43,12 @@ class GraphicInstance(TemplateInstance):
             - current_state (bool): The current state (active or inactive) of the instance.
 
             Rect Attributes:
-                - size (tuple): The size (width, height).
-                - border_radius (int): The border radius of the graphic.
-                - color_active (tuple): The active color of the graphic.
-                - color_inactive (tuple): The inactive color of the graphic.
-                - color_border (tuple): The border color of the graphic.
-                - color (tuple): The current color of the graphic.
+                - size (tuple): The size (width, height) of the rect.
+                - border_radius (int): The border radius of the rect.
+                - color_active (tuple): The active color of the rect.
+                - color_inactive (tuple): The inactive color of the rect.
+                - color_border (tuple): The border color of the rect.
+                - color (tuple): The current color of the rect.
 
             Image Attributes:
                 - image (Surface): The current displayed image.
@@ -57,7 +57,7 @@ class GraphicInstance(TemplateInstance):
                 - images (list): A list of images for image sequences.
                 - image_duration (int): The duration (in seconds) between image changes in a sequence.
                 - current_image (int): The index of the current image in the sequence.
-                - time_elapsed (int): The time elapsed since the last update.
+                - time_elapsed (int): The time elapsed since the last update of the current image in the sequence.
 
         Inherited Attributes from TemplateInstance:
             - screen (pygame.Surface): The game display surface.
@@ -67,10 +67,8 @@ class GraphicInstance(TemplateInstance):
         Management:
             - set_pos(tuple): Set the position of the instance.
             - set_size(tuple): Set the size of the instance.
-            - set_state(bool): Set the state (active or inactive) of the instance.
-
-        Inherited from TemplateInstance:
             - set_align(str): Set the alignment of the instance within its bounding rectangle.
+            - set_state(bool): Set the state (active or inactive) of the instance.
             - update_rect(): Update the instance's bounding rectangle.
 
         Render:
@@ -141,6 +139,13 @@ class GraphicInstance(TemplateInstance):
             self.size = self.rect[2], self.rect[3] = size
             self.update_rect()
 
+    def set_align(self, align):
+        """
+        Set the alignment of the instance within its bounding rectangle.
+        """
+        self.align = align
+        self.update_rect()
+
     def set_state(self, state):
         """
         Set the state (active or inactive) of the instance.
@@ -152,6 +157,30 @@ class GraphicInstance(TemplateInstance):
         else:
             if self.graphic_type == "rect":
                 self.color = self.color_inactive
+
+    def update_rect(self):
+        """
+        Update the instance's bounding rectangle.
+        """
+        if self.align == "center":
+            self.rect.center = self.pos
+        if self.align == "nw":
+            self.rect.topleft = self.pos
+        if self.align == "ne":
+            self.rect.topright = self.pos
+        if self.align == "sw":
+            self.rect.bottomleft = self.pos
+        if self.align == "se":
+            self.rect.bottomright = self.pos
+        if self.align == "n":
+            self.rect.midtop = self.pos
+        if self.align == "s":
+            self.rect.midbottom = self.pos
+        if self.align == "e":
+            self.rect.midright = self.pos
+        if self.align == "w":
+            self.rect.midleft = self.pos
+
 
     """
     Render:
@@ -188,5 +217,5 @@ class GraphicInstance(TemplateInstance):
                 pygame.draw.rect(self.screen, self.color_border, self.rect, self.border_radius)
 
         if self.graphic_type in ["image", "image_sequence"]:
-            # Draw the image
+            # Draw the current image
             self.screen.blit(self.image, self.rect)
