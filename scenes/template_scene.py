@@ -1,52 +1,69 @@
 from manager.scene_manager import SceneBase
 
 class TemplateScene(SceneBase):
-    def __init__(self, data, managers):
-        super().__init__(data, managers)
+    def __init__(self, instance_data, managers):
+        super().__init__(instance_data, managers)
+
 
     """
-    Scene Management
+    Lifecycle
     """
     def enter(self):
         super().enter()
-        self.init_managers()
-        self.init_graphics()
 
     def exit(self):
         super().exit()
 
     def update(self):
         super().update()
-        self.update_buttons()
-        self.update_graphics(self.dt)
 
     def draw(self):
         super().draw()
-        self.draw_graphics(self.screen)
 
 
     """
     Scene Logic
     """
-    def init_managers(self):
-        pass
+    def init_buttons(self):
+        super().init_buttons()
 
     def init_graphics(self):
-        pass
+        super().init_graphics()
+
+    def init_texts(self):
+        super().init_texts()
 
     def update_buttons(self):
-        pass
+        super().update_buttons()
 
-    def update_graphics(self, dt):
-        pass
+    def update_graphics(self):
+        super().update_graphics()
 
-    def draw_graphics(self, screen):
-        pass
+    def update_texts(self):
+        super().update_texts()
+
+    def draw_buttons(self):
+        super().draw_buttons()
+
+    def draw_graphics(self):
+        super().draw_graphics()
+
+    def draw_texts(self):
+        super().draw_texts()
 
 
     """
     Custom Functions
     """
+    def init_custom(self):
+        pass
+
+    def update_custom(self):
+        pass
+
+    def draw_custom(self):
+        pass
+
     @staticmethod
     def hello_world():
         print("Hello World")

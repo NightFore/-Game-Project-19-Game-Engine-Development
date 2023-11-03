@@ -6,18 +6,16 @@ class MainMenuScene(SceneBase):
 
 
     """
-    Scene Management
+    Lifecycle
     """
     def enter(self):
         super().enter()
-        self.init_texts()
 
     def exit(self):
         super().exit()
 
     def update(self):
         super().update()
-        self.update_buttons()
 
     def draw(self):
         super().draw()
@@ -26,10 +24,18 @@ class MainMenuScene(SceneBase):
     """
     Scene Logic
     """
+    def init_buttons(self):
+        super().init_buttons()
+
+    def init_graphics(self):
+        super().init_graphics()
+
     def init_texts(self):
+        super().init_texts()
         self.scene_texts["project_title"].set_text(self.game_manager.project_title)
 
     def update_buttons(self):
+        super().update_buttons()
         if self.scene_buttons["start"].clicked_and_released:
             self.scene_manager.set_scene("GameScene")
         if self.scene_buttons["settings"].clicked_and_released:
@@ -45,10 +51,34 @@ class MainMenuScene(SceneBase):
         if self.scene_buttons["quit_game"].clicked_and_released:
             self.game_manager.quit_game()
 
+    def update_graphics(self):
+        super().update_graphics()
+
+    def update_texts(self):
+        super().update_texts()
+
+    def draw_buttons(self):
+        super().draw_buttons()
+
+    def draw_graphics(self):
+        super().draw_graphics()
+
+    def draw_texts(self):
+        super().draw_texts()
+
 
     """
     Custom Functions
     """
+    def init_custom(self):
+        pass
+
+    def update_custom(self):
+        pass
+
+    def draw_custom(self):
+        pass
+
     def debug_audio_manager(self):
         self.audio_manager.play_music("debug_music")
         self.audio_manager.play_sound("debug_sound")

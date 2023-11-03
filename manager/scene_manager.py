@@ -146,6 +146,22 @@ class SceneBase(TemplateInstance):
             - exit(): Called when exiting the scene.
             - update(): Update the scene.
             - draw(): Draw the scene.
+
+        Scene Logic:
+            - init_buttons(self): Initialize buttons for the scene. Override this method in derived classes for button setup.
+            - init_graphics(self): Initialize graphics for the scene. Override this method in derived classes for graphic setup.
+            - init_texts(self): Initialize texts for the scene. Override this method in derived classes for text setup.
+            - update_buttons(self): Update buttons in the scene.
+            - update_graphics(self): Update graphics in the scene.
+            - update_texts(self): Update texts in the scene.
+            - draw_buttons(self): Draw buttons in the scene.
+            - draw_graphics(self): Draw graphics in the scene.
+            - draw_texts(self): Draw texts in the scene.
+
+        Custom Functions:
+            - init_custom(self): Initialize custom scene logic. Override this method in derived classes for custom scene setup.
+            - update_custom(self): Update custom scene logic. Override this method in derived classes for custom updates.
+            - draw_custom(self): Draw custom scene elements. Override this method in derived classes for custom drawing.
     """
     def __init__(self, instance_data, managers):
         # Call the constructor of the parent class (TemplateInstance)
@@ -161,9 +177,6 @@ class SceneBase(TemplateInstance):
 
     """
     Management
-        - initialize_scene_buttons
-        - initialize_scene_graphics
-        - initialize_scene_texts
     """
     def initialize_scene_buttons(self):
         """
@@ -241,10 +254,6 @@ class SceneBase(TemplateInstance):
 
     """
     Lifecycle
-        - enter
-        - exit
-        - update
-        - draw
     """
     def enter(self):
         """
@@ -253,6 +262,10 @@ class SceneBase(TemplateInstance):
         self.initialize_scene_buttons()
         self.initialize_scene_graphics()
         self.initialize_scene_texts()
+        self.init_buttons()
+        self.init_graphics()
+        self.init_texts()
+        self.init_custom()
 
     def exit(self):
         """
@@ -267,33 +280,103 @@ class SceneBase(TemplateInstance):
         Update the scene.
         """
         super().update()
-
-        # Update each button in the scene
-        for button_instance in self.scene_buttons.values():
-            button_instance.update()
-
-        # Update each graphic in the scene
-        for graphic_instance in self.scene_graphics.values():
-            graphic_instance.update()
-
-        # Update each text in the scene
-        for text_instance in self.scene_texts.values():
-            text_instance.update()
+        self.update_buttons()
+        self.update_graphics()
+        self.update_texts()
+        self.update_custom()
 
     def draw(self):
         """
         Draw the scene.
         """
         super().draw()
+        self.draw_buttons()
+        self.draw_graphics()
+        self.draw_texts()
+        self.draw_custom()
 
-        # Draw each button in the scene
+
+    """
+    Scene Logic
+    """
+    def init_buttons(self):
+        """
+        Initialize buttons for the scene. Override this method in derived classes for button setup.
+        """
+        pass
+
+    def init_graphics(self):
+        """
+        Initialize graphics for the scene. Override this method in derived classes for graphic setup.
+        """
+        pass
+
+    def init_texts(self):
+        """
+        Initialize texts for the scene. Override this method in derived classes for text setup.
+        """
+        pass
+
+    def update_buttons(self):
+        """
+        Update buttons in the scene.
+        """
+        for button_instance in self.scene_buttons.values():
+            button_instance.update()
+
+    def update_graphics(self):
+        """
+        Update graphics in the scene.
+        """
+        for graphic_instance in self.scene_graphics.values():
+            graphic_instance.update()
+
+    def update_texts(self):
+        """
+        Update texts in the scene.
+        """
+        for text_instance in self.scene_texts.values():
+            text_instance.update()
+
+    def draw_buttons(self):
+        """
+        Draw buttons in the scene.
+        """
         for button_instance in self.scene_buttons.values():
             button_instance.draw()
 
-        # Draw each graphic in the scene
+    def draw_graphics(self):
+        """
+        Draw graphics in the scene.
+        """
         for graphic_instance in self.scene_graphics.values():
             graphic_instance.draw()
 
-        # Draw each text in the scene
+    def draw_texts(self):
+        """
+        Draw texts in the scene.
+        """
         for text_instance in self.scene_texts.values():
             text_instance.draw()
+
+
+    """
+    Custom Functions
+    """
+    def init_custom(self):
+        """
+        Initialize custom scene logic. Override this method in derived classes for custom scene setup.
+        """
+        pass
+
+    def update_custom(self):
+        """
+        Update custom scene logic. Override this method in derived classes for custom updates.
+        """
+        pass
+
+    def draw_custom(self):
+        """
+        Draw custom scene elements. Override this method in derived classes for custom drawing.
+        """
+        pass
