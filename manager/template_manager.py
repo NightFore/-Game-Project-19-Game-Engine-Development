@@ -5,12 +5,12 @@ class TemplateManager:
     TemplateManager manages resources and their instances in the game.
 
     Attributes:
-    - managers (dict): A dictionary containing game managers.
-    - resources (dict): A dictionary containing loaded resources.
-    - instances (dict): A dictionary containing resource instances.
-    - instance_class: The class used to create resource instances.
-    - resource_types_to_load (list): A list of resource types to load for this manager.
-    - manager_specific_attribute: An attribute specific to this manager.
+        - managers (dict): A dictionary containing game managers.
+        - resources (dict): A dictionary containing loaded resources.
+        - instances (dict): A dictionary containing resource instances.
+        - instance_class: The class used to create resource instances.
+        - resource_types_to_load (list): A list of resource types to load for this manager.
+        - manager_specific_attribute: An attribute specific to this manager.
 
     Methods:
         Setup

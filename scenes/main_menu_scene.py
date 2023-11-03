@@ -9,7 +9,6 @@ class MainMenuScene(SceneBase):
     """
     def enter(self):
         super().enter()
-
         self.init_debug()
 
     def exit(self):
@@ -27,14 +26,11 @@ class MainMenuScene(SceneBase):
     """
     def init_debug(self):
         button_dict = self.scene_data.get("buttons", {})
-        print(self.scene_data)
-        print(button_dict)
 
         for button_name, button_data in button_dict.items():
             button_resource = button_data.get("button", None)
             button_pos = button_data.get("pos", (0, 0))
             button_text = button_data.get("text", "")
-            print(button_name, button_data)
 
             if button_resource:
                 button_instance = self.button_manager.create_resource_instance(button_resource)

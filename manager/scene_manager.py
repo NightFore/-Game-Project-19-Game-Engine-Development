@@ -11,19 +11,22 @@ class SceneManager(TemplateManager):
     SceneManager manages game scenes.
 
     Attributes:
-        current_scene (SceneBase): The currently active game scene.
+        - resources (dict): A dictionary containing loaded resources.
+        - instances (dict): A dictionary containing resource instances.
+        - instance_class: The class used to create resource instances.
+        - resource_types_to_load (list): A list of resource types to load for this manager.
+        - current_scene (SceneBase): The currently active game scene.
 
     Methods:
-    - Setup
-        - load_scenes_from_directory(directory): Load game scenes from Python files in the specified directory and add them to the SceneManager.
-        - load_buttons_data(): Pre-load data for buttons in all scenes.
+        Setup:
+            - load_scenes_from_directory(directory): Load game scenes from Python files in the specified directory and add them to the SceneManager.
 
-    - Management
-        - set_scene(scene_name): Set the currently active game scene.
+        Management:
+            - set_scene(scene_name): Set the currently active game scene.
 
-    - Render
-        - update(): Update the current scene and buttons.
-        - draw(): Draw the current scene and buttons on the screen.
+        Render:
+            - update(): Update the current scene.
+            - draw(): Draw the current scene.
     """
     def __init__(self):
         # Initialize the manager as a subclass of TemplateManager
@@ -47,7 +50,6 @@ class SceneManager(TemplateManager):
     """
     Setup
         - load_scenes_from_directory
-        - load_buttons_data
     """
     def load_scenes_from_directory(self, directory):
         """
@@ -76,28 +78,6 @@ class SceneManager(TemplateManager):
                         # Add the scene to the SceneManager
                         self.instances[name] = scene_instance
 
-    def load_buttons_data(self):
-        """
-        Pre-load data for buttons in all scenes.
-        """
-        for scene_name, scene_data in self.resources.items():
-            buttons_data = scene_data.get("buttons", {})
-
-            for button_name, button_info in buttons_data.items():
-                graphic_name = button_info.get("graphic_name")
-                if graphic_name:
-                    graphic_instance = self.graphic_manager.create_resource_instance(graphic_name)
-                    button_info["graphic_instance"] = graphic_instance
-
-                font_name = button_info.get("font_name")
-                if font_name:
-                    text_instance = self.text_manager.create_resource_instance(font_name)
-                    button_info["text_instance"] = text_instance
-
-                rect_data = button_info.get("rect")
-                if rect_data:
-                    button_info["rect"] = pygame.Rect(rect_data)
-
 
     """
     Management
@@ -124,7 +104,6 @@ class SceneManager(TemplateManager):
             self.current_scene.enter()
 
 
-
     """
     Render
         - update
@@ -132,14 +111,14 @@ class SceneManager(TemplateManager):
     """
     def update(self):
         """
-        Update the current scene and buttons.
+        Update the current scene.
         """
         if self.current_scene:
             self.current_scene.update()
 
     def draw(self):
         """
-        Draw the current scene and buttons on the screen.
+        Draw the current scene.
         """
         if self.current_scene:
             self.current_scene.draw()
@@ -152,61 +131,33 @@ class SceneBase(TemplateInstance):
     SceneBase provides a base for game scenes.
 
     Attributes:
-        scene_buttons (dict): A dictionary containing buttons in the scene.
-        scene_texts (dict): A dictionary containing texts in the scene.
+        - scene_buttons (dict): A dictionary containing buttons in the scene.
+        - scene_graphics (dict): A dictionary containing graphics in the scene.
+        - scene_texts (dict): A dictionary containing texts in the scene.
 
     Methods:
-    - Management
-        - set_scene(scene_name): Set the currently active game scene.
-        - create_buttons_from_dict(scene_name): Create buttons for the specified scene based on a dictionary of button data.
-        - create_texts_from_dict(scene_name): Create text instances for the specified scene based on a dictionary of text data.
+        Management:
 
-    - Lifecycle
-        - enter: Called when entering the scene.
-        - exit: Called when exiting the scene.
-        - update: Update the scene.
-        - draw: Draw the scene.
+        Lifecycle:
+            - enter(): Called when entering the scene.
+            - exit(): Called when exiting the scene.
+            - update(): Update the scene.
+            - draw(): Draw the scene.
     """
     def __init__(self, instance_data, managers):
-        """
-        Initialize the SceneBase.
-
-        Args:
-            instance_data (dict): Data for initializing the scene.
-            managers (dict): A dictionary containing game managers.
-        """
         super().__init__(instance_data, managers)
+
+        # Initialize instance variables
         self.scene_name = self.__class__.__name__
         self.scene_data = self.instance_data[self.scene_name]
         self.scene_buttons = {}
-        self.scene_texts = []
+        self.scene_graphics = {}
+        self.scene_texts = {}
 
 
     """
     Management
-        - create_buttons_from_dict
-        - create_texts_from_dict
     """
-    def create_buttons_from_dict(self):
-        """
-        Create buttons for the specified scene based on a dictionary of button data.
-        """
-        buttons_dict = self.instance_data[self.scene_name].get("buttons", {})
-        for name, button_info in buttons_dict.items():
-            # Create an instance using the manager
-            button_instance = self.button_manager.create_instance_from_data(button_info)
-            self.scene_buttons[name] = button_instance
-
-    def create_texts_from_dict(self):
-        """
-        Create text instances for the specified scene based on a dictionary of text data.
-        """
-
-        texts_dict = self.instance_data[self.scene_name].get("texts", {})
-        for text_info in texts_dict:
-            # Create an instance using the manager
-            text_instance = self.text_manager.create_instance_from_data(text_info)
-            self.scene_texts.append(text_instance)
 
 
     """
@@ -220,14 +171,13 @@ class SceneBase(TemplateInstance):
         """
         Called when entering the scene.
         """
-        # self.create_buttons_from_dict()
-        # self.create_texts_from_dict()
+        pass
 
     def exit(self):
         """
         Called when exiting the scene.
         """
-        self.button_manager.clear_resources()
+        pass
 
     def update(self):
         """

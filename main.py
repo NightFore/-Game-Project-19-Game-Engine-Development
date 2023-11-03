@@ -182,9 +182,6 @@ class GameManager:
         # Load scenes from the 'scenes' directory
         self.scene_manager.load_scenes_from_directory("scenes")
 
-        # Load button graphics for scenes
-        self.scene_manager.load_buttons_data()
-
 
     """
     Game Loop

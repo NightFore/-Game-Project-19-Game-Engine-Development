@@ -8,10 +8,10 @@ class GraphicManager(TemplateManager):
     GraphicManager manages graphic resources and their instances in the game.
 
     Attributes:
-    - resources (dict): A dictionary containing loaded resources.
-    - instances (dict): A dictionary containing resource instances.
-    - instance_class: The class used to create resource instances.
-    - resource_types_to_load (list): A list of resource types to load for this manager.
+        - resources (dict): A dictionary containing loaded resources.
+        - instances (dict): A dictionary containing resource instances.
+        - instance_class: The class used to create resource instances.
+        - resource_types_to_load (list): A list of resource types to load for this manager.
     """
     def __init__(self):
         # Initialize the manager as a subclass of TemplateManager
