@@ -36,7 +36,7 @@ DICT_RESOURCES = {
         "default_sequence": {
             "files": [{"filename": "debug_graphic_manager_sequence_1.png"},
                       {"filename": "debug_graphic_manager_sequence_2.png"}],
-            "image_duration": 1,
+            "image_duration": 0.5,
         },
     },
     "rect": {
@@ -61,8 +61,9 @@ DICT_RESOURCES = {
 DICT_INSTANCES = {
     # ButtonManager
     "button": {
-        "button_rect": {"font_name": "liberation_serif", "graphic_name": "default_rect", "align": "center"},
-        "button_image": {"font_name": "liberation_serif", "graphic_name": "default_single", "align": "nw"},
+        "button_interface": {"graphic_name": "default_rect", "font_name": "liberation_serif", "align": "center"},
+        "button_icon": {"graphic_name": "default_icon", "font_name": "liberation_serif", "align": "nw"},
+        "button_image": {"graphic_name": "default_single", "font_name": "liberation_serif", "align": "nw"},
     },
 }
 
@@ -73,14 +74,18 @@ DICT_SCENES = {
     "scene": {
         "MainMenuScene": {
             "buttons": {
-                "start": {"button": "button_rect", "pos": (640, 250), "text": "Start"},
-                "settings": {"button": "button_rect", "pos": (640, 320), "text": "Settings"},
-                "debug_audio": {"button": "button_rect", "pos": (640, 390), "text": "Debug Audio"},
-                "pause_music": {"button": "button_rect", "pos": (640, 460), "text": "Pause Music"},
-                "toggle_music": {"button": "button_rect", "pos": (640, 530), "text": "Toggle Music"},
-                "toggle_zoom": {"button": "button_rect", "pos": (640, 600), "text": "Toggle Zoom"},
-                "quit_game": {"button": "button_image", "pos": (10, 10), "text": "X"},
+                "start": {"button": "button_interface", "pos": (640, 250), "text": "Start"},
+                "settings": {"button": "button_interface", "pos": (640, 320), "text": "Settings"},
+                "debug_audio": {"button": "button_interface", "pos": (640, 390), "text": "Debug Audio"},
+                "pause_music": {"button": "button_interface", "pos": (640, 460), "text": "Pause Music"},
+                "toggle_music": {"button": "button_interface", "pos": (640, 530), "text": "Toggle Music"},
+                "toggle_zoom": {"button": "button_interface", "pos": (640, 600), "text": "Toggle Zoom"},
+                "quit_game": {"button": "button_icon", "pos": (10, 10), "text": "X"},
             },
+            "graphics": {
+                "test_single": {"graphic": "default_single", "pos": (10, 100), "align": "nw"},
+                "test_sequence": {"graphic": "default_sequence", "pos": (640, 100), "align": "center"}
+            }
         },
         "GameScene": {
             "buttons": {

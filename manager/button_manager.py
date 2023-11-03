@@ -58,6 +58,7 @@ class ButtonInstance(TemplateInstance):
             - draw(): Draw the instance.
     """
     def __init__(self, instance_data, managers):
+        # Call the constructor of the parent class (TemplateInstance)
         super().__init__(instance_data, managers)
 
         # Initialize state variables

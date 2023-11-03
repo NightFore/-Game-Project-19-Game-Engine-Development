@@ -66,6 +66,7 @@ class TextInstance(TemplateInstance):
             - draw(): Draw the instance.
     """
     def __init__(self, data, managers):
+        # Call the constructor of the parent class (TemplateInstance)
         super().__init__(data, managers)
 
         # Initialize instance variables

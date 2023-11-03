@@ -138,6 +138,7 @@ class SceneBase(TemplateInstance):
     Methods:
         Management:
             - initialize_scene_buttons(): Initialize and create button instances for the current scene.
+            - initialize_scene_graphics(): Initialize and create graphic instances for the current scene.
 
         Lifecycle:
             - enter(): Called when entering the scene.
@@ -146,35 +147,68 @@ class SceneBase(TemplateInstance):
             - draw(): Draw the scene.
     """
     def __init__(self, instance_data, managers):
+        # Call the constructor of the parent class (TemplateInstance)
         super().__init__(instance_data, managers)
 
         # Initialize instance variables
         self.scene_name = self.__class__.__name__
         self.scene_data = self.instance_data[self.scene_name]
         self.scene_buttons = {}
+        self.scene_graphics = {}
 
 
     """
     Management
+        - initialize_scene_buttons
+        - initialize_scene_graphics
     """
     def initialize_scene_buttons(self):
         """
         Initialize and create button instances for the current scene.
         """
+        # Get the button data for the current scene
         button_dict = self.scene_data.get("buttons", {})
 
+        # Iterate through the button data
         for button_name, button_data in button_dict.items():
             button_resource = button_data.get("button", None)
             button_pos = button_data.get("pos", (0, 0))
             button_text = button_data.get("text", "")
+            button_align = button_data.get("align", None)
 
+            # Check if a valid button resource is specified
             if button_resource:
+                # Create a button instance
                 button_instance = self.button_manager.create_resource_instance(button_resource)
                 button_instance.set_pos(button_pos)
                 button_instance.set_text(button_text)
+                button_instance.set_align(button_align)
 
                 # Add the button instance to the scene_buttons dictionary
                 self.scene_buttons[button_name] = button_instance
+
+    def initialize_scene_graphics(self):
+        """
+        Initialize and create graphic instances for the current scene.
+        """
+        # Get the graphic data for the current scene
+        graphic_dict = self.scene_data.get("graphics", {})
+
+        # Iterate through the graphic data
+        for graphic_name, graphic_data in graphic_dict.items():
+            graphic_resource = graphic_data.get("graphic", None)
+            graphic_pos = graphic_data.get("pos", (0, 0))
+            graphic_align = graphic_data.get("align", None)
+
+            # Check if a valid graphic resource is specified
+            if graphic_resource:
+                # Create a graphic instance
+                graphic_instance = self.graphic_manager.create_resource_instance(graphic_resource)
+                graphic_instance.set_pos(graphic_pos)
+                graphic_instance.set_align(graphic_align)
+
+                # Add the graphic instance to the scene_graphics dictionary
+                self.scene_graphics[graphic_name] = graphic_instance
 
 
     """
@@ -189,12 +223,15 @@ class SceneBase(TemplateInstance):
         Called when entering the scene.
         """
         self.initialize_scene_buttons()
+        self.initialize_scene_graphics()
 
     def exit(self):
         """
         Called when exiting the scene.
         """
         self.scene_buttons = {}
+        self.scene_graphics = {}
+        self.scene_texts = {}
 
     def update(self):
         """
@@ -206,6 +243,10 @@ class SceneBase(TemplateInstance):
         for button_instance in self.scene_buttons.values():
             button_instance.update()
 
+        # Update each graphic in the scene
+        for graphic_instance in self.scene_graphics.values():
+            graphic_instance.update()
+
     def draw(self):
         """
         Draw the scene.
@@ -215,3 +256,7 @@ class SceneBase(TemplateInstance):
         # Draw each button in the scene
         for button_instance in self.scene_buttons.values():
             button_instance.draw()
+
+        # Draw each graphic in the scene
+        for graphic_instance in self.scene_graphics.values():
+            graphic_instance.draw()

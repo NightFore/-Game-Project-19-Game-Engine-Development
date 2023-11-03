@@ -76,6 +76,7 @@ class GraphicInstance(TemplateInstance):
             - draw(): Draw the instance.
     """
     def __init__(self, instance_data, managers):
+        # Call the constructor of the parent class (TemplateInstance)
         super().__init__(instance_data, managers)
 
         # Initialize state variables
@@ -95,28 +96,37 @@ class GraphicInstance(TemplateInstance):
         if self.graphic_type == "rect":
             self.size = instance_data.get("size", None)
             self.border_radius = instance_data.get("border_radius", None)
-            self.rect = pygame.Rect((self.pos[0], self.pos[1], self.size[0], self.size[1]))
 
             color_data = instance_data.get("color_data", None)
             if color_data:
                 self.color_active = color_data.get("active", None)
                 self.color_inactive = color_data.get("inactive", None)
                 self.color_border = color_data.get("border", None)
+
+            # Set the initial rect and color
+            self.rect = pygame.Rect((self.pos[0], self.pos[1], self.size[0], self.size[1]))
             self.color = self.color_inactive
 
         # Image attributes
         elif self.graphic_type == "image":
             self.image = instance_data.get("image", None)
+
+            # Set the initial rect
             self.rect = self.image.get_rect()
 
         # Image sequence attributes
         elif self.graphic_type == "image_sequence":
+            # Get the list of images for the sequence
             self.images = instance_data.get("images", None)
             self.image_duration = instance_data.get("image_duration", None)
-            self.image = self.images[self.current_image]
-            self.rect = self.image.get_rect()
+
+            # Initialize the current image index and elapsed time
             self.current_image = 0
             self.time_elapsed = 0
+
+            # Set the initial image and rect
+            self.image = self.images[self.current_image]
+            self.rect = self.image.get_rect()
 
 
     """
