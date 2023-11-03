@@ -4,18 +4,19 @@ class MainMenuScene(SceneBase):
     def __init__(self, instance_data, managers):
         super().__init__(instance_data, managers)
 
+
     """
     Scene Management
     """
     def enter(self):
         super().enter()
-        self.init_debug()
 
     def exit(self):
         super().exit()
 
     def update(self):
         super().update()
+        self.update_buttons()
 
     def draw(self):
         super().draw()
@@ -24,21 +25,21 @@ class MainMenuScene(SceneBase):
     """
     Scene Logic
     """
-    def init_debug(self):
-        button_dict = self.scene_data.get("buttons", {})
-
-        for button_name, button_data in button_dict.items():
-            button_resource = button_data.get("button", None)
-            button_pos = button_data.get("pos", (0, 0))
-            button_text = button_data.get("text", "")
-
-            if button_resource:
-                button_instance = self.button_manager.create_resource_instance(button_resource)
-                button_instance.set_pos(button_pos)
-                button_instance.set_text(button_text)
-
-                # Add the button instance to the scene_buttons dictionary
-                self.scene_buttons[button_name] = button_instance
+    def update_buttons(self):
+        if self.scene_buttons["start"].clicked_and_released:
+            self.scene_manager.set_scene("GameScene")
+        if self.scene_buttons["settings"].clicked_and_released:
+            self.scene_manager.set_scene("SettingsScene")
+        if self.scene_buttons["debug_audio"].clicked_and_released:
+            self.debug_audio_manager()
+        if self.scene_buttons["pause_music"].clicked_and_released:
+            self.audio_manager.pause_music()
+        if self.scene_buttons["toggle_music"].clicked_and_released:
+            self.audio_manager.toggle_music()
+        if self.scene_buttons["toggle_zoom"].clicked_and_released:
+            self.window_manager.toggle_zoom()
+        if self.scene_buttons["quit_game"].clicked_and_released:
+            self.game_manager.quit_game()
 
 
     """

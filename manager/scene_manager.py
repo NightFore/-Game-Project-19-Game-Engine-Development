@@ -137,6 +137,7 @@ class SceneBase(TemplateInstance):
 
     Methods:
         Management:
+            - initialize_scene_buttons(): Initialize and create button instances for the current scene.
 
         Lifecycle:
             - enter(): Called when entering the scene.
@@ -151,13 +152,29 @@ class SceneBase(TemplateInstance):
         self.scene_name = self.__class__.__name__
         self.scene_data = self.instance_data[self.scene_name]
         self.scene_buttons = {}
-        self.scene_graphics = {}
-        self.scene_texts = {}
 
 
     """
     Management
     """
+    def initialize_scene_buttons(self):
+        """
+        Initialize and create button instances for the current scene.
+        """
+        button_dict = self.scene_data.get("buttons", {})
+
+        for button_name, button_data in button_dict.items():
+            button_resource = button_data.get("button", None)
+            button_pos = button_data.get("pos", (0, 0))
+            button_text = button_data.get("text", "")
+
+            if button_resource:
+                button_instance = self.button_manager.create_resource_instance(button_resource)
+                button_instance.set_pos(button_pos)
+                button_instance.set_text(button_text)
+
+                # Add the button instance to the scene_buttons dictionary
+                self.scene_buttons[button_name] = button_instance
 
 
     """
@@ -171,13 +188,13 @@ class SceneBase(TemplateInstance):
         """
         Called when entering the scene.
         """
-        pass
+        self.initialize_scene_buttons()
 
     def exit(self):
         """
         Called when exiting the scene.
         """
-        pass
+        self.scene_buttons = {}
 
     def update(self):
         """
@@ -189,10 +206,6 @@ class SceneBase(TemplateInstance):
         for button_instance in self.scene_buttons.values():
             button_instance.update()
 
-        # Update each text in the scene
-        for text_instance in self.scene_texts:
-            text_instance.update()
-
     def draw(self):
         """
         Draw the scene.
@@ -202,7 +215,3 @@ class SceneBase(TemplateInstance):
         # Draw each button in the scene
         for button_instance in self.scene_buttons.values():
             button_instance.draw()
-
-        # Draw each text in the scene
-        for text_instance in self.scene_texts:
-            text_instance.draw()
