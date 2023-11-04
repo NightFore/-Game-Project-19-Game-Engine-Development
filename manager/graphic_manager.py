@@ -65,10 +65,10 @@ class GraphicInstance(TemplateInstance):
 
     Methods:
         Management:
-            - set_pos(tuple): Set the position of the instance.
-            - set_size(tuple): Set the size of the instance.
-            - set_align(str): Set the alignment of the instance within its bounding rectangle.
-            - set_state(bool): Set the state (active or inactive) of the instance.
+            - set_pos(pos): Set the position of the instance.
+            - set_size(size): Set the size of the instance.
+            - set_align(align): Set the alignment of the instance within its bounding rectangle.
+            - set_state(state): Set the state (active or inactive) of the instance.
             - update_rect(): Update the instance's bounding rectangle.
 
         Render:

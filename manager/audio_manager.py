@@ -8,37 +8,34 @@ class AudioManager(TemplateManager):
     AudioManager manages music and sound effects in the game.
 
     Attributes:
-        Specific to AudioManager:
-            - current_music_name (str): The name of the currently playing music.
-            - music_volume (float): The volume of the currently playing music (0.0 to 1.0).
-            - sound_volume (float): The volume for all loaded sound effects (0.0 to 1.0).
-            - loop (int): The number of repetitions for playing music (-1 for looping indefinitely, 0 for no looping).
-
-        Inherited from TemplateManager:
-            - resources (dict): A dictionary containing loaded audio resources.
-            - resource_types_to_load (list): A list of resource types to load for this manager.
+        - resources (dict): A dictionary containing loaded audio resources.
+        - resource_types_to_load (list): A list of resource types to load for this manager.
+        - current_music_name (str): The name of the currently playing music.
+        - music_volume (float): The volume of the currently playing music (0.0 to 1.0).
+        - sound_volume (float): The volume for all loaded sound effects (0.0 to 1.0).
+        - loop (int): The number of repetitions for playing music (-1 for looping indefinitely, 0 for no looping).
 
     Methods:
         Settings:
-            - set_music_volume(volume: float or int): Set the music volume.
-            - set_sound_volume(volume: float or int): Set the volume for all loaded sound effects.
-            - increment_music_volume(increment: float or int): Increment the music volume.
-            - increment_sound_volume(increment: float or int): Increment the sound volume.
-            - set_music_loop(loop: int): Set the loop behavior for playing music.
+            - set_music_volume(volume): Set the music volume.
+            - set_sound_volume(volume): Set the volume for all loaded sound effects.
+            - increment_music_volume(increment): Increment the music volume.
+            - increment_sound_volume(increment): Increment the sound volume.
+            - set_music_loop(loop): Set the loop behavior for playing music.
 
         Management:
-            - play_music(name: str): Play the music associated with the given name.
-            - play_sound(name: str): Play the sound effect associated with the given name.
+            - play_music(audio_name): Play the music associated with the given name.
+            - play_sound(audio_name): Play the sound effect associated with the given name.
             - stop_music(): Stop the currently playing music.
             - pause_music(): Pause the currently playing music.
             - unpause_music(): Unpause the currently paused music.
             - toggle_music(): Toggle the music state between paused and playing.
 
         Validation:
-            - validate_volume(volume: float or int): Validate volume value (type and range).
-            - validate_music_loop(loop: int): Validate the loop behavior for playing music.
-            - validate_increment(increment: float or int): Validate the volume increment value (type).
-            - validate_audio_resource(name: str, resource_type: str): Validate the existence of the audio resource.
+            - validate_volume(volume): Validate volume value (type and range).
+            - validate_music_loop(loop): Validate the loop behavior for playing music.
+            - validate_increment(increment): Validate the volume increment value (type).
+            - validate_audio_resource(audio_name, resource_type): Validate the existence of the audio resource.
     """
     def __init__(self):
         # Initialize the manager as a subclass of TemplateManager
@@ -164,18 +161,18 @@ class AudioManager(TemplateManager):
         - unpause_music
         - toggle_music
     """
-    def play_music(self, name):
+    def play_music(self, audio_name):
         """
         Play the music associated with the given name.
 
         Args:
-            name (str): The name of the music to play.
+            audio_name (str): The name of the music to play.
 
         Raises:
-            ValueError: If the specified 'name' is not found in the AudioManager's audio resources.
+            ValueError: If the specified 'audio_name' is not found in the AudioManager's audio resources.
         """
         # Validate the audio resource existence
-        self.validate_audio_resource(name, "music", self.resources)
+        self.validate_audio_resource(audio_name, "music", self.resources)
 
         # Check if any music is currently playing
         current_music = pygame.mixer.music.get_busy()
@@ -184,27 +181,27 @@ class AudioManager(TemplateManager):
         current_name = self.current_music_name if current_music else None
 
         # Check if the requested music is different from the currently playing one
-        if current_name != name:
+        if current_name != audio_name:
             # Load and play the new track
-            pygame.mixer.music.load(self.resources[name])
+            pygame.mixer.music.load(self.resources[audio_name])
             pygame.mixer.music.play(self.loop)
-            self.current_music_name = name
+            self.current_music_name = audio_name
 
-    def play_sound(self, name):
+    def play_sound(self, audio_name):
         """
         Play the sound effect associated with the given name.
 
         Args:
-            name (str): The name of the sound effect to play.
+            audio_name (str): The name of the sound effect to play.
 
         Raises:
-            ValueError: If the specified 'name' is not found in the AudioManager's audio resources.
+            ValueError: If the specified 'audio_name' is not found in the AudioManager's audio resources.
         """
         # Validate the audio resource existence
-        self.validate_audio_resource(name, "sound", self.resources)
+        self.validate_audio_resource(audio_name, "sound", self.resources)
 
         # Play the sound effect
-        self.resources[name].play()
+        self.resources[audio_name].play()
 
     @staticmethod
     def stop_music():
@@ -294,17 +291,17 @@ class AudioManager(TemplateManager):
             raise ValueError("The 'loop' argument must be -1 for looping indefinitely or 0 for no looping.")
 
     @staticmethod
-    def validate_audio_resource(name, resource_type, resources):
+    def validate_audio_resource(audio_name, resource_type, resources):
         """
-        Validate if the specified 'name' exists in the AudioManager's audio resources.
+        Validate if the specified 'audio_name' exists in the AudioManager's audio resources.
 
         Args:
-            name (str): The name of the audio resource to validate.
+            audio_name (str): The name of the audio resource to validate.
             resource_type (str): The type of audio resource ("music" or "sound").
             resources (dict): The dictionary of audio resources managed by the AudioManager.
 
         Raises:
-            ValueError: If the specified 'name' is not found in the AudioManager's audio resources.
+            ValueError: If the specified 'audio_name' is not found in the AudioManager's audio resources.
         """
-        if name not in resources:
-            raise ValueError(f"{resource_type.capitalize()} '{name}' does not exist in the AudioManager's audio resources.")
+        if audio_name not in resources:
+            raise ValueError(f"{resource_type.capitalize()} '{audio_name}' does not exist in the AudioManager's audio resources.")

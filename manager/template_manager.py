@@ -14,11 +14,11 @@ class TemplateManager:
 
     Methods:
         Setup
-            - set_managers(managers: dict): Load and set game managers.
+            - set_managers(managers): Load and set game managers.
             - set_resources(): Load resources of specified types and store them in the resources dictionary.
 
         Management
-            - create_resource_instance(resource_name: str): Create a resource instance from a resource template.
+            - create_resource_instance(resource_name): Create a resource instance from a resource template.
             - clear_resources(): Clear all resource instances managed by this manager.
     """
     def __init__(self):
@@ -122,8 +122,8 @@ class TemplateInstance:
 
     Methods:
         Render:
-            - update(): Update the instance.
-            - draw(): Draw the instance.
+            - update (): Update the instance.
+            - draw (): Draw the instance.
     """
     def __init__(self, instance_data, managers):
         # Store the input data specific to this instance.

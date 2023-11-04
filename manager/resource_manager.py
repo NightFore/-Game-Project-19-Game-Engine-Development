@@ -14,10 +14,10 @@ class ResourceManager(TemplateManager):
 
     Methods:
         Setup:
-            - set_resource_folders: Set resource folders for specific resource types.
+            - set_resource_folders(resource_folders: dict): Set resource folders for specific resource types.
 
         Resource Acquisition:
-            - load_resources: Load multiple resources from a dictionary.
+            - load_resources(resources_dict: dict): Load multiple resources from a dictionary.
             - load_resource: Load a resource based on its type and specific data.
             - get_info: Get information about a specific resource.
 

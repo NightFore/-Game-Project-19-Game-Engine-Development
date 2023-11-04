@@ -49,9 +49,9 @@ class ButtonInstance(TemplateInstance):
 
     Methods:
         Management:
-            - set_pos(tuple): Set the position of the instance.
-            - set_align(str): Set the alignment of the instance within its bounding rectangle.
-            - set_text(str): Set the text of the instance.
+            - set_pos(pos): Set the position of the instance.
+            - set_align(align): Set the alignment of the instance within its bounding rectangle.
+            - set_text(text): Set the text of the instance.
 
         Render:
             - update(): Update the instance.

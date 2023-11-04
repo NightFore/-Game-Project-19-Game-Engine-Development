@@ -1,6 +1,5 @@
 # scene_manager.py
 
-import pygame
 import os
 import inspect
 import importlib

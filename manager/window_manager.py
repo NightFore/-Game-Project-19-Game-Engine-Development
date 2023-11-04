@@ -9,16 +9,21 @@ class WindowManager(pygame.Surface):
     WindowManager manages the game window and its display modes.
 
     Attributes:
-        project_title (str): The title of the game project.
-        game_size (tuple): The size of the game window in (width, height).
-        screen_info (pygame.Surface): Information about the display's capabilities.
-        screen_scaled (tuple): The scaled screen resolution for maintaining aspect ratio.
-        screen_gap (tuple): Gap used to center the game surface when zoomed.
-        flags (int): Flags for the display mode.
-        is_fullscreen (bool): Indicates if the game is in fullscreen mode.
-        is_zoom (bool): Indicates if the game is in zoom mode.
-        display_factor (float): Factor used for scaling the display.
-        display (pygame.Surface): The game window surface.
+        Game Settings Attributes:
+            - project_title (str): The title of the game project.
+            - game_size (tuple): The size of the game window in (width, height).
+
+        Display Settings Attributes:
+            - screen_info (pygame.Surface): Information about the display's capabilities.
+            - screen_scaled (tuple): The scaled screen resolution for maintaining aspect ratio.
+            - screen_gap (tuple): Gap used to center the game surface when zoomed.
+            - display_factor (float): Factor used for scaling the display.
+            - display (pygame.Surface): The game window surface.
+
+        Flags Attributes:
+            - flags (int): Flags for the display mode.
+            - is_fullscreen (bool): Indicates if the game is in fullscreen mode.
+            - is_zoom (bool): Indicates if the game is in zoom mode.
 
     Example:
         # Create a WindowManager instance with the specified project title and size.
@@ -50,24 +55,24 @@ class WindowManager(pygame.Surface):
             window_manager.draw()
 
     Methods:
-    - Initialization
-        - create_window_instance(project_title, size): Create a window instance with the specified size.
+        Initialization:
+            - create_window_instance(project_title, size): Create a window instance with the specified size.
 
-    - Display Management
-        - toggle_fullscreen(): Toggle between fullscreen and windowed mode.
-        - toggle_zoom(): Toggle between zoom and original size mode.
+        Display Management:
+            - toggle_fullscreen(): Toggle between fullscreen and windowed mode.
+            - toggle_zoom(): Toggle between zoom and original size mode.
 
-    - Size Management
-        - resize(): Resize the game window while considering zoom and screen width.
-        - update_display_mode(toggle_fullscreen, toggle_zoom, flags, resize): Create the game window with the specified size.
-        - adjust_aspect_ratio(): Adjust the aspect ratio for maintaining proper scaling during resizing.
+        Size Management:
+            - resize(): Resize the game window while considering zoom and screen width.
+            - update_display_mode(toggle_fullscreen, toggle_zoom, flags, resize): Create the game window with the specified size.
+            - adjust_aspect_ratio(): Adjust the aspect ratio for maintaining proper scaling during resizing.
 
-    - Input Handling
-        - get_adjusted_mouse_position(): Get the adjusted mouse position based on display_factor.
+        Input Handling:
+            - get_adjusted_mouse_position(): Get the adjusted mouse position based on display_factor.
 
-    - Render
-        - update(frame_rate): Update the display with the current frame rate.
-        - draw(): Draw the game surface onto the screen.
+        Render:
+            - update(frame_rate): Update the display with the current frame rate.
+            - draw(): Draw the game surface onto the screen.
     """
     def __init__(self):
         """

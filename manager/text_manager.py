@@ -53,14 +53,14 @@ class TextInstance(TemplateInstance):
 
     Methods:
         Rect Management:
-            - set_pos(tuple): Set the position of the instance.
-            - set_align(str): Set the alignment of the instance within its bounding rectangle.
-            - update_rect: Update the instance's bounding rectangle.
+            - set_pos(pos): Set the position of the instance.
+            - set_align(align): Set the alignment of the instance within its bounding rectangle.
+            - update_rect(): Update the instance's bounding rectangle.
 
         Text Management:
             - set_text(text): Set the text content.
             - set_font_size(size): Set the font size.
-            - update_text: Update the rendered text and its rectangle.
+            - update_text(): Update the rendered text and its rectangle.
 
         Render:
             - update(): Update the instance.

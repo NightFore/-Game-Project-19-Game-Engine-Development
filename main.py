@@ -20,34 +20,44 @@ class GameManager:
     The Game class manages the initialization, setup, loading, and execution of a game using the Pygame framework.
 
     Attributes:
-        playing (bool): A flag that indicates if the game is currently running.
-        paused (bool): A flag that indicates if the game is in a paused state.
-        debug_mode (bool): A flag that indicates if the game is running in debug mode.
-        clock (pygame.time.Clock): The Pygame clock used for controlling the game's frame rate.
-        dt (float): The time passed since the last frame update, in seconds.
-        total_play_time (float): The total play time of the game in seconds.
-        mouse_pos (tuple): The adjusted position of the mouse based on display_factor.
-        project_title (str): The title of the game project.
-        FPS (int): The desired frames per second for the game's execution.
-        screen_size (tuple): The dimensions of the game window (width, height).
-        gameDisplay (pygame.Surface): The Pygame surface representing the game's display window.
+        Flags Attributes:
+            - playing (bool): A flag that indicates if the game is currently running.
+            - paused (bool): A flag that indicates if the game is in a paused state.
+            - debug_mode (bool): A flag that indicates if the game is running in debug mode.
+
+        Time Attributes:
+            - clock (pygame.time.Clock): The Pygame clock used for controlling the game's frame rate.
+            - dt (float): The time passed since the last frame update, in seconds.
+            - total_play_time (float): The total play time of the game in seconds.
+
+        Input Attributes:
+            - mouse_pos (tuple): The adjusted position of the mouse based on display_factor.
+
+        Game Settings Attributes:
+            - window_title (str): The title of the game window.
+            - project_title (str): The title of the game project.
+            - FPS (int): The desired frames per second for the game's execution.
+            - screen_size (tuple): The dimensions of the game window (width, height).
+
+        Display Attributes:
+            - gameDisplay (pygame.Surface): The Pygame surface representing the game's display window.
 
     Methods:
-    - Setup:
-        - setup_game: Initialize the game environment.
-        - setup_folders: Set up resource folders.
-        - setup_managers: Initialize game managers.
-        - setup_managers_settings: Set up manager settings.
-        - setup_managers_resources: Load and set resources for managers.
-        - setup_display: Configure display settings.
-        - setup_scenes: Load game scenes and button graphics.
+        Setup:
+            - setup_game: Initialize the game environment.
+            - setup_folders: Set up resource folders.
+            - setup_managers: Initialize game managers.
+            - setup_managers_settings: Set up manager settings.
+            - setup_managers_resources: Load and set resources for managers.
+            - setup_display: Configure display settings.
+            - setup_scenes: Load game scenes and button graphics.
 
-    - Game Loop:
-        - run: The main game loop that handles game events, updates, and drawing.
-        - events: Handle game events, including user input and window events.
-        - update: Update game components, including scenes, managers.
-        - draw: Draw game components, scenes, managers.
-        - quit_game: Exit the game, print total play time, and clean up resources.
+        Game Loop:
+            - run: The main game loop that handles game events, updates, and drawing.
+            - events: Handle game events, including user input and window events.
+            - update: Update game components, including scenes, managers.
+            - draw: Draw game components, scenes, managers.
+            - quit_game: Exit the game, print total play time, and clean up resources.
     """
     def __init__(self):
         # Initialize the game
@@ -56,16 +66,24 @@ class GameManager:
         pygame.mixer.init()
         random.seed()
 
-        # Set initial game state flags
+        # Initialize game state flags
         self.playing = True
         self.paused = False
         self.debug_mode = False
 
-        # Initialize game-related variables
+        # Initialize time-related variables
         self.clock = pygame.time.Clock()
         self.dt = self.clock.tick()
         self.total_play_time = 0
+
+        # Initialize input handling
         self.mouse_pos = (0, 0)
+
+        # Initialize project settings
+        self.window_title = WINDOW_TITLE
+        self.project_title = PROJECT_TITLE
+        self.FPS = FPS
+        self.screen_size = self.screen_width, self.screen_height = SCREEN_SIZE
 
         # Launch the game
         self.setup_game()
@@ -170,10 +188,6 @@ class GameManager:
         """
         Configure display settings.
         """
-        self.window_title = WINDOW_TITLE
-        self.project_title = PROJECT_TITLE
-        self.FPS = FPS
-        self.screen_size = self.screen_width, self.screen_height = SCREEN_SIZE
         self.gameDisplay = self.window_manager.create_window_instance(self.window_title, self.screen_size)
 
     def setup_scenes(self):
