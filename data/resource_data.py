@@ -92,7 +92,10 @@ DICT_SCENES = {
             }
         },
         "GameScene": {
-            "buttons": {},
+            "buttons": {
+                "game_over": {"button": "button_interface", "pos": (640, 250), "text": "Game Over"},
+                "click_me": {"button": "button_interface", "pos": (640, 320), "text": "Click Me!"},
+            },
             "graphics": {},
             "texts": {}
         },
