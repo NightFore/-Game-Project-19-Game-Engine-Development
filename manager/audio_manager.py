@@ -99,8 +99,9 @@ class AudioManager(TemplateManager):
 
         # Set the volume for sound effects
         self.sound_volume = volume
-        for sound in self.resources.values():
-            sound.set_volume(self.sound_volume)
+        for audio in self.resources.values():
+            if isinstance(audio, pygame.mixer.Sound):
+                audio.set_volume(self.sound_volume)
 
     def increment_music_volume(self, increment):
         """

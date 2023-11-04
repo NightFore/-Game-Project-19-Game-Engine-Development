@@ -188,17 +188,20 @@ class SceneBase(TemplateInstance):
         # Iterate through the button data
         for button_name, button_data in button_dict.items():
             button_resource = button_data.get("button", None)
-            button_pos = button_data.get("pos", (0, 0))
-            button_text = button_data.get("text", "")
+            button_pos = button_data.get("pos", None)
+            button_text = button_data.get("text", None)
             button_align = button_data.get("align", None)
 
             # Check if a valid button resource is specified
             if button_resource:
                 # Create a button instance
                 button_instance = self.button_manager.create_resource_instance(button_resource)
-                button_instance.set_pos(button_pos)
-                button_instance.set_text(button_text)
-                button_instance.set_align(button_align)
+                if button_pos:
+                    button_instance.set_pos(button_pos)
+                if button_text:
+                    button_instance.set_text(button_text)
+                if button_align:
+                    button_instance.set_align(button_align)
 
                 # Add the button instance to the scene_buttons dictionary
                 self.scene_buttons[button_name] = button_instance
@@ -213,15 +216,17 @@ class SceneBase(TemplateInstance):
         # Iterate through the graphic data
         for graphic_name, graphic_data in graphic_dict.items():
             graphic_resource = graphic_data.get("graphic", None)
-            graphic_pos = graphic_data.get("pos", (0, 0))
+            graphic_pos = graphic_data.get("pos", None)
             graphic_align = graphic_data.get("align", None)
 
             # Check if a valid graphic resource is specified
             if graphic_resource:
                 # Create a graphic instance
                 graphic_instance = self.graphic_manager.create_resource_instance(graphic_resource)
-                graphic_instance.set_pos(graphic_pos)
-                graphic_instance.set_align(graphic_align)
+                if graphic_pos:
+                    graphic_instance.set_pos(graphic_pos)
+                if graphic_align:
+                    graphic_instance.set_align(graphic_align)
 
                 # Add the graphic instance to the scene_graphics dictionary
                 self.scene_graphics[graphic_name] = graphic_instance
@@ -235,18 +240,21 @@ class SceneBase(TemplateInstance):
 
         # Iterate through the text data
         for text_name, text_data in text_dict.items():
-            font_resource = text_data.get("font", None)
-            text_pos = text_data.get("pos", (0, 0))
-            text_text = text_data.get("text", "")
+            text_resource = text_data.get("font", None)
+            text_pos = text_data.get("pos", None)
+            text_text = text_data.get("text", None)
             text_align = text_data.get("align", None)
 
             # Check if a valid text resource is specified
-            if font_resource:
+            if text_resource:
                 # Create a text instance
-                text_instance = self.text_manager.create_resource_instance(font_resource)
-                text_instance.set_pos(text_pos)
-                text_instance.set_text(text_text)
-                text_instance.set_align(text_align)
+                text_instance = self.text_manager.create_resource_instance(text_resource)
+                if text_pos:
+                    text_instance.set_pos(text_pos)
+                if text_text:
+                    text_instance.set_text(text_text)
+                if text_align:
+                    text_instance.set_align(text_align)
 
                 # Add the text instance to the scene_texts dictionary
                 self.scene_texts[text_name] = text_instance
@@ -271,9 +279,7 @@ class SceneBase(TemplateInstance):
         """
         Called when exiting the scene.
         """
-        self.scene_buttons = {}
-        self.scene_graphics = {}
-        self.scene_texts = {}
+        pass
 
     def update(self):
         """

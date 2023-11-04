@@ -63,7 +63,3 @@ class TemplateScene(SceneBase):
 
     def draw_custom(self):
         pass
-
-    @staticmethod
-    def hello_world():
-        print("Hello World")

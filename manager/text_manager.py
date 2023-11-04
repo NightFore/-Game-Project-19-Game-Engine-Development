@@ -143,7 +143,7 @@ class TextInstance(TemplateInstance):
         """
         Set the text content to be displayed.
         """
-        self.text = text
+        self.text = str(text)
         self.update_text()
 
     def set_font_size(self, size):

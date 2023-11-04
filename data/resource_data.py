@@ -88,20 +88,33 @@ DICT_SCENES = {
                 "sequence": {"graphic": "default_sequence", "pos": (640, 150), "align": "center"}
             },
             "texts": {
-                "project_title": {"font": "font_title", "pos": (640, 50), "text": "Placeholder", "align": "center"},
+                "project_title": {"font": "font_title", "pos": (640, 50), "align": "center"},
             }
         },
         "GameScene": {
-            "buttons": {
-            },
+            "buttons": {},
+            "graphics": {},
+            "texts": {}
         },
         "SettingsScene": {
             "buttons": {
+                "return": {"button": "button_interface", "pos": (100, 350), "text": "Return to Main Menu", "align": "nw"},
+                "music_volume_up": {"button": "button_interface", "pos": (100, 400), "text": "Music Volume Up", "align": "nw"},
+                "music_volume_down": {"button": "button_interface", "pos": (100, 450), "text": "Music Volume Down", "align": "nw"},
+                "sound_volume_up": {"button": "button_interface", "pos": (100, 500), "text": "Sound Volume Up", "align": "nw"},
+                "sound_volume_down": {"button": "button_interface", "pos": (100, 550), "text": "Sound Volume Down", "align": "nw"},
             },
+            "graphics": {},
+            "texts": {
+                "settings": {"font": "font_body", "pos": (50, 300), "text": "Settings", "align": "nw"},
+                "volume_music": {"font": "font_body", "pos": (450, 425)},
+                "volume_sound": {"font": "font_body", "pos": (450, 525)},
+            }
         },
         "TemplateScene": {
-            "buttons": {
-            },
+            "buttons": {},
+            "graphics": {},
+            "texts": {}
         },
     }
 }
