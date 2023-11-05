@@ -265,7 +265,6 @@ class GameManager:
     def draw(self):
         # Debug
         self.gameDisplay.fill((30, 30, 30))
-        pygame.draw.rect(self.gameDisplay, (255, 0, 0), (100, 100, 200, 150))
 
         # Draw the game components
         self.scene_manager.draw()

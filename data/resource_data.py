@@ -81,6 +81,7 @@ DICT_SCENES = {
                 "pause_music": {"button": "button_interface", "pos": (640, 460), "text": "Pause Music"},
                 "toggle_music": {"button": "button_interface", "pos": (640, 530), "text": "Toggle Music"},
                 "toggle_zoom": {"button": "button_interface", "pos": (640, 600), "text": "Toggle Zoom"},
+                "debug_selection": {"button": "button_interface", "pos": (640, 670), "text": "Debug Selection"},
                 "quit_game": {"button": "button_icon", "pos": (10, 10), "text": "X"},
             },
             "graphics": {
@@ -113,6 +114,11 @@ DICT_SCENES = {
                 "volume_music": {"font": "font_body", "pos": (450, 425)},
                 "volume_sound": {"font": "font_body", "pos": (450, 525)},
             }
+        },
+        "LevelSelectionScene": {
+            "buttons": {},
+            "graphics": {},
+            "texts": {}
         },
         "TemplateScene": {
             "buttons": {},

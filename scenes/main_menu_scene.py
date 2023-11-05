@@ -48,6 +48,8 @@ class MainMenuScene(SceneBase):
             self.audio_manager.toggle_music()
         if self.scene_buttons["toggle_zoom"].clicked_and_released:
             self.window_manager.toggle_zoom()
+        if self.scene_buttons["debug_selection"].clicked_and_released:
+            self.scene_manager.set_scene("LevelSelectionScene")
         if self.scene_buttons["quit_game"].clicked_and_released:
             self.game_manager.quit_game()
 
