@@ -1,6 +1,6 @@
 from manager.scene_manager import SceneBase
 
-class LevelSelectionScene(SceneBase):
+class Project1GameScene(SceneBase):
     def __init__(self, instance_data, managers):
         super().__init__(instance_data, managers)
 
@@ -56,24 +56,10 @@ class LevelSelectionScene(SceneBase):
     Custom Functions
     """
     def init_custom(self):
-        for i in range(1, 18+1):
-            button_name = i
-            button_resource = "button_interface"
-            button_pos = (10+400*((i-1) // 10), 10+70*((i-1) % 10))
-            button_text = i
-            button_align = "nw"
-
-            button_instance = self.button_manager.create_resource_instance(button_resource)
-            button_instance.set_pos(button_pos)
-            button_instance.set_text(button_text)
-            button_instance.set_align(button_align)
-            self.scene_buttons[button_name] = button_instance
+        pass
 
     def update_custom(self):
-
-        for button_name, button in self.scene_buttons.items():
-            if button.clicked_and_released:
-                self.scene_manager.set_scene("Project" + str(button_name) + "MainMenuScene")
+        pass
 
     def draw_custom(self):
         pass

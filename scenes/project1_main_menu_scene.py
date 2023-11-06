@@ -1,6 +1,6 @@
 from manager.scene_manager import SceneBase
 
-class MainMenuScene(SceneBase):
+class Project1MainMenuScene(SceneBase):
     def __init__(self, instance_data, managers):
         super().__init__(instance_data, managers)
 
@@ -32,24 +32,19 @@ class MainMenuScene(SceneBase):
 
     def init_texts(self):
         super().init_texts()
-        self.scene_texts["project_title"].set_text(self.main_manager.project_title)
+        self.scene_texts["project_title"].set_text("Game Project 1")
 
     def update_buttons(self):
         super().update_buttons()
-        if self.scene_buttons["start"].clicked_and_released:
-            self.scene_manager.set_scene("GameScene")
+        if self.scene_buttons["new_game"].clicked_and_released:
+            self.scene_manager.set_scene("Projet1GameScene")
+
+        if self.scene_buttons["load_game"].clicked_and_released:
+            pass
+
         if self.scene_buttons["settings"].clicked_and_released:
-            self.scene_manager.set_scene("SettingsScene")
-        if self.scene_buttons["debug_audio"].clicked_and_released:
-            self.debug_audio_manager()
-        if self.scene_buttons["pause_music"].clicked_and_released:
-            self.audio_manager.pause_music()
-        if self.scene_buttons["toggle_music"].clicked_and_released:
-            self.audio_manager.toggle_music()
-        if self.scene_buttons["toggle_zoom"].clicked_and_released:
-            self.window_manager.toggle_zoom()
-        if self.scene_buttons["debug_selection"].clicked_and_released:
-            self.scene_manager.set_scene("LevelSelectionScene")
+            self.scene_manager.set_scene("Projet1SettingsScene")
+
         if self.scene_buttons["quit_game"].clicked_and_released:
             self.main_manager.quit_game()
 
@@ -80,7 +75,3 @@ class MainMenuScene(SceneBase):
 
     def draw_custom(self):
         pass
-
-    def debug_audio_manager(self):
-        self.audio_manager.play_music("debug_music")
-        self.audio_manager.play_sound("debug_sound")

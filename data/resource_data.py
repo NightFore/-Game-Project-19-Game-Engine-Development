@@ -120,6 +120,28 @@ DICT_SCENES = {
             "graphics": {},
             "texts": {}
         },
+        "Project1MainMenuScene": {
+            "buttons": {
+                "new_game": {"button": "button_interface", "pos": (640, 250), "text": "New Game"},
+                "load_game": {"button": "button_interface", "pos": (640, 350), "text": "Load Game"},
+                "settings": {"button": "button_interface", "pos": (640, 450), "text": "Settings"},
+                "quit_game": {"button": "button_interface", "pos": (640, 550), "text": "Quit Game"},
+            },
+            "graphics": {},
+            "texts": {
+                "project_title": {"font": "font_title", "pos": (640, 50), "align": "center"},
+            }
+        },
+        "Project1GameScene": {
+            "buttons": {},
+            "graphics": {},
+            "texts": {}
+        },
+        "Project1SettingsScene": {
+            "buttons": {},
+            "graphics": {},
+            "texts": {}
+        },
         "TemplateScene": {
             "buttons": {},
             "graphics": {},

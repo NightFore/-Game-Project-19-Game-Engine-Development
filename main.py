@@ -15,7 +15,7 @@ from manager.window_manager import WindowManager
 from data.constant_data import WINDOW_TITLE, PROJECT_TITLE, SCREEN_SIZE, FPS
 from data.resource_data import DICT_RESOURCES, DICT_INSTANCES, DICT_SCENES
 
-class GameManager:
+class MainManager:
     """
     The Game class manages the initialization, setup, loading, and execution of a game using the Pygame framework.
 
@@ -141,7 +141,7 @@ class GameManager:
         Initialize game managers.
         """
         self.managers = {
-            "game_manager": self,
+            "main_manager": self,
             "audio_manager": AudioManager(),
             "button_manager": ButtonManager(),
             "graphic_manager": GraphicManager(),
@@ -276,6 +276,6 @@ class GameManager:
         pygame.quit()
         quit()
 
-game = GameManager()
+game = MainManager()
 while True:
     game.run()

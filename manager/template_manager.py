@@ -53,7 +53,7 @@ class TemplateManager:
             managers (dict): A dictionary containing game managers.
         """
         self.managers = managers
-        self.game_manager = self.managers["game_manager"]
+        self.main_manager = self.managers["main_manager"]
         self.audio_manager = self.managers["audio_manager"]
         self.button_manager = self.managers["button_manager"]
         self.graphic_manager = self.managers["graphic_manager"]
@@ -115,7 +115,7 @@ class TemplateInstance:
             - instance_data (dict): Input data for this instance.
             - managers (dict): A dictionary containing game managers.
 
-        Inherited Attributes from GameManager:
+        Inherited Attributes from MainManager:
             - screen (pygame.Surface): The game display surface.
             - mouse_pos (tuple): The current mouse position.
             - dt (float): Time since the last frame update.
@@ -131,7 +131,7 @@ class TemplateInstance:
 
         # Set the managers used for this instance.
         self.managers = managers
-        self.game_manager = self.managers["game_manager"]
+        self.main_manager = self.managers["main_manager"]
         self.audio_manager = self.managers["audio_manager"]
         self.button_manager = self.managers["button_manager"]
         self.graphic_manager = self.managers["graphic_manager"]
@@ -141,9 +141,9 @@ class TemplateInstance:
         self.window_manager = self.managers["window_manager"]
 
         # Game attributes
-        self.screen = self.game_manager.gameDisplay
-        self.mouse_pos = self.game_manager.mouse_pos
-        self.dt = self.game_manager.dt
+        self.screen = self.main_manager.gameDisplay
+        self.mouse_pos = self.main_manager.mouse_pos
+        self.dt = self.main_manager.dt
 
 
     """
@@ -155,8 +155,8 @@ class TemplateInstance:
         """
         Update the instance.
         """
-        self.mouse_pos = self.game_manager.mouse_pos
-        self.dt = self.game_manager.dt
+        self.mouse_pos = self.main_manager.mouse_pos
+        self.dt = self.main_manager.dt
 
     def draw(self):
         """
