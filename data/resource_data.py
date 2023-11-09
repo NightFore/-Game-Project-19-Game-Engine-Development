@@ -138,9 +138,19 @@ DICT_SCENES = {
             "texts": {}
         },
         "Project1SettingsScene": {
-            "buttons": {},
+            "buttons": {
+                "return": {"button": "button_interface", "pos": (100, 350), "text": "Return to Main Menu", "align": "nw"},
+                "music_volume_up": {"button": "button_interface", "pos": (100, 400), "text": "Music Volume Up", "align": "nw"},
+                "music_volume_down": {"button": "button_interface", "pos": (100, 450), "text": "Music Volume Down", "align": "nw"},
+                "sound_volume_up": {"button": "button_interface", "pos": (100, 500), "text": "Sound Volume Up", "align": "nw"},
+                "sound_volume_down": {"button": "button_interface", "pos": (100, 550), "text": "Sound Volume Down", "align": "nw"},
+            },
             "graphics": {},
-            "texts": {}
+            "texts": {
+                "settings": {"font": "font_body", "pos": (50, 300), "text": "Settings", "align": "nw"},
+                "volume_music": {"font": "font_body", "pos": (450, 425)},
+                "volume_sound": {"font": "font_body", "pos": (450, 525)},
+            }
         },
         "TemplateScene": {
             "buttons": {},

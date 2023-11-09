@@ -37,13 +37,14 @@ class Project1MainMenuScene(SceneBase):
     def update_buttons(self):
         super().update_buttons()
         if self.scene_buttons["new_game"].clicked_and_released:
-            self.scene_manager.set_scene("Projet1GameScene")
+            self.scene_manager.set_scene("Project1GameScene")
 
         if self.scene_buttons["load_game"].clicked_and_released:
             pass
 
         if self.scene_buttons["settings"].clicked_and_released:
-            self.scene_manager.set_scene("Projet1SettingsScene")
+            print("ok")
+            self.scene_manager.set_scene("Project1SettingsScene")
 
         if self.scene_buttons["quit_game"].clicked_and_released:
             self.main_manager.quit_game()
