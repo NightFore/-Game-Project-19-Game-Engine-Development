@@ -14,39 +14,39 @@ class TemplateCharacter(TemplateInstance, pygame.sprite.Sprite):
     Attributes:
         Specific to TemplateCharacter:
             Character Attributes:
-                - Health (int): The health points of the character.
-                - Defense (int): The defense points of the character.
-                - Magic (int): The magic points of the character.
-                - Mana (int): The mana points of the character.
+                - health (int): The health points of the character.
+                - defense (int): The defense points of the character.
+                - magic (int): The magic points of the character.
+                - mana (int): The mana points of the character.
 
             Movement Attributes:
-                - Velocity (vec): The current velocity of the character.
-                - Max_movement_velocity (vec): The maximum movement velocity of the character.
-                - Acceleration (vec): The acceleration vector for the character's movement.
+                - velocity (vec): The current velocity of the character.
+                - max_movement_velocity (vec): The maximum movement velocity of the character.
+                - acceleration (vec): The acceleration vector for the character's movement.
 
-            Direction Vectors:
-                - Directions (dict): Dictionary mapping movement directions to vector values.
+            Direction vectors:
+                - directions (dict): Dictionary mapping movement directions to vector values.
 
-            Leveling and Experience Attributes:
-                - Level (int): The level of the character.
-                - Experience (int): The current experience points of the character.
-                - Experience_thresholds (list): List of experience thresholds required for each level.
+            Leveling and experience Attributes:
+                - level (int): The level of the character.
+                - experience (int): The current experience points of the character.
+                - experience_thresholds (list): List of experience thresholds required for each level.
 
             Attack Attributes:
-                - Attacks (dict): Dictionary of available attacks and their damage values.
-                - Current_attack: The currently selected attack.
+                - attacks (dict): Dictionary of available attacks and their damage values.
+                - current_attack: The currently selected attack.
 
             Projectile Attributes:
-                - Available_projectiles (list): List of available projectile types.
-                - Projectiles (dict): Dictionary to store projectile instances.
+                - available_projectiles (list): List of available projectile types.
+                - projectiles (dict): Dictionary to store projectile instances.
 
             Graphic Attributes:
-                - Graphic: The graphic instance associated with the character.
+                - graphic: The graphic instance associated with the character.
 
-            Index Position Management:
-                - Use_index_position (bool): Determines if using (x, y) or index positions.
+            Index position management:
+                - use_index_position (bool): Determines if using (x, y) or index positions.
 
-        Inherited Attributes from TemplateInstance:
+        Inherited attributes from TemplateInstance:
             - dt: The time difference between frames.
 
     Methods:
@@ -60,14 +60,17 @@ class TemplateCharacter(TemplateInstance, pygame.sprite.Sprite):
             - get_pos(): Get the current position of the character.
 
         Movement:
+            - set_movement_acceleration(acceleration): Set the movement acceleration of the character.
             - move_to_pos(position): Move the character to the specified position.
-            - move_to_tile(tile_index): Move the character to the specified tile index.
             - move_position_increment(increment): Move the character's position by the specified increment.
-            - move_tile_increment(increment): Move the character to the next tile position by the specified increment.
             - update_position(): Update the position based on the current velocity.
             - update_velocity(): Update the velocity based on acceleration.
-            - set_movement_acceleration(acceleration): Set the movement acceleration of the character.
+
+        Tile Movement:
+            - set_tile_size(tile_size): Set the size of a tile.
             - tile_index_to_position(tile_index): Convert tile index to (x, y) position.
+            - move_to_tile(tile_index): Move the character to the specified tile index.
+            - move_tile_increment(increment): Move the character to the next tile position by the specified increment.
 
         Experience:
             - level_up(): Level up the character.
@@ -109,6 +112,10 @@ class TemplateCharacter(TemplateInstance, pygame.sprite.Sprite):
         self.velocity = vec(0, 0)
         self.max_movement_velocity = vec(*character_data.get("max_movement_velocity", (5.0, 5.0)))
         self.acceleration = vec(*character_data.get("acceleration", (2.0, 2.0)))
+
+        # Tile Attributes
+        tile_data = instance_data.get("class_data", {}).get("tiles", {})
+        self.tile_size = vec(*tile_data.get("size", (32, 32)))  # Default tile size is (32, 32)
 
         # Leveling and Experience Attributes
         self.level = character_data.get("level", 1)
@@ -197,13 +204,20 @@ class TemplateCharacter(TemplateInstance, pygame.sprite.Sprite):
 
     """
     Movement:
+        - set_movement_acceleration
         - move_to_pos
-        - move_to_tile
         - move_position_increment
-        - move_tile_increment
         - update_position
         - update_velocity
     """
+    def set_movement_acceleration(self, acceleration):
+        """
+        Set the movement acceleration of the character.
+
+        Parameters:
+            - acceleration (vec): The movement acceleration vector.
+        """
+        self.movement_acceleration = acceleration
 
     def move_to_pos(self, position):
         """
@@ -221,29 +235,6 @@ class TemplateCharacter(TemplateInstance, pygame.sprite.Sprite):
             self.velocity += self.movement_acceleration * self.dt
             self.graphic.pos += self.velocity * self.dt
 
-    def tile_index_to_position(self, tile_index):
-        """
-        Convert tile index to (x, y) position.
-
-        Parameters:
-            - tile_index (vec or tuple): The tile index.
-
-        Returns:
-            - vec: The corresponding (x, y) position.
-        """
-        # Implement logic to convert tile index to (x, y) position
-        pass
-
-    def move_to_tile(self, tile_index):
-        """
-        Move the character to the specified tile index.
-
-        Parameters:
-            - tile_index (vec or tuple): The target tile index.
-        """
-        # Implement logic for moving to a tile index
-        pass
-
     def move_position_increment(self, increment):
         """
         Move the character's position by the specified increment.
@@ -253,25 +244,6 @@ class TemplateCharacter(TemplateInstance, pygame.sprite.Sprite):
         """
         if self.graphic:
             self.graphic.pos += increment
-
-    def move_tile_increment(self, increment):
-        """
-        Move the character to the next tile position by the specified increment.
-
-        Parameters:
-            - increment (vec): The increment for the tile position.
-        """
-        # Implement logic for moving to the next tile position
-        pass
-
-    def set_movement_acceleration(self, acceleration):
-        """
-        Set the movement acceleration of the character.
-
-        Parameters:
-            - acceleration (vec): The movement acceleration vector.
-        """
-        self.movement_acceleration = acceleration
 
     def update_position(self):
         """
@@ -290,6 +262,53 @@ class TemplateCharacter(TemplateInstance, pygame.sprite.Sprite):
         # Limit velocity to max_movement_velocity
         self.velocity.x = min(self.velocity.x, self.max_movement_velocity.x)
         self.velocity.y = min(self.velocity.y, self.max_movement_velocity.y)
+
+    """
+    Tile Movement:
+        - set_tile_size
+        - tile_index_to_position
+        - move_to_tile
+        - move_tile_increment
+    """
+    def set_tile_size(self, tile_size):
+        """
+        Set the size of a tile.
+
+        Parameters:
+            - tile_size (vec or tuple): The size of a tile (width, height).
+        """
+        self.tile_size = vec(tile_size)
+
+    def tile_index_to_position(self, tile_index):
+        """
+        Convert tile index to (x, y) position.
+
+        Parameters:
+            - tile_index (vec or tuple): The tile index.
+
+        Returns:
+            - vec: The corresponding (x, y) position.
+        """
+        return tile_index * self.tile_size
+
+    def move_to_tile(self, tile_index):
+        """
+        Move the character to the specified tile index.
+
+        Parameters:
+            - tile_index (vec or tuple): The target tile index.
+        """
+        target_position = self.tile_index_to_position(tile_index)
+        self.move_to_pos(target_position)
+
+    def move_tile_increment(self, increment):
+        """
+        Move the character to the next tile position by the specified increment.
+
+        Parameters:
+            - increment (vec): The increment for the tile position.
+        """
+        self.move_position_increment(increment * self.tile_size)
 
     """
     Experience:
