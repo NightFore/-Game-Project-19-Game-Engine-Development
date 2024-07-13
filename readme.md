@@ -16,47 +16,47 @@ This is a hobbyist game engine project aimed at recreating and constructing my p
 The project structure is organized as follows:
 
 ```
-assets/
-    images/
-        sprites/
-        backgrounds/
-        ui/
-    sounds/
-        effects/
-        music/
-        voices/
-    fonts/
-docs/
-engine/
-    __init__.py/
-    audio.py/
-    graphics.py/
-    input.py/
-    physics.py/
-    ui.py/
-game/
-    __init__.py/
-    game.py/
-    levels/
-        __init__.py/
-    scenes/
-        __init__.py/
-    entities/
-        __init__.py/
-    utils/
-        __init__.py/
-logs/
-tests/
-    __init__.py/
-    test_audio.py/
-    test_graphics.py/
-    test_input.py/
-    test_physics.py/
-    test_ui.py/
-config.py/
-logger.py/
-main.py/
-requirements.txt/
+├── assets/
+│   ├── images/
+│   │   ├── sprites/
+│   │   ├── backgrounds/
+│   │   └── ui/
+│   ├── sounds/
+│   │   ├── effects/
+│   │   ├── music/
+│   │   └── voices/
+│   └── fonts/
+├── docs/
+├── engine/
+│   ├── __init__.py/
+│   ├── audio.py/
+│   ├── graphics.py/
+│   ├── input.py/
+│   ├── physics.py/
+│   └── ui.py/
+├── game/
+│   ├── __init__.py/
+│   ├── game.py/
+│   ├── levels/
+│   │   └── __init__.py/
+│   ├── scenes/
+│   │   └── __init__.py/
+│   ├── entities/
+│   │   └── __init__.py/
+│   └── utils/
+│       └── __init__.py/
+├── logs/
+├── tests/
+│   ├── __init__.py/
+│   ├── test_audio.py/
+│   ├── test_graphics.py/
+│   ├── test_input.py/
+│   ├── test_physics.py/
+│   └── test_ui.py/
+├── config.py/
+├── logger.py/
+├── main.py/
+└── requirements.txt/
 
 ```
 

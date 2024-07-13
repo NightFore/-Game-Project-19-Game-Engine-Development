@@ -55,9 +55,5 @@
     "save_system": {
         "autosave": true,
         "save_interval": 300
-    },
-    "logging": {
-        "log_level": "INFO",
-        "log_file": "game.log"
     }
 }

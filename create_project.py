@@ -1,4 +1,5 @@
 # create_project.py
+
 import json
 import os
 from datetime import datetime
@@ -102,10 +103,16 @@ def create_structure(base_path, structure):
 
 def generate_structure_tree(structure, indent):
     tree_str = ""
-    for name, content in structure.items():
-        tree_str += f"{indent}{name}/\n"
+    for idx, (name, content) in enumerate(structure.items()):
+        if idx == len(structure) - 1:  # Last item in the current level
+            tree_str += f"{indent}└── {name}/\n"
+            new_indent = indent + "    "  # Adjust indentation for sub-level
+        else:
+            tree_str += f"{indent}├── {name}/\n"
+            new_indent = indent + "│   "  # Adjust indentation for sub-level
+
         if isinstance(content, dict):
-            tree_str += generate_structure_tree(content, indent + "    ")
+            tree_str += generate_structure_tree(content, new_indent)
     return tree_str
 
 
@@ -172,7 +179,7 @@ def create_readme(base_path, structure, project_name, username):
 
     readme_path = os.path.join(base_path, 'README.md')
     if not os.path.exists(readme_path) or os.path.getsize(readme_path) == 0:
-        with open(readme_path, 'w') as f:
+        with open(readme_path, 'w', encoding='utf-8') as f:
             f.write(readme_content)
         print(f"\tCreated file: README.md")
     else:
@@ -273,10 +280,6 @@ def create_config(base_path, project_name):
             "autosave": True,
             "save_interval": 300
         },
-        "logging": {
-            "log_level": "INFO",
-            "log_file": "game.log"
-        }
     }
 
     config_path = os.path.join(base_path, 'config.json')
@@ -292,23 +295,9 @@ def create_gitignore(base_path):
     # List of files/directories to ignore
     ignore_list = [
         "__pycache__/",
-        "*.pyc",
-        "*.pyo",
-        "*.pyd",
-        "*.class",
-        "*.log",
-        "*.sqlite3",
-        "*/__pycache__/",
-        "*/__pycache__/*",
-        "*/.idea/",
+        ".idea",
         ".DS_Store",
-        "*/.DS_Store",
-        "*/.vscode/",
-        "*/.vscode/*",
-        "*/venv/",
-        "*/venv/*",
-        "*/.git/",
-        "*/.git/*",
+        "*.log"
     ]
 
     gitignore_content = "\n".join(ignore_list)
