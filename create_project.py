@@ -67,6 +67,7 @@ def main():
         "config.py": "",
         "logger.py": "",
         "main.py": "",
+        "test.py": "",
         "requirements.txt": "",
     }
 
