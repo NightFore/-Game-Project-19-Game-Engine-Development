@@ -1,54 +1,83 @@
-# Game Engine Development
+# [Game Project 19] Game Engine
 
-## Project Information
-- Developer(s): NightFore
-- Release Date: N/A
-- Project Start: August 04, 2023
-- GitHub Page: https://github.com/NightFore/Game-Project-19-Game-Engine-Development
 
-## Description
-This project aims to develop a comprehensive game engine with various managers to handle different aspects of game development.
+## Project Description
 
-## Managers
-- AudioManager: AudioManager manages music and sound effects in the game.
-- ButtonManager: ButtonManager manages the creation, updating, and rendering of buttons.
-- GraphicManager: GraphicManager manages graphic resources and their instances in the game.
-- ResourceManager: ResourceManager manages the loading and storage of various game resources.
-- SceneManager: SceneManager manages game scenes.
-- TemplateManager: TemplateManager manages resources and their instances in the game.
-- TextManager: TextManager manages text resources and rendering text in the game.
-- WindowManager: WindowManager manages the game window and its display modes.
+This is a hobbyist game engine project aimed at recreating and constructing my projects more effectively.
 
-## Project Tree
+## Project Timeline
+
+- **Started**: August 5, 2023
+- **Rebooted**: July 13, 2024
+
+## Project Structure
+
+
+The project structure is organized as follows:
+
 ```
-project/
-├── build
-│   ├── setup.py
-├── data
-│   ├── constant_data.py
-│   └── resource_data.py
-├── manager
-│   ├── audio_manager.py
-│   ├── button_manager.py
-│   ├── graphic_manager.py
-│   ├── resource_manager.py
-│   ├── scene_manager.py
-│   ├── template_manager.py
-│   ├── text_manager.py
-│   └── window_manager.py
-├── mods
-├── resources
-│   ├── font
-│   ├── graphic
-│   ├── music
-│   └── sound
-├── scenes
-│   └── template_scene.py
-└── main.py
+assets/
+    images/
+        sprites/
+        backgrounds/
+        ui/
+    sounds/
+        effects/
+        music/
+        voices/
+    fonts/
+docs/
+engine/
+    __init__.py/
+    audio.py/
+    graphics.py/
+    input.py/
+    physics.py/
+    ui.py/
+game/
+    __init__.py/
+    game.py/
+    levels/
+        __init__.py/
+    scenes/
+        __init__.py/
+    entities/
+        __init__.py/
+    utils/
+        __init__.py/
+logs/
+tests/
+    __init__.py/
+    test_audio.py/
+    test_graphics.py/
+    test_input.py/
+    test_physics.py/
+    test_ui.py/
+config.py/
+logger.py/
+main.py/
+requirements.txt/
+
 ```
 
-## Controls
-N/A
+## Getting Started
 
-## Credits
-N/A
+To start using [Game Project 19] Game Engine, simply clone the repository.
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/NightFore/[Game Project 19] Game Engine.git
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

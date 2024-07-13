@@ -1,0 +1,63 @@
+{
+    "window": {
+        "width": 800,
+        "height": 600,
+        "title": "[Game Project 19] Game Engine",
+        "fullscreen": false,
+        "vsync": true,
+        "resizable": true
+    },
+    "audio": {
+        "master_volume": 1.0,
+        "bgm_volume": 0.5,
+        "sfx_volume": 0.5,
+        "voice_volume": 0.5,
+        "mute": false
+    },
+    "graphics": {
+        "background_color": "#000000",
+        "fps_limit": 60,
+        "anti_aliasing": true
+    },
+    "input": {
+        "keyboard": {
+            "move_up": "W",
+            "move_down": "S",
+            "move_left": "A",
+            "move_right": "D",
+            "action": "SPACE",
+            "cancel": "ESCAPE"
+        },
+        "mouse": {
+            "sensitivity": 1.0,
+            "invert_y_axis": false
+        },
+        "controller": {
+            "enabled": false,
+            "sensitivity": 1.0
+        }
+    },
+    "gameplay": {
+        "difficulty": "normal",
+        "language": "english",
+        "tutorial": true
+    },
+    "physics": {
+        "gravity": 9.81,
+        "air_friction": 0.01,
+        "ground_friction": 0.5
+    },
+    "ui": {
+        "font_size": 16,
+        "default_font": "Arial",
+        "show_fps": true
+    },
+    "save_system": {
+        "autosave": true,
+        "save_interval": 300
+    },
+    "logging": {
+        "log_level": "INFO",
+        "log_file": "game.log"
+    }
+}
