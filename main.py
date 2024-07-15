@@ -78,6 +78,9 @@ class MainManager:
         self.click = None
         self.event = None
 
+        # Debug
+        self.is_maximized = False
+
     """
     Game Loop
         - run
@@ -126,7 +129,7 @@ class MainManager:
                 elif event.key == pygame.K_h:
                     self.debug_mode = not self.debug_mode
                 elif event.key == pygame.K_F4:
-                    self.window_manager.toggle_zoom()
+                    self.window_manager.toggle_maximize()
                 elif event.key == pygame.K_F6:
                     self.window_manager.toggle_resizable()
                 elif event.key == pygame.K_F11:
@@ -146,8 +149,10 @@ class MainManager:
         # Debug
         debug = False
         if debug:
-            print(self.mouse_pos)
-            print(self.window_manager.is_resizable, self.window_manager.is_fullscreen, self.window_manager.is_zoom)
+            print(self.window_manager.game_size)
+            print(self.window_manager.screen_gap)
+            print(self.window_manager.screen_scaled)
+            pass
 
     def draw(self):
         # Debug

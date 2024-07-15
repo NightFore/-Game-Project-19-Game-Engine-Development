@@ -2,6 +2,7 @@
 
 import pygame
 import os
+import ctypes
 from pygame.locals import *
 
 
@@ -11,67 +12,50 @@ class WindowManager(pygame.Surface):
 
     Attributes:
         Game Settings Attributes:
-            - window_title (str): The title of the game project.
+            - window_title (str): The title of the window.
             - game_size (tuple): The size of the game window in (width, height).
 
         Display Settings Attributes:
-            - screen_info (pygame.Surface): Information about the display's capabilities.
-            - screen_scaled (tuple): The scaled screen resolution for maintaining aspect ratio.
-            - screen_gap (tuple): Gap used to center the game surface when zoomed.
-            - display_factor (float): Factor used for scaling the display.
-            - display (pygame.Surface): The game window surface.
+            - screen_info (pygame.display.Info): Information about the display.
+            - screen_gap (tuple): Gap around the game surface on the screen.
+            - screen_scaled (tuple): Scaled size of the game surface on the screen.
+            - display_factor (float): Factor for scaling based on display resolution.
+            - display (pygame.Surface): Main display surface managed by the window manager.
 
         Flags Attributes:
-            - flags (int): Flags for the display mode.
-            - is_fullscreen (bool): Indicates if the game is in fullscreen mode.
-            - is_zoom (bool): Indicates if the game is in zoom mode.
+            - flags (int): Flags for display mode.
+            - is_resizable (bool): Flag indicating if the window is resizable.
+            - is_fullscreen (bool): Flag indicating if the window is in fullscreen mode.
+            - is_maximized (bool): Flag indicating if the window is maximized.
 
-    Example:
-        # Create a WindowManager instance with the specified project title and size.
-        window_manager = WindowManager()
-        window_manager.create_window_instance("My Game", (800, 600))
-
-        # Main game loop setup
-        clock = pygame.time.Clock()
-        running = True
-
-        # Toggle fullscreen mode.
-        window_manager.toggle_fullscreen()
-
-        # Toggle zoom mode.
-        window_manager.toggle_zoom()
-
-        # Main game loop
-        while running:
-            for event in pygame.event.get():
-                # Handle window resizing event
-                if event.type == VIDEORESIZE:
-                    window_manager.resize()
-
-            # Get the current frame rate
-            frame_rate = clock.get_fps()
-
-            # Update the display and draw the game
-            window_manager.update(frame_rate)
-            window_manager.draw()
+        Miscellaneous Attributes:
+            - logger (GameLogger or None): Logger instance for logging events.
 
     Methods:
-        Initialization:
-            - create_window_instance(window_title, size): Create a window instance with the specified size.
+        Instance Setup:
+            - create_window_instance(window_title, size, flags, logger): Create a window instance.
+            - set_title(window_title): Set the title of the window.
+            - set_size(size): Set the size of the window.
+            - set_flags(flags): Set the display flags of the window.
+            - set_logger(logger): Set the logger instance.
+
+        Window Management:
+            - toggle_fullscreen(): Toggle the fullscreen mode of the window.
+            - toggle_resizable(): Toggle the resizable mode of the window.
+            - toggle_maximize(): Toggle the maximize mode of the window.
+            - detect_maximize(): Detect and toggle maximize flag based on current state.
+            - maximize_window(): Maximize the game window on Windows.
+            - restore_window(): Restore the game window to its initial size on Windows.
 
         Display Management:
-            - toggle_fullscreen(): Toggle between fullscreen and windowed mode.
-            - toggle_zoom(): Toggle between zoom and original size mode.
-
-        Size Management:
-            - resize(): Resize the game window while considering zoom and screen width.
-            - update_display_mode(toggle_fullscreen, toggle_zoom, flags, resize): Update the game window.
+            - adjust_display(): Adjust the window display based on current settings.
             - adjust_aspect_ratio(): Adjust the aspect ratio for maintaining proper scaling during resizing.
+            - resize(): Resize the window while considering maximize and screen width.
 
         Input Handling:
             - get_adjusted_mouse_position(): Get the adjusted mouse position based on display_factor.
 
-        Render:
+        Update and Drawing:
             - update(frame_rate): Update the display with the current frame rate.
             - draw(): Draw the game surface onto the screen.
     """
@@ -85,28 +69,28 @@ class WindowManager(pygame.Surface):
         # Set the environment variable to center the game window.
         os.environ['SDL_VIDEO_CENTERED'] = '1'
 
-        # Retrieve information about the display's capabilities.
+        # Game Settings Attributes
+        self.window_title = ""
+        self.game_size = (0, 0)
+
+        # Display Settings Attributes
         self.screen_info = pygame.display.Info()
-
-        # Initialize the display window with a hidden mode.
+        self.screen_gap = (0, 0)
+        self.screen_scaled = (0, 0)
         self.display_factor = 1
-        self.display = pygame.display.set_mode((0, 0), HIDDEN)
+        self.display = pygame.display.set_mode(self.game_size, HIDDEN)
 
-        #
+        # Flags Attributes
+        self.flags = False
+        self.is_resizable = False
+        self.is_fullscreen = False
+        self.is_maximized = False
 
-        self.window_title = None
-        self.game_size = None
-        self.screen_scaled = None
-        self.screen_gap = None
-        self.flags = None
-        self.is_resizable = True
-        self.is_fullscreen = None
-        self.is_zoom = None
-
+        # Miscellaneous Attributes
         self.logger = None
 
     """
-    Initialization
+    Instance Setup
         - create_window_instance
         - set_title
         - set_size
@@ -129,14 +113,14 @@ class WindowManager(pygame.Surface):
         # Initialize the window surface with the given size
         super().__init__(size)
 
-        # Set
+        # Set window attributes
         self.set_title(window_title)
         self.set_size(size)
         self.set_flags(flags)
         self.set_logger(logger)
 
-        # Update display mode based on initial settings
-        self.update_display_mode()
+        # Adjust the display based on new settings
+        self.adjust_display()
 
         # Return the instance of the created window
         return self
@@ -172,7 +156,7 @@ class WindowManager(pygame.Surface):
         self.flags = flags
         self.is_fullscreen = bool(flags & FULLSCREEN)
         self.is_resizable = bool(flags & RESIZABLE)
-        self.is_zoom = False
+        self.is_maximized = False
 
     def set_logger(self, logger):
         """
@@ -184,14 +168,17 @@ class WindowManager(pygame.Surface):
         self.logger = logger
 
     """
-    Display flags Management
+    Window Management
         - toggle_fullscreen
         - toggle_resizable
-        - toggle_zoom
+        - toggle_maximize
+        - detect_maximize
+        - maximize_window
+        - restore_window
     """
     def toggle_fullscreen(self):
         """
-        Toggle the fullscreen flag.
+        Toggle the fullscreen mode of the window.
         """
         # Toggle the fullscreen mode
         self.is_fullscreen = not self.is_fullscreen
@@ -199,10 +186,10 @@ class WindowManager(pygame.Surface):
         if self.is_fullscreen:
             # Switch to fullscreen mode
             self.flags |= FULLSCREEN
-            self.flags &= ~RESIZABLE  # Ensure resizable is turned off if fullscreen is on
+            self.flags &= ~RESIZABLE
 
             # Reset screen properties
-            self.screen_gap = 0, 0
+            self.screen_gap = (0, 0)
             self.screen_scaled = self.game_size
         else:
             # Switch to windowed mode
@@ -217,19 +204,12 @@ class WindowManager(pygame.Surface):
             action = "enabled" if self.is_fullscreen else "disabled"
             self.logger.info(f"Fullscreen mode {action}")
 
-        """
-        WIP
-        """
-        # Calculate screen dimensions
-        screen_w = self.screen_scaled[0] + self.screen_gap[0] * 2
-        screen_h = self.screen_scaled[1] + self.screen_gap[1] * 2
-
-        # Set the display mode with the calculated dimensions and provided flags.
-        self.display = pygame.display.set_mode((screen_w, screen_h), self.flags)
+        # Adjust the display based on new settings
+        self.adjust_display()
 
     def toggle_resizable(self):
         """
-        Toggle the resizable flag.
+        Toggle the resizable mode of the window.
         """
         # Toggle the resizable mode
         self.is_resizable = not self.is_resizable
@@ -237,7 +217,7 @@ class WindowManager(pygame.Surface):
         if self.is_resizable:
             # Switch to resizable mode
             self.flags |= RESIZABLE
-            self.flags &= ~FULLSCREEN  # Ensure fullscreen is turned off if resizable is on
+            self.flags &= ~FULLSCREEN
         else:
             # Switch to windowed mode
             self.flags &= ~RESIZABLE
@@ -247,38 +227,66 @@ class WindowManager(pygame.Surface):
             action = "enabled" if self.is_resizable else "disabled"
             self.logger.info(f"Resizable mode {action}")
 
-        """
-        WIP
-        """
-        # Calculate screen dimensions
-        screen_w = self.screen_scaled[0] + self.screen_gap[0] * 2
-        screen_h = self.screen_scaled[1] + self.screen_gap[1] * 2
+        # Adjust the display based on new settings
+        self.adjust_display()
 
-        # Set the display mode with the calculated dimensions and provided flags.
-        self.display = pygame.display.set_mode((screen_w, screen_h), self.flags)
-
-    def toggle_zoom(self):
+    def toggle_maximize(self):
         """
-        Toggle the zoom flag.
+        Toggle the maximize mode of the window.
         """
-        # Toggle the zoom mode
-        self.is_zoom = not self.is_zoom
+        if self.is_maximized:
+            self.restore_window()
+        else:
+            self.maximize_window()
 
-        if self.is_zoom:
-            # Adjust screen_gap when zoom is enabled to center the game surface.
+    def detect_maximize(self):
+        """
+        Detect and toggle maximize flag based on current state.
+        """
+        # Toggle the maximize mode
+        self.is_maximized = not self.is_maximized
+
+        if self.is_maximized:
+            # Adjust screen_gap when maximize is enabled to center the game surface.
             self.screen_gap = int((self.screen_info.current_w - self.screen_scaled[0]) / 2), self.screen_gap[1]
         else:
             # Reset screen properties
-            self.screen_gap = 0, 0
+            self.screen_gap = (0, 0)
             self.screen_scaled = self.game_size
 
         # Log the action if logger is defined
         if self.logger:
-            action = "enabled" if self.is_zoom else "disabled"
-            self.logger.info(f"Zoom mode {action}")
+            action = "enabled" if self.is_maximized else "disabled"
+            self.logger.info(f"Maximize mode {action}")
 
+        # Adjust the display based on new settings
+        self.adjust_display()
+
+    @staticmethod
+    def maximize_window():
         """
-        WIP
+        Maximize the game window on Windows.
+        """
+        hwnd = pygame.display.get_wm_info()['window']
+        ctypes.windll.user32.ShowWindow(hwnd, 3)  # SW_MAXIMIZE = 3
+
+    @staticmethod
+    def restore_window():
+        """
+        Restore the game window to its initial size on Windows.
+        """
+        hwnd = pygame.display.get_wm_info()['window']
+        ctypes.windll.user32.ShowWindow(hwnd, 9)  # SW_RESTORE = 9
+
+    """
+    Display Management
+        - adjust_display
+        - adjust_aspect_ratio
+        - resize
+    """
+    def adjust_display(self):
+        """
+        Adjust the window display based on current settings.
         """
         # Calculate screen dimensions
         screen_w = self.screen_scaled[0] + self.screen_gap[0] * 2
@@ -287,12 +295,6 @@ class WindowManager(pygame.Surface):
         # Set the display mode with the calculated dimensions and provided flags.
         self.display = pygame.display.set_mode((screen_w, screen_h), self.flags)
 
-    """
-    Size Management
-        - adjust_aspect_ratio
-        - update_display_mode
-        - resize
-    """
     def adjust_aspect_ratio(self):
         """
         Adjust the aspect ratio for maintaining proper scaling during resizing.
@@ -308,69 +310,33 @@ class WindowManager(pygame.Surface):
         sap = ss[0] / ss[1]
         gap = gs[0] / gs[1]
 
-        # The inequality signs' order decides size reduction (current) or increase in one-sided resizing.
         if sap < gap:
-            # To maintain the aspect ratio, divide the height by the width scaling factor.
+            # Adjust based on width scaling factor to maintain aspect ratio
             self.display_factor = ss[0] / gs[0]
             self.screen_scaled = ss[0], int(gs[1] * self.display_factor)
         elif sap > gap:
-            # To maintain the aspect ratio, divide the width by the height scaling factor.
+            # Adjust based on height scaling factor to maintain aspect ratio
             self.display_factor = ss[1] / gs[1]
             self.screen_scaled = int(gs[0] * self.display_factor), ss[1]
 
-    def update_display_mode(self, toggle_fullscreen=False, toggle_zoom=False, flags=None, resize=True):
-        """
-        Update the game window.
-
-        Args:
-            toggle_fullscreen (bool): Toggle fullscreen mode.
-            toggle_zoom (bool): Toggle zoom mode.
-            flags (int or None): Flags for display mode.
-            resize (bool): Whether to resize the window.
-        """
-        # Calculate the scaled resolution and adjust window properties accordingly.
-        self.adjust_aspect_ratio()
-
-        # Toggle fullscreen mode if requested and not in zoom mode.
-        if toggle_fullscreen and not self.is_zoom:
-            self.toggle_fullscreen()
-            resize = True
-
-        # Toggle zoom mode if requested and not in fullscreen mode.
-        elif toggle_zoom and not self.is_fullscreen:
-            self.toggle_zoom()
-            resize = True
-
-        # Update display flags if provided.
-        if flags is not None:
-            self.flags = flags
-
-        # Resize the display window if requested.
-        if resize:
-            # Calculate screen dimensions
-            screen_w = self.screen_scaled[0] + self.screen_gap[0] * 2
-            screen_h = self.screen_scaled[1] + self.screen_gap[1] * 2
-
-            # Set the display mode with the calculated dimensions and provided flags.
-            self.display = pygame.display.set_mode((screen_w, screen_h), self.flags)
-
     def resize(self):
         """
-        Resize the game window while considering zoom and screen width.
+        Resize the window while considering maximize and screen width.
         """
-        # Detect zoom
-        detect_zoom = False
-        if self.is_zoom or self.display.get_width() == self.screen_info.current_w:
-            detect_zoom = True
+        # Adjust aspect ratio based on current display size
+        self.adjust_aspect_ratio()
 
-        # Update the display mode to reflect resizing changes
-        self.update_display_mode(toggle_zoom=detect_zoom, resize=True)
+        # Detect maximize if enabled or if screen width matches current display width
+        if self.is_maximized or self.display.get_width() == self.screen_info.current_w:
+            self.detect_maximize()
+
+        # Adjust the display based on new settings
+        self.adjust_display()
 
     """
     Input Handling
         - get_adjusted_mouse_position
     """
-
     def get_adjusted_mouse_position(self):
         """
         Get the adjusted mouse position based on display_factor.
