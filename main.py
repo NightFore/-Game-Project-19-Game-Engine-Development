@@ -4,6 +4,7 @@ from pygame.locals import *
 import random
 from os import path
 
+from logger import GameLogger
 from engine.window_manager import WindowManager
 
 
@@ -70,10 +71,15 @@ class MainManager:
         self.window_manager = self.managers["window_manager"]
 
         """
+        WIP
+        """
+        self.game_logger = GameLogger()
+
+        """
         Configure display settings.
         """
         flags = RESIZABLE
-        self.gameDisplay = self.window_manager.create_window_instance(self.window_title, self.screen_size, flags)
+        self.gameDisplay = self.window_manager.initialize_instance(self.window_title, self.screen_size, flags, self.game_logger)
 
         self.click = None
         self.event = None
@@ -89,7 +95,6 @@ class MainManager:
         - draw
         - quit_game
     """
-
     def run(self):
         while self.playing:
             # Calculate the time since the last frame (in seconds)

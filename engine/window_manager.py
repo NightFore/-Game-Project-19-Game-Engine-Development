@@ -33,7 +33,7 @@ class WindowManager(pygame.Surface):
 
     Methods:
         Instance Setup:
-            - create_window_instance(window_title, size, flags, logger): Create a window instance.
+            - initialize_instance(window_title, size, flags, logger): Initialize a window instance.
             - set_title(window_title): Set the title of the window.
             - set_size(size): Set the size of the window.
             - set_flags(flags): Set the display flags of the window.
@@ -91,15 +91,15 @@ class WindowManager(pygame.Surface):
 
     """
     Instance Setup
-        - create_window_instance
+        - initialize_instance
         - set_title
         - set_size
         - set_flags
         - set_logger
     """
-    def create_window_instance(self, window_title="", size=(800, 600), flags=0, logger=None):
+    def initialize_instance(self, window_title="", size=(800, 600), flags=0, logger=None):
         """
-        Create a window instance.
+        Initialize a window instance.
 
         Args:
             window_title (str): The title of the window.
@@ -108,7 +108,7 @@ class WindowManager(pygame.Surface):
             logger (GameLogger or None): Logger instance for logging events.
 
         Returns:
-            pygame.Surface: The created window instance.
+            pygame.Surface: The initialized window instance.
         """
         # Initialize the window surface with the given size
         super().__init__(size)
@@ -122,7 +122,11 @@ class WindowManager(pygame.Surface):
         # Adjust the display based on new settings
         self.adjust_display()
 
-        # Return the instance of the created window
+        # Log initialization of window instance
+        if self.logger:
+            self.logger.info(f"Window instance initialized: Title='{window_title}', Size={size}, Flags={flags}")
+
+        # Return the instance of the initialized window
         return self
 
     def set_title(self, window_title):
@@ -199,13 +203,13 @@ class WindowManager(pygame.Surface):
             if self.is_resizable:
                 self.flags |= RESIZABLE
 
+        # Adjust the display based on new settings
+        self.adjust_display()
+
         # Log the action if logger is defined
         if self.logger:
             action = "enabled" if self.is_fullscreen else "disabled"
-            self.logger.info(f"Fullscreen mode {action}")
-
-        # Adjust the display based on new settings
-        self.adjust_display()
+            self.logger.debug(f"Fullscreen mode {action}")
 
     def toggle_resizable(self):
         """
@@ -222,13 +226,13 @@ class WindowManager(pygame.Surface):
             # Switch to windowed mode
             self.flags &= ~RESIZABLE
 
+        # Adjust the display based on new settings
+        self.adjust_display()
+
         # Log the action if logger is defined
         if self.logger:
             action = "enabled" if self.is_resizable else "disabled"
-            self.logger.info(f"Resizable mode {action}")
-
-        # Adjust the display based on new settings
-        self.adjust_display()
+            self.logger.debug(f"Resizable mode {action}")
 
     def toggle_maximize(self):
         """
@@ -257,10 +261,7 @@ class WindowManager(pygame.Surface):
         # Log the action if logger is defined
         if self.logger:
             action = "enabled" if self.is_maximized else "disabled"
-            self.logger.info(f"Maximize mode {action}")
-
-        # Adjust the display based on new settings
-        self.adjust_display()
+            self.logger.debug(f"Maximize mode {action}")
 
     @staticmethod
     def maximize_window():
@@ -291,9 +292,17 @@ class WindowManager(pygame.Surface):
         # Calculate screen dimensions
         screen_w = self.screen_scaled[0] + self.screen_gap[0] * 2
         screen_h = self.screen_scaled[1] + self.screen_gap[1] * 2
+        screen_size = screen_w, screen_h
+
+        # Get current display size
+        display_size = self.display.get_size()
+
+        # Log the new screen size if it has changed
+        if display_size != screen_size:
+            self.logger.debug(f"Setting display mode: Size={display_size} -> {screen_size}")
 
         # Set the display mode with the calculated dimensions and provided flags.
-        self.display = pygame.display.set_mode((screen_w, screen_h), self.flags)
+        self.display = pygame.display.set_mode(screen_size, self.flags)
 
     def adjust_aspect_ratio(self):
         """
@@ -358,7 +367,6 @@ class WindowManager(pygame.Surface):
         - update
         - draw
     """
-
     def update(self, frame_rate):
         """
         Update the display.
