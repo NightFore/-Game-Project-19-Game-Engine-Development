@@ -1,7 +1,7 @@
 import pygame
 import random
 from pygame.locals import *
-from logger import GameLogger
+from logger import Logger
 from engine.window_manager import WindowManager
 
 
@@ -77,7 +77,7 @@ class MainManager:
         self.screen_size = self.screen_width, self.screen_height = (800, 600)
 
         # Miscellaneous Attributes
-        self.logger = GameLogger()
+        self.logger = Logger()
         self.logger.info(f"MainManager initialized")
 
         # Manager Attributes
