@@ -33,7 +33,7 @@ class WindowManager(pygame.Surface):
 
     Methods:
         Instance Setup:
-            - initialize_instance(window_title, size, flags, logger): Initialize a window instance.
+            - initialize(window_title, size, flags, logger): Initialize the WindowManager.
             - set_title(window_title): Set the title of the window.
             - set_size(size): Set the size of the window.
             - set_flags(flags): Set the display flags of the window.
@@ -59,7 +59,6 @@ class WindowManager(pygame.Surface):
             - update(frame_rate): Update the display with the current frame rate.
             - draw(): Draw the game surface onto the screen.
     """
-
     def __init__(self):
         """
         Initialize the WindowManager instance.
@@ -91,24 +90,24 @@ class WindowManager(pygame.Surface):
 
     """
     Instance Setup
-        - initialize_instance
+        - initialize
         - set_title
         - set_size
         - set_flags
         - set_logger
     """
-    def initialize_instance(self, window_title="", size=(800, 600), flags=0, logger=None):
+    def initialize(self, window_title="", size=(800, 600), flags=0, logger=None):
         """
-        Initialize a window instance.
+        Initialize the WindowManager.
 
         Args:
             window_title (str): The title of the window.
             size (tuple): Size of the window in (width, height).
-            flags (int or None): Flags for display mode.
+            flags (int): Flags for display mode.
             logger (GameLogger or None): Logger instance for logging events.
 
         Returns:
-            pygame.Surface: The initialized window instance.
+            pygame.Surface: The initialized window.
         """
         # Initialize the window surface with the given size
         super().__init__(size)
@@ -122,11 +121,11 @@ class WindowManager(pygame.Surface):
         # Adjust the display based on new settings
         self.adjust_display()
 
-        # Log initialization of window instance
+        # Log initialization of WindowManager
         if self.logger:
-            self.logger.info(f"Window instance initialized: Title='{window_title}', Size={size}, Flags={flags}")
+            self.logger.info(f"WindowManager initialized: Title='{window_title}', Size={size}, Flags={flags}")
 
-        # Return the instance of the initialized window
+        # Return the initialized window
         return self
 
     def set_title(self, window_title):

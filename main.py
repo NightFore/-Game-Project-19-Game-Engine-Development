@@ -1,91 +1,88 @@
 import pygame
-from pygame.locals import *
-
 import random
-from os import path
-
+from pygame.locals import *
 from logger import GameLogger
 from engine.window_manager import WindowManager
 
 
 class MainManager:
     """
+    MainManager handles the main game loop and overall game state management.
+
+    Attributes:
+        Game State Attributes:
+            - event (list): List to store pygame events.
+            - playing (bool): Flag to control the main game loop.
+            - paused (bool): Flag to indicate if the game is paused.
+            - debug_mode (bool): Flag to toggle debug mode.
+
+        Time Management Attributes:
+            - clock (pygame.time.Clock): Clock object to manage frame rate.
+            - dt (float): Delta time since the last frame.
+            - total_play_time (float): Total play time in seconds.
+
+        Input Handling Attributes:
+            - mouse_pos (tuple): Current mouse position.
+            - click (list): List to track mouse click states.
+
+        Project Settings Attributes:
+            - window_title (str): Title of the game window.
+            - project_title (str): Title of the project.
+            - FPS (int): Target frames per second.
+            - screen_size (tuple): Size of the game screen.
+
+        Miscellaneous Attributes:
+            - logger (GameLogger): Logger instance for logging events.
+
+        Manager Attributes:
+            - window_manager (WindowManager): Instance of the WindowManager.
+
+    Methods:
+        Game Loop:
+            - run(): Main game loop. Handles events, updates game state, and renders the frame.
+            - events(): Handle user input events.
+            - update(): Update the game state.
+            - draw(): Render the game frame.
+            - quit_game(): Quit the game and clean up resources.
     """
     def __init__(self):
-        # Initialize the game
+        """
+        Initialize the MainManager instance and set up the game.
+        """
+        # Initialize pygame and random seed
         pygame.mixer.pre_init(44100, -16, 2, 2048)
         pygame.init()
         pygame.mixer.init()
         random.seed()
 
-        # Initialize game state flags
+        # Game State Attributes
+        self.event = None
         self.playing = True
         self.paused = False
         self.debug_mode = False
 
-        # Initialize time-related variables
+        # Time Management Attributes
         self.clock = pygame.time.Clock()
         self.dt = self.clock.tick()
         self.total_play_time = 0
 
-        # Initialize input handling
+        # Input Handling Attributes
         self.mouse_pos = (0, 0)
+        self.click = [None, False, False, False, False, False]
 
-        # Initialize project settings
+        # Project Settings Attributes
         self.window_title = "WINDOW_TITLE"
         self.project_title = "PROJECT_TITLE"
         self.FPS = 60
         self.screen_size = self.screen_width, self.screen_height = (800, 600)
 
-        """
-        Set up resource folders.
-        """
-        # Get the directory of the current script file
-        self.game_folder = path.dirname(__file__)
+        # Miscellaneous Attributes
+        self.logger = GameLogger()
+        self.logger.info(f"MainManager initialized")
 
-        # Define the base resources folder
-        self.resources_folder = path.join(self.game_folder, "resources")
-
-        # Define individual resource folders
-        self.music_folder = path.join(self.resources_folder, "music")
-        self.sound_folder = path.join(self.resources_folder, "sound")
-        self.graphic_folder = path.join(self.resources_folder, "graphic")
-        self.font_folder = path.join(self.resources_folder, "font")
-
-        # Define resource type folders (see ResourceManagers)
-        self.resource_type_folders = {
-            "music": self.music_folder,
-            "sound": self.sound_folder,
-            "image": self.graphic_folder,
-            "image_sequence": self.graphic_folder,
-            "font": self.font_folder,
-        }
-
-        """
-        Initialize game managers.
-        """
-        self.managers = {
-            "main_manager": self,
-            "window_manager": WindowManager()
-        }
-        self.window_manager = self.managers["window_manager"]
-
-        """
-        WIP
-        """
-        self.game_logger = GameLogger()
-
-        """
-        Configure display settings.
-        """
-        flags = RESIZABLE
-        self.gameDisplay = self.window_manager.initialize_instance(self.window_title, self.screen_size, flags, self.game_logger)
-
-        self.click = None
-        self.event = None
-
-        # Debug
-        self.is_maximized = False
+        # Manager Attributes
+        self.window_manager = WindowManager()
+        self.gameDisplay = self.window_manager.initialize(self.window_title, self.screen_size, RESIZABLE, self.logger)
 
     """
     Game Loop
@@ -96,11 +93,12 @@ class MainManager:
         - quit_game
     """
     def run(self):
+        """
+        Main game loop. Handles events, updates game state, and renders the frame.
+        """
         while self.playing:
-            # Calculate the time since the last frame (in seconds)
+            # Calculate delta time and increment total play time (in seconds)
             self.dt = self.clock.tick(self.FPS) / 1000
-
-            # Increment the total play time
             self.total_play_time += self.dt
 
             # Handle user events
@@ -117,17 +115,20 @@ class MainManager:
         self.quit_game()
 
     def events(self):
-        """Click: None, Left, Middle, Right, Scroll Up, Scroll Down"""
+        """
+        Handle user input events.
+        """
+        # Click: None, Left, Middle, Right, Scroll Up, Scroll Down
         self.click = [None, False, False, False, False, False]
 
-        """Handle Events"""
+        # Get events
         self.event = pygame.event.get()
         for event in self.event:
             # Handle window resizing event
             if event.type == VIDEORESIZE:
                 self.window_manager.resize()
 
-            # Check for keyboard shortcuts
+            # Handle keyboard shortcuts
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.quit_game()
@@ -148,18 +149,19 @@ class MainManager:
         self.mouse_pos = self.window_manager.get_adjusted_mouse_position()
 
     def update(self):
+        """
+        Update the game state.
+        """
         # Update game components
         self.window_manager.update(self.clock.get_fps())
 
-        # Debug
-        debug = False
-        if debug:
-            print(self.window_manager.game_size)
-            print(self.window_manager.screen_gap)
-            print(self.window_manager.screen_scaled)
-            pass
-
     def draw(self):
+        """
+        Render the game frame.
+        """
+        # Clear the display
+        self.gameDisplay.fill((0, 0, 0))
+
         # Debug
         self.gameDisplay.fill((30, 30, 30))
         pygame.draw.circle(self.gameDisplay, (255, 0, 0), (400, 300), 30)
@@ -168,8 +170,11 @@ class MainManager:
         self.window_manager.draw()
 
     def quit_game(self):
+        """
+        Quit the game and clean up resources.
+        """
         # pygame.image.save(self.gameDisplay, "screenshot.png")
-        print(f"Total game time: {self.total_play_time:.3f} seconds")
+        self.logger.info(f"Total game time: {self.total_play_time:.3f} seconds")
         pygame.quit()
         quit()
 
