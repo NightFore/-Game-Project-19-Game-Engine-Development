@@ -1,6 +1,6 @@
+# audio.py
 import pygame
 import os
-import json
 import logging
 
 # Constants
@@ -10,13 +10,13 @@ DEFAULT_SFX_VOLUME = 0.7
 DEFAULT_VOICE_VOLUME = 0.5
 
 
-class SoundManager:
+class AudioManager:
     """
-    SoundManager class handles all audio-related functionalities in the game.
+    AudioManager class handles all audio-related functionalities in the game.
 
     Attributes:
-        config_path (str): Path to the configuration file (config.json).
-        config_defaults (dict): Dictionary containing default values for audio configuration.
+        config (dict): Configuration dictionary loaded from config.json.
+        logger (logging.Logger): Logger instance for logging messages.
 
         Master Volume Controls:
         - master_volume (float): Master volume level for all audio (default: 0.5).
@@ -29,48 +29,18 @@ class SoundManager:
         - music_tracks (dict): Dictionary to store loaded music tracks.
         - voice_clips (dict): Dictionary to store loaded voice clips.
 
-    Methods:
-        Initialization:
-        - load_config(): Loads audio settings from config.json or uses defaults.
-        - initialize_pygame(): Initializes Pygame mixer for sound playback.
-        - load_assets(): Loads sound assets from the assets directory.
-
-        Playback Controls:
-        - play_sound_effect(effect_name): Plays a sound effect by name.
-        - play_music(track_name, loop): Plays music track by name.
-        - play_voice_clip(clip_name): Plays a voice clip by name.
-        - stop_music(): Stops the currently playing music.
-        - pause_music(): Pauses the currently playing music.
-        - unpause_music(): Unpauses the currently paused music.
-
-        Volume Controls:
-        - set_master_volume(volume): Sets the master volume for all audio.
-        - get_master_volume(): Retrieves the current master volume.
-        - get_bgm_volume(): Retrieves the current background music volume.
-        - get_sfx_volume(): Retrieves the current sound effects volume.
-        - get_voice_volume(): Retrieves the current voice clips volume.
-
-        Configuration Management:
-        - save_config(): Saves the current audio settings to config.json.
+        Playback State:
+        - current_music_name (str or None): Name of currently playing music track.
+        - current_voice_clip_name (str or None): Name of currently playing voice clip.
     """
 
-    def __init__(self, config_path):
+    def __init__(self):
         """
-        Initialize the SoundManager instance.
+        Initialize the AudioManager instance.
+        """
+        self.config = None
+        self.logger = None
 
-        Args:
-            config_path (str): Path to the configuration file (config.json).
-        """
-        self.config_path = config_path
-        self.config_defaults = {
-            "audio": {
-                "master_volume": DEFAULT_VOLUME,
-                "bgm_volume": DEFAULT_MUSIC_VOLUME,
-                "sfx_volume": DEFAULT_SFX_VOLUME,
-                "voice_volume": DEFAULT_VOICE_VOLUME
-            }
-        }
-        self.logger = logging.getLogger(__name__)
         self.master_volume = DEFAULT_VOLUME
         self.bgm_volume = DEFAULT_MUSIC_VOLUME
         self.sfx_volume = DEFAULT_SFX_VOLUME
@@ -83,31 +53,35 @@ class SoundManager:
         self.current_music_name = None
         self.current_voice_clip_name = None
 
-        self.load_config()
+    def initialize(self, config, logger):
+        """
+        Initialize the AudioManager with configuration and logger.
+
+        Args:
+            config (dict): Configuration dictionary loaded from config.json.
+            logger (logging.Logger): Logger instance for logging messages.
+        """
+        self.config = config
+        self.logger = logger
+
+        self.load_audio_settings()
         self.initialize_pygame()
         self.load_assets()
-        self.logger.info("SoundManager initialized.")
+        self.logger.info("AudioManager initialized.")
 
-    def load_config(self):
+    def load_audio_settings(self):
         """
-        Load audio settings from the configuration file (config.json).
-        If the file doesn't exist or settings are missing, use default values.
+        Load audio settings from the configuration dictionary.
         """
-        if os.path.exists(self.config_path):
-            with open(self.config_path, 'r') as f:
-                config_data = json.load(f)
-                audio_config = config_data.get("audio", {})
-                self.master_volume = audio_config.get("master_volume", self.config_defaults["audio"]["master_volume"])
-                self.bgm_volume = audio_config.get("bgm_volume", self.config_defaults["audio"]["bgm_volume"])
-                self.sfx_volume = audio_config.get("sfx_volume", self.config_defaults["audio"]["sfx_volume"])
-                self.voice_volume = audio_config.get("voice_volume", self.config_defaults["audio"]["voice_volume"])
-                self.logger.info(f"Config loaded from '{self.config_path}'")
+        if self.config:
+            audio_config = self.config.get("audio", {})
+            self.master_volume = audio_config.get("master_volume", DEFAULT_VOLUME)
+            self.bgm_volume = audio_config.get("bgm_volume", DEFAULT_MUSIC_VOLUME)
+            self.sfx_volume = audio_config.get("sfx_volume", DEFAULT_SFX_VOLUME)
+            self.voice_volume = audio_config.get("voice_volume", DEFAULT_VOICE_VOLUME)
+            self.logger.info("Audio settings loaded.")
         else:
-            self.master_volume = self.config_defaults["audio"]["master_volume"]
-            self.bgm_volume = self.config_defaults["audio"]["bgm_volume"]
-            self.sfx_volume = self.config_defaults["audio"]["sfx_volume"]
-            self.voice_volume = self.config_defaults["audio"]["voice_volume"]
-            self.logger.warning(f"Config file '{self.config_path}' not found. Using default audio settings.")
+            self.logger.warning("Configuration dictionary is not set.")
 
     def initialize_pygame(self):
         """
@@ -119,11 +93,19 @@ class SoundManager:
 
     def load_assets(self):
         """
-        Load sound assets from the assets directory.
+        Load sound assets from the assets directory based on project structure.
         """
-        # Implement loading sound effects, music tracks, and voice clips as per your project structure
-        # Example: self.sound_effects = load_sound_effects()
-        pass
+        assets_folder = "assets"
+        for root, dirs, files in os.walk(assets_folder):
+            for file in files:
+                file_path = os.path.join(root, file)
+                if file_path.endswith(".mp3") or file_path.endswith(".wav"):
+                    if "bgm" in root:
+                        self.music_tracks[os.path.splitext(file)[0]] = file_path
+                    elif "sfx" in root:
+                        self.sound_effects[os.path.splitext(file)[0]] = pygame.mixer.Sound(file_path)
+                    elif "voice" in root:
+                        self.voice_clips[os.path.splitext(file)[0]] = pygame.mixer.Sound(file_path)
 
     def play_sound_effect(self, effect_name):
         """
@@ -132,7 +114,6 @@ class SoundManager:
         Args:
             effect_name (str): Name of the sound effect to play.
         """
-        # Implement playing sound effects from the loaded sound_effects dictionary
         if effect_name in self.sound_effects:
             self.sound_effects[effect_name].play()
 
@@ -144,7 +125,6 @@ class SoundManager:
             track_name (str): Name of the music track to play.
             loop (bool, optional): Whether to loop the music track. Default is False.
         """
-        # Implement playing music tracks from the loaded music_tracks dictionary
         if track_name in self.music_tracks:
             pygame.mixer.music.load(self.music_tracks[track_name])
             pygame.mixer.music.play(-1 if loop else 0)
@@ -157,7 +137,6 @@ class SoundManager:
         Args:
             clip_name (str): Name of the voice clip to play.
         """
-        # Implement playing voice clips from the loaded voice_clips dictionary
         if clip_name in self.voice_clips:
             self.voice_clips[clip_name].play()
 
@@ -190,7 +169,7 @@ class SoundManager:
             volume (float): Master volume level (0.0 to 1.0).
         """
         self.master_volume = max(0.0, min(1.0, volume))
-        # Implement setting master volume for all audio using Pygame mixer
+        pygame.mixer.music.set_volume(self.master_volume)
 
     def get_master_volume(self):
         """
@@ -209,7 +188,7 @@ class SoundManager:
             volume (float): Background music volume level (0.0 to 1.0).
         """
         self.bgm_volume = max(0.0, min(1.0, volume))
-        # Implement setting background music volume using Pygame mixer
+        pygame.mixer.music.set_volume(self.bgm_volume)
 
     def get_bgm_volume(self):
         """
@@ -228,7 +207,6 @@ class SoundManager:
             volume (float): Sound effects volume level (0.0 to 1.0).
         """
         self.sfx_volume = max(0.0, min(1.0, volume))
-        # Implement setting sound effects volume using Pygame mixer
 
     def get_sfx_volume(self):
         """
@@ -247,7 +225,6 @@ class SoundManager:
             volume (float): Voice clips volume level (0.0 to 1.0).
         """
         self.voice_volume = max(0.0, min(1.0, volume))
-        # Implement setting voice clips volume using Pygame mixer
 
     def get_voice_volume(self):
         """
@@ -257,19 +234,3 @@ class SoundManager:
             float: Current voice clips volume level.
         """
         return self.voice_volume
-
-    def save_config(self):
-        """
-        Save the current audio settings to the configuration file (config.json).
-        """
-        config_data = {
-            "audio": {
-                "master_volume": self.master_volume,
-                "bgm_volume": self.bgm_volume,
-                "sfx_volume": self.sfx_volume,
-                "voice_volume": self.voice_volume
-            }
-        }
-        with open(self.config_path, 'w') as f:
-            json.dump(config_data, f, indent=4)
-        self.logger.info(f"Saved audio configuration to '{self.config_path}'")

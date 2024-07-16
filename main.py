@@ -1,7 +1,10 @@
+# main.py
 import pygame
 import random
 from pygame.locals import *
+from config import load_config
 from logger import Logger
+from engine.audio import AudioManager
 from engine.window_manager import WindowManager
 
 
@@ -80,9 +83,14 @@ class MainManager:
         self.logger = Logger()
         self.logger.info(f"MainManager initialized")
 
+        self.config = load_config()
+
         # Manager Attributes
         self.window_manager = WindowManager()
         self.gameDisplay = self.window_manager.initialize(self.window_title, self.screen_size, RESIZABLE, self.logger)
+
+        self.audio_manager = AudioManager()
+        self.audio_manager.initialize(self.config, self.logger)
 
     """
     Game Loop
@@ -144,6 +152,16 @@ class MainManager:
             # Handle quit event
             if event.type == pygame.QUIT:
                 self.quit_game()
+
+            # Debug
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    self.audio_manager.play_music("bgm_eight_嘆きのスカーレット_(Nageki_no_Scarlet)", loop=True)
+                elif event.key == pygame.K_2:
+                    self.audio_manager.play_music("bgm_nagumorizu_Strategy_Meeting", loop=True)
+                elif event.key == pygame.K_3:
+                    self.audio_manager.play_music("bgm_tak_mfk_冷月の舞踏_(Reigetsu_no_Buto)", loop=True)
+
 
         # Update mouse position based on display_factor
         self.mouse_pos = self.window_manager.get_adjusted_mouse_position()

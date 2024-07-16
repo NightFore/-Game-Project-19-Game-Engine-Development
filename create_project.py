@@ -1,5 +1,4 @@
 # create_project.py
-
 import json
 import os
 from datetime import datetime
@@ -23,11 +22,9 @@ def main():
                 "backgrounds": {},
                 "ui": {},
             },
-            "sounds": {
-                "effects": {},
-                "music": {},
-                "voices": {},
-            },
+            "sfx": {},
+            "bgm": {},
+            "voice": {},
             "fonts": {},
         },
         "docs": {},
