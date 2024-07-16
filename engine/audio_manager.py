@@ -1,4 +1,5 @@
-# audio.py
+# audio_manager.py
+
 import pygame
 import os
 import logging
@@ -33,7 +34,6 @@ class AudioManager:
         - current_music_name (str or None): Name of currently playing music track.
         - current_voice_clip_name (str or None): Name of currently playing voice clip.
     """
-
     def __init__(self):
         """
         Initialize the AudioManager instance.

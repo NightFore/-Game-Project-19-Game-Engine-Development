@@ -1,4 +1,5 @@
 # create_project.py
+
 import json
 import os
 from datetime import datetime
@@ -30,11 +31,9 @@ def main():
         "docs": {},
         "engine": {
             "__init__.py": "",
-            "audio.py": "",
-            "graphics.py": "",
-            "input.py": "",
-            "physics.py": "",
-            "ui.py": ""
+            "audio_manager.py": "",
+            "base_manager.py": "",
+            "window_manager.py": ""
         },
         "game": {
             "__init__.py": "",

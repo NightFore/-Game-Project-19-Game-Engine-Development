@@ -4,9 +4,10 @@ import pygame
 import os
 import ctypes
 from pygame.locals import *
+from engine.base_manager import BaseManager
 
 
-class WindowManager(pygame.Surface):
+class WindowManager(BaseManager):
     """
     WindowManager manages the game window and its display modes.
 
@@ -63,7 +64,7 @@ class WindowManager(pygame.Surface):
         """
         Initialize the WindowManager instance.
         """
-        super().__init__((0, 0))
+        super().__init__()
 
         # Set the environment variable to center the game window.
         os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -109,9 +110,6 @@ class WindowManager(pygame.Surface):
         Returns:
             pygame.Surface: The initialized window.
         """
-        # Initialize the window surface with the given size
-        super().__init__(size)
-
         # Set window attributes
         self.set_title(window_title)
         self.set_size(size)
@@ -126,7 +124,7 @@ class WindowManager(pygame.Surface):
             self.logger.info(f"WindowManager initialized: Title='{window_title}', Size={size}, Flags={flags}")
 
         # Return the initialized window
-        return self
+        return self.display
 
     def set_title(self, window_title):
         """
@@ -380,6 +378,9 @@ class WindowManager(pygame.Surface):
         """
         Draw the game surface onto the screen.
         """
-        # Add game to screen with the scaled size and gap required.
-        self.display.blit(pygame.transform.scale(self, self.screen_scaled), self.screen_gap)
+        # Scale and blit the display
+        scaled_surface = pygame.transform.scale(self.display, self.screen_scaled)
+        self.display.blit(scaled_surface, self.screen_gap)
+
+        # Update the display
         pygame.display.flip()

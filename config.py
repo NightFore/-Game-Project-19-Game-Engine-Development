@@ -1,18 +1,24 @@
 # config.py
+
 import json
-import logging
-
-logger = logging.getLogger(__name__)
 
 
-def load_config(config_file='config.json'):
+def load_config(config_file='config.json', logger=None):
     try:
         with open(config_file, 'r') as f:
             config = json.load(f)
         return config
     except FileNotFoundError:
-        logger.error(f"Config file '{config_file}' not found. Please create it before running the game.")
+        message = f"Config file '{config_file}' not found. Please create it before running the game."
+        if logger:
+            logger.error(message)
+        else:
+            print(message)
         raise SystemExit(1)
     except json.JSONDecodeError:
-        logger.error(f"Error parsing JSON from '{config_file}'. Please ensure it is correctly formatted.")
+        message = f"Error parsing JSON from '{config_file}'. Please ensure it is correctly formatted."
+        if logger:
+            logger.error(message)
+        else:
+            print(message)
         raise SystemExit(1)
