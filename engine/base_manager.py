@@ -1,5 +1,6 @@
 # base_manager.py
 import inspect
+import logging
 
 
 class BaseManager:
@@ -12,13 +13,18 @@ class BaseManager:
 
     Methods:
         Instance Setup:
-            - initialize(config, logger): Initialize the manager with configuration and logger.
+            - initialize(config, logger=None): Initialize the manager with configuration and logger.
             - update_config(new_config, check_all_params=False): Update the configuration with new settings.
             - load_components(): Load necessary components based on the configuration.
             - load_specific_components(): Template method to be implemented in subclasses.
 
         Utility:
             - get_function_name(): Get the name of the current function dynamically.
+            - log_debug(message): Log a message at DEBUG level.
+            - log_info(message): Log a message at INFO level.
+            - log_warning(message): Log a message at WARNING level.
+            - log_error(message): Log a message at ERROR level and optionally raise an exception.
+            - log_critical(message): Log a message at CRITICAL level and optionally raise an exception.
     """
     def __init__(self):
         self.config = None
@@ -31,12 +37,12 @@ class BaseManager:
         - load_components
         - load_specific_components
     """
-    def initialize(self, config=None, logger=None):
+    def initialize(self, config, logger=None):
         """
         Initialize the manager with configuration and logger.
 
         Args:
-            config (dict or None): Configuration dictionary.
+            config (dict): Configuration dictionary.
             logger (logging.Logger or None): Logger instance.
         """
         # Set the initial configuration and logger
@@ -47,11 +53,7 @@ class BaseManager:
         self.update_config(config)
 
         # Log initialization
-        message = f"{self.__class__.__name__} initialized"
-        if self.logger:
-            self.logger.info(message)
-        else:
-            print(message)
+        self.log_info(f"{self.__class__.__name__} initialized")
 
     def update_config(self, new_config, check_all_params=False):
         """
@@ -70,11 +72,8 @@ class BaseManager:
         # Get class-specific configuration from new_config
         class_config = new_config.get(class_name)
         if class_config is None:
-            message = f"Configuration for {class_name} not found in new_config."
-            if self.logger:
-                self.logger.error(message)
-            else:
-                raise ValueError(message)
+            self.log_error(f"Configuration for {class_name} not found in new_config.",
+                           ValueError)
 
         # Check for missing parameters if check_all_params is True
         if check_all_params:
@@ -82,89 +81,56 @@ class BaseManager:
 
             # Raise error if any parameters are missing
             if missing_params:
-                message = (f"All parameters must be present in the new configuration. "
-                           f"Missing parameters: {missing_params}")
-                if self.logger:
-                    self.logger.error(message)
-                else:
-                    raise ValueError(message)
+                self.log_error(f"All parameters must be present in the new configuration. "
+                               f"Missing parameters: {missing_params}",
+                               ValueError)
 
         # Update configuration settings
         updated = False
         for key, value in new_config.items():
             if key in self.config and value != self.config[key]:
-                # Update the configuration value
-                self.config[key] = value
                 updated = True
+                self.config[key] = value
+                self.log_debug(f"Updated {key} = {repr(value)}")
 
-                # Log the updated configuration value
-                message = f"\t{key} = {repr(value)}"
-                if self.logger:
-                    self.logger.debug(message)
-                else:
-                    print(message)
-
-        # Perform actions if configuration was updated
+        # Load components after configuration update
         if updated:
-            # Load components after configuration update
             self.load_components()
-
-            # Log completion of configuration update
-            message = f"Configuration update for {class_name} completed."
-            if self.logger:
-                self.logger.info(message)
-            else:
-                print(message)
+            self.log_info(f"Configuration update for {class_name} completed.")
         else:
-            # Log no configuration update detected
-            message = f"No configuration update detected for {class_name}."
-            if self.logger:
-                self.logger.info(message)
-            else:
-                print(message)
+            self.log_info(f"No configuration update detected for {class_name}.")
 
     def load_components(self):
         """
         Load necessary components based on the configuration.
         """
-        # Get the class name
         class_name = self.__class__.__name__
-
-        # Log loading components
-        self.logger.info(f"Loading components for {class_name}...")
+        self.log_info(f"Loading components for {class_name}...")
 
         try:
             # Call the subclass-specific method to load components
             self.load_specific_components()
-
-            # Log completion of component loading
-            message = f"Loading components for {class_name} completed."
-            if self.logger:
-                self.logger.info(message)
-            else:
-                print(message)
+            self.log_info(f"Loading components for {class_name} completed.")
         except Exception as e:
-            # Log error if component loading fails
-            message = f"Error loading components for {class_name}: {e}"
-            if self.logger:
-                self.logger.error(message)
-            else:
-                raise message
+            self.log_error(f"Error loading components for {class_name}: {e}",
+                           RuntimeError)
 
     def load_specific_components(self):
         """
         Template method to be implemented in subclasses.
         """
         # Log that the method should be implemented in subclasses
-        message = f"Subclasses should implement {self.get_function_name()} method."
-        if self.logger:
-            self.logger.error(message)
-        else:
-            raise NotImplementedError(message)
+        self.log_error(f"Subclasses should implement {self.get_function_name()} method.",
+                       NotImplementedError)
 
     """
     Utility:
         - get_function_name
+        - log_debug
+        - log_info
+        - log_warning
+        - log_error
+        - log_critical
     """
     @staticmethod
     def get_function_name():
@@ -174,3 +140,65 @@ class BaseManager:
         # Use inspect module to get the current function name
         frame = inspect.currentframe().f_back
         return frame.f_code.co_name
+
+    def log_debug(self, message):
+        """
+        Log a message at DEBUG level.
+
+        Args:
+            message (str): Message to be logged.
+        """
+        if self.logger:
+            self.logger.debug(message)
+        else:
+            print(message)
+
+    def log_info(self, message):
+        """
+        Log a message at INFO level.
+
+        Args:
+            message (str): Message to be logged.
+        """
+        if self.logger:
+            self.logger.info(message)
+        else:
+            print(message)
+
+    def log_warning(self, message):
+        """
+        Log a message at WARNING level.
+
+        Args:
+            message (str): Message to be logged.
+        """
+        if self.logger:
+            self.logger.warning(message)
+        else:
+            print(message)
+
+    def log_error(self, message, exception=None):
+        """
+        Log a message at ERROR level and optionally raise an exception.
+
+        Args:
+            message (str): Message to be logged.
+            exception (type or None): Exception class to raise (default: None).
+        """
+        if self.logger:
+            self.logger.error(message, exception)
+        else:
+            print(message)
+
+    def log_critical(self, message, exception=None):
+        """
+        Log a message at CRITICAL level and optionally raise an exception.
+
+        Args:
+            message (str): Message to be logged.
+            exception (type or None): Exception class to raise (default: None).
+        """
+        if self.logger:
+            self.logger.critical(message, exception)
+        else:
+            print(message)

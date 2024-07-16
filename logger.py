@@ -28,18 +28,18 @@ class Logger:
 
     Methods:
         Logging Methods:
-            - debug: Log a message at DEBUG level.
-            - info: Log a message at INFO level.
-            - warning: Log a message at WARNING level.
-            - error: Log a message at ERROR level.
-            - critical: Log a message at CRITICAL level.
-            - event: Log a unique event message with context.
+            - debug(message): Log a message at DEBUG level.
+            - info(message): Log a message at INFO level.
+            - warning(message): Log a message at WARNING level.
+            - error(message, exception=None): Log a message at ERROR level and optionally raise an exception.
+            - critical(message, exception=None): Log a message at CRITICAL level and optionally raise an exception.
+            - event(message): Log a unique event message with context.
 
         Helper Methods:
-            - log_message: Log a message at a specified logging level.
-            - should_log_event: Determine whether an event should be logged based on uniqueness and time threshold.
-            - get_calling_class_name: Retrieve the name of the calling class.
-            - get_session_id: Retrieve the session ID associated with the logger.
+            - log_message(level, message): Log a message at a specified logging level.
+            - should_log_event(message): Determine whether an event should be logged.
+            - get_calling_class_name(): Retrieve the name of the calling class.
+            - get_session_id(): Retrieve the session ID associated with the logger.
     """
     def __init__(self):
         """
@@ -124,23 +124,31 @@ class Logger:
         """
         self.log_message(logging.WARNING, message)
 
-    def error(self, message):
+    def error(self, message, exception=None):
         """
-        Log a message at ERROR level.
+        Log a message at ERROR level and raise .
 
         Args:
             message (str): Message to be logged.
+            exception (type or None): Exception class to raise (default: None).
         """
         self.log_message(logging.ERROR, message)
 
-    def critical(self, message):
+        if exception:
+            raise exception(message)
+
+    def critical(self, message, exception=None):
         """
-        Log a message at CRITICAL level.
+        Log a message at CRITICAL level and optionally raise an exception.
 
         Args:
             message (str): Message to be logged.
+            exception (type or None): Exception class to raise (default: None).
         """
         self.log_message(logging.CRITICAL, message)
+
+        if exception:
+            raise exception(message)
 
     def event(self, event_message):
         """
@@ -171,20 +179,20 @@ class Logger:
         calling_class = self.get_calling_class_name()
         self.logger.log(level, f"{calling_class} - {message}")
 
-    def should_log_event(self, event_message):
+    def should_log_event(self, message):
         """
-        Determine whether an event should be logged based on uniqueness and time threshold.
+        Determine whether an event should be logged.
 
         Args:
-            event_message (str): The event message to be logged.
+            message (str): Message to be logged.
 
         Returns:
             bool: True if the event should be logged, False otherwise.
         """
         current_time = datetime.now()
-        time_since_last_event = current_time - self.unique_events.get(event_message, datetime.min)
+        time_since_last_event = current_time - self.unique_events.get(message, datetime.min)
 
-        if event_message not in self.unique_events or time_since_last_event > self.event_time_threshold:
+        if message not in self.unique_events or time_since_last_event > self.event_time_threshold:
             return True
         else:
             return False
