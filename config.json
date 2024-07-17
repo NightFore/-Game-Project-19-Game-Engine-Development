@@ -1,11 +1,11 @@
 {
-    "window": {
+    "WindowManager": {
+        "title": "[Game Project 19] Game Engine",
         "width": 800,
         "height": 600,
-        "title": "[Game Project 19] Game Engine",
         "fullscreen": false,
-        "vsync": true,
-        "resizable": true
+        "resizable": true,
+        "maximized": false
     },
     "audio": {
         "master_volume": 1.0,

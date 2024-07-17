@@ -45,11 +45,10 @@ class BaseManager:
             config (dict): Configuration dictionary.
             logger (logging.Logger or None): Logger instance.
         """
-        # Set the initial configuration and logger
-        self.config = config
+        # Set the logger
         self.logger = logger
 
-        # Update configuration with initial settings
+        # Set the initial configuration
         self.update_config(config)
 
         # Log initialization
@@ -69,6 +68,11 @@ class BaseManager:
         # Log configuration update
         self.logger.info(f"Configuration update for {class_name}...")
 
+        # Check if self.config is None
+        if self.config is None:
+            self.log_error(f"Configuration for {class_name} is not initialized.",
+                           ValueError)
+
         # Get class-specific configuration from new_config
         class_config = new_config.get(class_name)
         if class_config is None:
@@ -87,11 +91,12 @@ class BaseManager:
 
         # Update configuration settings
         updated = False
-        for key, value in new_config.items():
+        for key, value in class_config.items():
             if key in self.config and value != self.config[key]:
                 updated = True
+                old_value = self.config[key]
                 self.config[key] = value
-                self.log_debug(f"Updated {key} = {repr(value)}")
+                self.log_debug(f"Updated {key}: {repr(old_value)} -> {repr(value)}")
 
         # Load components after configuration update
         if updated:

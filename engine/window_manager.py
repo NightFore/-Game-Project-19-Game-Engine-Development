@@ -3,6 +3,7 @@
 import pygame
 import os
 import ctypes
+from typing import Optional
 from pygame.locals import *
 from engine.base_manager import BaseManager
 
@@ -13,13 +14,13 @@ class WindowManager(BaseManager):
 
     Attributes:
         Game Settings Attributes:
-            - window_title (str): The title of the window.
+            - title (str): The title of the window.
             - game_size (tuple): The size of the game window in (width, height).
 
         Display Settings Attributes:
             - screen_info (pygame.display.Info): Information about the display.
-            - screen_gap (tuple): Gap around the game surface on the screen.
             - screen_scaled (tuple): Scaled size of the game surface on the screen.
+            - screen_gap (tuple): Gap around the game surface on the screen.
             - display_factor (float): Factor for scaling based on display resolution.
             - display (pygame.Surface): Main display surface managed by the window manager.
 
@@ -34,8 +35,8 @@ class WindowManager(BaseManager):
 
     Methods:
         Instance Setup:
-            - initialize(window_title, size, flags, logger): Initialize the WindowManager.
-            - set_title(window_title): Set the title of the window.
+            - initialize(title, size, flags, logger): Initialize the WindowManager.
+            - set_title(title): Set the title of the window.
             - set_size(size): Set the size of the window.
             - set_flags(flags): Set the display flags of the window.
             - set_logger(logger): Set the logger instance.
@@ -66,25 +67,34 @@ class WindowManager(BaseManager):
         """
         super().__init__()
 
+        self.config = {
+            "title": Optional[str],
+            "width": Optional[int],
+            "height": Optional[int],
+            "fullscreen": Optional[bool],
+            "resizable": Optional[bool],
+            "maximized": Optional[bool]
+        }
+
         # Set the environment variable to center the game window.
         os.environ['SDL_VIDEO_CENTERED'] = '1'
 
         # Game Settings Attributes
-        self.window_title = ""
+        self.title = ""
         self.game_size = (0, 0)
 
         # Display Settings Attributes
         self.screen_info = pygame.display.Info()
-        self.screen_gap = (0, 0)
         self.screen_scaled = (0, 0)
+        self.screen_gap = (0, 0)
         self.display_factor = 1
-        self.display = pygame.display.set_mode(self.game_size, HIDDEN)
+        self.display = pygame.display.set_mode((0, 0), HIDDEN)
 
         # Flags Attributes
-        self.flags = False
-        self.is_resizable = False
         self.is_fullscreen = False
+        self.is_resizable = False
         self.is_maximized = False
+        self.flags = 0
 
         # Miscellaneous Attributes
         self.logger = None
@@ -97,76 +107,50 @@ class WindowManager(BaseManager):
         - set_flags
         - set_logger
     """
-    def initialize(self, window_title="", size=(800, 600), flags=0, logger=None):
-        """
-        Initialize the WindowManager.
-
-        Args:
-            window_title (str): The title of the window.
-            size (tuple): Size of the window in (width, height).
-            flags (int): Flags for display mode.
-            logger (GameLogger or None): Logger instance for logging events.
-
-        Returns:
-            pygame.Surface: The initialized window.
-        """
+    def load_specific_components(self):
         # Set window attributes
-        self.set_title(window_title)
-        self.set_size(size)
-        self.set_flags(flags)
-        self.set_logger(logger)
+        self.set_title()
+        self.set_size()
+        self.set_flags()
 
         # Adjust the display based on new settings
         self.adjust_display()
 
         # Log initialization of WindowManager
         if self.logger:
-            self.logger.info(f"WindowManager initialized: Title='{window_title}', Size={size}, Flags={flags}")
+            self.logger.info(f"WindowManager initialized: {self.title} | {self.game_size} | {self.flags}")
 
-        # Return the initialized window
-        return self.display
-
-    def set_title(self, window_title):
+    def set_title(self):
         """
         Set the title of the window.
-
-        Args:
-            window_title (str): The title of the window.
         """
-        self.window_title = window_title
-        pygame.display.set_caption(self.window_title)
+        self.title = self.config["title"]
+        pygame.display.set_caption(self.title)
 
-    def set_size(self, size):
+    def set_size(self):
         """
         Set the size of the window.
-
-        Args:
-            size (tuple): Size of the window in (width, height).
         """
-        self.game_size = size
+        self.game_size = (self.config["width"], self.config["height"])
         self.screen_scaled = self.game_size
         self.screen_gap = (0, 0)
 
-    def set_flags(self, flags):
+    def set_flags(self):
         """
         Set the display flags of the window.
-
-        Args:
-            flags (int or None): Flags for display mode.
         """
-        self.flags = flags
-        self.is_fullscreen = bool(flags & FULLSCREEN)
-        self.is_resizable = bool(flags & RESIZABLE)
-        self.is_maximized = False
+        self.is_fullscreen = self.config["fullscreen"]
+        self.is_resizable = self.config["resizable"]
+        self.is_maximized = self.config["maximized"]
 
-    def set_logger(self, logger):
-        """
-        Set the logger instance.
+        self.flags = 0
+        if self.is_fullscreen:
+            self.flags |= FULLSCREEN
+        if self.is_resizable:
+            self.flags |= RESIZABLE
 
-        Args:
-            logger (GameLogger or None): Logger instance for logging events.
-        """
-        self.logger = logger
+    def get_display(self):
+        return self.display
 
     """
     Window Management
@@ -296,7 +280,7 @@ class WindowManager(BaseManager):
 
         # Log the new screen size if it has changed
         if display_size != screen_size:
-            self.logger.debug(f"Setting display mode: Size={display_size} -> {screen_size}")
+            self.logger.debug(f"Updated display size: {display_size} -> {screen_size}")
 
         # Set the display mode with the calculated dimensions and provided flags.
         self.display = pygame.display.set_mode(screen_size, self.flags)
@@ -372,7 +356,7 @@ class WindowManager(BaseManager):
             frame_rate (float): Current frame rate in frames per second.
         """
         # Display the current FPS in the window title
-        pygame.display.set_caption(f"{self.window_title} ({int(frame_rate)} FPS)")
+        pygame.display.set_caption(f"{self.title} ({int(frame_rate)} FPS)")
 
     def draw(self):
         """
