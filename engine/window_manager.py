@@ -195,6 +195,11 @@ class WindowManager(BaseManager):
             if self.is_resizable:
                 self.flags |= RESIZABLE
 
+        # Check and restore maximized state if transitioning from fullscreen to windowed mode
+        if self.is_fullscreen and self.is_maximized:
+            self.restore_window()
+            self.logger.debug(f"Resizable mode disabled")
+
         # Adjust the display based on new settings
         self.adjust_display()
 
@@ -207,35 +212,51 @@ class WindowManager(BaseManager):
         """
         Toggle the resizable mode of the window.
         """
-        # Toggle the resizable mode
-        self.is_resizable = not self.is_resizable
+        if not self.is_fullscreen and not self.is_maximized:
+            # Toggle the resizable mode
+            self.is_resizable = not self.is_resizable
 
-        if self.is_resizable:
-            # Switch to resizable mode
-            self.flags |= RESIZABLE
-            self.flags &= ~FULLSCREEN
+            if self.is_resizable:
+                # Switch to resizable mode
+                self.flags |= RESIZABLE
+                self.flags &= ~FULLSCREEN
+            else:
+                # Switch to windowed mode
+                self.flags &= ~RESIZABLE
+
+            # Adjust the display based on new settings
+            self.adjust_display()
+
+            # Log the action if logger is defined
+            if self.logger:
+                action = "enabled" if self.is_resizable else "disabled"
+                self.logger.debug(f"Resizable mode {action}")
         else:
-            # Switch to windowed mode
-            self.flags &= ~RESIZABLE
-
-        # Adjust the display based on new settings
-        self.adjust_display()
-
-        # Log the action if logger is defined
-        if self.logger:
-            action = "enabled" if self.is_resizable else "disabled"
-            self.logger.debug(f"Resizable mode {action}")
+            # Handle cases where toggle is ignored
+            if self.is_fullscreen:
+                self.logger.debug("Window is in fullscreen mode. Resizable mode toggle ignored.")
+            elif self.is_maximized:
+                self.logger.debug("Window is maximized. Resizable mode toggle ignored.")
 
     def toggle_maximize(self):
         """
         Toggle the maximize mode of the window.
         """
-        if self.is_maximized:
-            # If currently maximized, restore to normal size
-            self.restore_window()
+        if self.is_resizable and not self.is_fullscreen:
+            hwnd = pygame.display.get_wm_info()['window']
+            current_state = ctypes.windll.user32.IsZoomed(hwnd)
+            if current_state:
+                # If currently maximized, restore to normal size
+                self.restore_window()
+            else:
+                # If not currently maximized, maximize the window
+                self.maximize_window()
         else:
-            # If not currently maximized, maximize the window
-            self.maximize_window()
+            # Handle cases where toggle is ignored
+            if self.is_fullscreen:
+                self.logger.debug("Window is in fullscreen mode. Maximize operation ignored.")
+            else:
+                self.logger.debug("Window is not resizable. Maximize operation ignored.")
 
     def detect_maximize(self):
         """
@@ -294,9 +315,6 @@ class WindowManager(BaseManager):
     def adjust_aspect_ratio(self):
         """
         Adjust the aspect ratio for maintaining proper scaling during resizing.
-
-        Returns:
-            tuple: Scaled resolution.
         """
         # Get the display and game screen sizes
         ss = self.display.get_size()
@@ -322,7 +340,8 @@ class WindowManager(BaseManager):
             self.screen_scaled = int(gs[0] * self.display_factor), ss[1]
 
         # Log the new screen size
-        self.logger.debug(f"Updated display size: {previous_scaled_size} -> {ss}")
+        if previous_scaled_size != ss:
+            self.logger.debug(f"Updated display size: {previous_scaled_size} -> {ss}")
 
     def resize(self):
         """
