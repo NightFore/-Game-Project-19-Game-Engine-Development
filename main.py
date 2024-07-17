@@ -93,7 +93,7 @@ class MainManager:
         # Initialize Managers
         self.audio_manager.initialize(self.config, self.logger)
         self.window_manager.initialize(self.config, self.logger)
-        self.gameDisplay = self.window_manager.get_display()
+        self.gameDisplay = self.window_manager.get_surface()
 
     """
     Game Loop

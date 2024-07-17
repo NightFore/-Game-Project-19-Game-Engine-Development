@@ -23,6 +23,7 @@ class WindowManager(BaseManager):
             - screen_gap (tuple): Gap around the game surface on the screen.
             - display_factor (float): Factor for scaling based on display resolution.
             - display (pygame.Surface): Main display surface managed by the window manager.
+            - surface (pygame.Surface): Surface for rendering game content.
 
         Flags Attributes:
             - flags (int): Flags for display mode.
@@ -40,6 +41,7 @@ class WindowManager(BaseManager):
             - set_size(size): Set the size of the window.
             - set_flags(flags): Set the display flags of the window.
             - set_logger(logger): Set the logger instance.
+            - get_surface(): Retrieve the pygame.Surface used for rendering game content.
 
         Window Management:
             - toggle_fullscreen(): Toggle the fullscreen mode of the window.
@@ -59,7 +61,7 @@ class WindowManager(BaseManager):
 
         Update and Drawing:
             - update(frame_rate): Update the display with the current frame rate.
-            - draw(): Draw the game surface onto the screen.
+            - draw(): Draw the game surface onto the display.
     """
     def __init__(self):
         """
@@ -89,6 +91,7 @@ class WindowManager(BaseManager):
         self.screen_gap = (0, 0)
         self.display_factor = 1
         self.display = pygame.display.set_mode((0, 0), HIDDEN)
+        self.surface = pygame.Surface((0, 0))
 
         # Flags Attributes
         self.is_fullscreen = False
@@ -106,6 +109,7 @@ class WindowManager(BaseManager):
         - set_size
         - set_flags
         - set_logger
+        - get_surface
     """
     def load_specific_components(self):
         # Set window attributes
@@ -134,6 +138,7 @@ class WindowManager(BaseManager):
         self.game_size = (self.config["width"], self.config["height"])
         self.screen_scaled = self.game_size
         self.screen_gap = (0, 0)
+        self.surface = pygame.Surface(self.game_size)
 
     def set_flags(self):
         """
@@ -149,8 +154,14 @@ class WindowManager(BaseManager):
         if self.is_resizable:
             self.flags |= RESIZABLE
 
-    def get_display(self):
-        return self.display
+    def get_surface(self):
+        """
+        Retrieve the pygame.Surface used for rendering game content.
+
+        Returns:
+            pygame.Surface: The surface used for rendering game content.
+        """
+        return self.surface
 
     """
     Window Management
@@ -220,8 +231,10 @@ class WindowManager(BaseManager):
         Toggle the maximize mode of the window.
         """
         if self.is_maximized:
+            # If currently maximized, restore to normal size
             self.restore_window()
         else:
+            # If not currently maximized, maximize the window
             self.maximize_window()
 
     def detect_maximize(self):
@@ -275,13 +288,6 @@ class WindowManager(BaseManager):
         screen_h = self.screen_scaled[1] + self.screen_gap[1] * 2
         screen_size = screen_w, screen_h
 
-        # Get current display size
-        display_size = self.display.get_size()
-
-        # Log the new screen size if it has changed
-        if display_size != screen_size:
-            self.logger.debug(f"Updated display size: {display_size} -> {screen_size}")
-
         # Set the display mode with the calculated dimensions and provided flags.
         self.display = pygame.display.set_mode(screen_size, self.flags)
 
@@ -300,6 +306,12 @@ class WindowManager(BaseManager):
         sap = ss[0] / ss[1]
         gap = gs[0] / gs[1]
 
+        # Store the current scaled size including the gap for logging
+        previous_scaled_size = (
+            self.screen_scaled[0] + self.screen_gap[0] * 2,
+            self.screen_scaled[1] + self.screen_gap[1] * 2
+        )
+
         if sap < gap:
             # Adjust based on width scaling factor to maintain aspect ratio
             self.display_factor = ss[0] / gs[0]
@@ -308,6 +320,9 @@ class WindowManager(BaseManager):
             # Adjust based on height scaling factor to maintain aspect ratio
             self.display_factor = ss[1] / gs[1]
             self.screen_scaled = int(gs[0] * self.display_factor), ss[1]
+
+        # Log the new screen size
+        self.logger.debug(f"Updated display size: {previous_scaled_size} -> {ss}")
 
     def resize(self):
         """
@@ -360,10 +375,10 @@ class WindowManager(BaseManager):
 
     def draw(self):
         """
-        Draw the game surface onto the screen.
+        Draw the game surface onto the display.
         """
-        # Scale and blit the display
-        scaled_surface = pygame.transform.scale(self.display, self.screen_scaled)
+        # Scale and blit the game surface onto the display
+        scaled_surface = pygame.transform.scale(self.surface, self.screen_scaled)
         self.display.blit(scaled_surface, self.screen_gap)
 
         # Update the display
