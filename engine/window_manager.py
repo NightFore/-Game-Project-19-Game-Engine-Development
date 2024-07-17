@@ -13,11 +13,15 @@ class WindowManager(BaseManager):
     WindowManager manages the game window and its display modes.
 
     Attributes:
-        Game Settings Attributes:
+        Common Attributes:
+            - config (dict): Configuration dictionary loaded from config.json.
+            - logger (logging.Logger): Logger instance for logging messages.
+
+        Game Attributes:
             - title (str): The title of the window.
             - game_size (tuple): The size of the game window in (width, height).
 
-        Display Settings Attributes:
+        Display Attributes:
             - screen_info (pygame.display.Info): Information about the display.
             - screen_scaled (tuple): Scaled size of the game surface on the screen.
             - screen_gap (tuple): Gap around the game surface on the screen.
@@ -29,14 +33,11 @@ class WindowManager(BaseManager):
             - flags (int): Flags for display mode.
             - is_resizable (bool): Flag indicating if the window is resizable.
             - is_fullscreen (bool): Flag indicating if the window is in fullscreen mode.
-            - is_maximized (bool): Flag indicating if the window is maximized.
-
-        Miscellaneous Attributes:
-            - logger (GameLogger or None): Logger instance for logging events.
+            - is_maximized (bool): Flag indicating if the window is maximized.x
 
     Methods:
         Instance Setup:
-            - initialize(title, size, flags, logger): Initialize the WindowManager.
+            - load_specific_components(): Load specific components based on the configuration.
             - set_title(title): Set the title of the window.
             - set_size(size): Set the size of the window.
             - set_flags(flags): Set the display flags of the window.
@@ -69,6 +70,7 @@ class WindowManager(BaseManager):
         """
         super().__init__()
 
+        # Common Attributes
         self.config = {
             "title": Optional[str],
             "width": Optional[int],
@@ -77,34 +79,32 @@ class WindowManager(BaseManager):
             "resizable": Optional[bool],
             "maximized": Optional[bool]
         }
+        self.logger = None
 
         # Set the environment variable to center the game window.
         os.environ['SDL_VIDEO_CENTERED'] = '1'
 
-        # Game Settings Attributes
-        self.title = ""
-        self.game_size = (0, 0)
+        # Game Attributes
+        self.title = Optional[str]
+        self.game_size = Optional[tuple]
 
-        # Display Settings Attributes
+        # Display Attributes
         self.screen_info = pygame.display.Info()
-        self.screen_scaled = (0, 0)
-        self.screen_gap = (0, 0)
+        self.screen_scaled = Optional[tuple]
+        self.screen_gap = Optional[tuple]
         self.display_factor = 1
         self.display = pygame.display.set_mode((0, 0), HIDDEN)
         self.surface = pygame.Surface((0, 0))
 
         # Flags Attributes
-        self.is_fullscreen = False
-        self.is_resizable = False
-        self.is_maximized = False
-        self.flags = 0
-
-        # Miscellaneous Attributes
-        self.logger = None
+        self.is_fullscreen = Optional[bool]
+        self.is_resizable = Optional[bool]
+        self.is_maximized = Optional[bool]
+        self.flags = Optional[int]
 
     """
     Instance Setup
-        - initialize
+        - load_specific_components
         - set_title
         - set_size
         - set_flags
@@ -112,7 +112,10 @@ class WindowManager(BaseManager):
         - get_surface
     """
     def load_specific_components(self):
-        # Set window attributes
+        """
+        Load specific components based on the configuration.
+        """
+        # Set Manager attributes
         self.set_title()
         self.set_size()
         self.set_flags()
@@ -121,8 +124,7 @@ class WindowManager(BaseManager):
         self.adjust_display()
 
         # Log initialization of WindowManager
-        if self.logger:
-            self.logger.info(f"WindowManager initialized: {self.title} | {self.game_size} | {self.flags}")
+        self.log_info(f"WindowManager initialized: Title: {self.title}, Size: {self.game_size}")
 
     def set_title(self):
         """
@@ -198,15 +200,14 @@ class WindowManager(BaseManager):
         # Check and restore maximized state if transitioning from fullscreen to windowed mode
         if self.is_fullscreen and self.is_maximized:
             self.restore_window()
-            self.logger.debug(f"Resizable mode disabled")
+            self.log_debug(f"Resizable mode disabled")
 
         # Adjust the display based on new settings
         self.adjust_display()
 
         # Log the action if logger is defined
-        if self.logger:
-            action = "enabled" if self.is_fullscreen else "disabled"
-            self.logger.debug(f"Fullscreen mode {action}")
+        action = "enabled" if self.is_fullscreen else "disabled"
+        self.log_debug(f"Fullscreen mode {action}")
 
     def toggle_resizable(self):
         """
@@ -228,15 +229,14 @@ class WindowManager(BaseManager):
             self.adjust_display()
 
             # Log the action if logger is defined
-            if self.logger:
-                action = "enabled" if self.is_resizable else "disabled"
-                self.logger.debug(f"Resizable mode {action}")
+            action = "enabled" if self.is_resizable else "disabled"
+            self.log_debug(f"Resizable mode {action}")
         else:
             # Handle cases where toggle is ignored
             if self.is_fullscreen:
-                self.logger.debug("Window is in fullscreen mode. Resizable mode toggle ignored.")
+                self.log_debug("Window is in fullscreen mode. Resizable mode toggle ignored.")
             elif self.is_maximized:
-                self.logger.debug("Window is maximized. Resizable mode toggle ignored.")
+                self.log_debug("Window is maximized. Resizable mode toggle ignored.")
 
     def toggle_maximize(self):
         """
@@ -254,9 +254,9 @@ class WindowManager(BaseManager):
         else:
             # Handle cases where toggle is ignored
             if self.is_fullscreen:
-                self.logger.debug("Window is in fullscreen mode. Maximize operation ignored.")
+                self.log_debug("Window is in fullscreen mode. Maximize operation ignored.")
             else:
-                self.logger.debug("Window is not resizable. Maximize operation ignored.")
+                self.log_debug("Window is not resizable. Maximize operation ignored.")
 
     def detect_maximize(self):
         """
@@ -276,7 +276,7 @@ class WindowManager(BaseManager):
         # Log the action if logger is defined
         if self.logger:
             action = "enabled" if self.is_maximized else "disabled"
-            self.logger.debug(f"Maximize mode {action}")
+            self.log_debug(f"Maximize mode {action}")
 
     @staticmethod
     def maximize_window():
@@ -341,7 +341,7 @@ class WindowManager(BaseManager):
 
         # Log the new screen size
         if previous_scaled_size != ss:
-            self.logger.debug(f"Updated display size: {previous_scaled_size} -> {ss}")
+            self.log_debug(f"Updated display size: {previous_scaled_size} -> {ss}")
 
     def resize(self):
         """

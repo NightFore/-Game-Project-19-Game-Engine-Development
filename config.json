@@ -7,12 +7,14 @@
         "resizable": true,
         "maximized": false
     },
-    "audio": {
-        "master_volume": 1.0,
-        "bgm_volume": 0.5,
-        "sfx_volume": 0.5,
-        "voice_volume": 0.5,
-        "mute": false
+    "AudioManager": {
+        "library_path": "assets",
+        "volume_master": 1.0,
+        "volume_bgm": 0.5,
+        "volume_sfx": 0.5,
+        "volume_voice": 0.5,
+        "mute": false,
+        "bgm_loop": -1
     },
     "graphics": {
         "background_color": "#000000",
