@@ -178,16 +178,16 @@ class AudioManager(BaseManager):
             # Iterate over files in the folder
             for filename in os.listdir(folder_path):
                 file_path = os.path.join(folder_path, filename)
+                base_filename = os.path.splitext(filename)[0]
                 try:
                     if category == "music" and is_valid_file(filename, (".wav", ".mp3")):
                         # Load as music
-                        pygame.mixer.music.load(file_path)
-                        audio_library[filename] = pygame.mixer.music
+                        audio_library[base_filename] = file_path
                         self.log_debug(f"Loaded background music: {filename}")
                     elif category in "sound" and is_valid_file(filename, (".wav", ".mp3")):
                         # Load as sound
                         sound = pygame.mixer.Sound(file_path)
-                        audio_library[filename] = sound
+                        audio_library[base_filename] = sound
                         self.log_debug(f"Loaded {category} file: {filename}")
                     else:
                         # Log a warning for unsupported file extensions
@@ -199,8 +199,6 @@ class AudioManager(BaseManager):
         # Log the number of files loaded
         num_files_loaded = len(audio_library)
         self.log_info(f"Loaded {num_files_loaded} audio files from {folder_path}")
-
-        print(audio_library)
 
         return audio_library
 
@@ -223,15 +221,18 @@ class AudioManager(BaseManager):
             music_name (str): Name of the music track to play.
         """
         if music_name in self.library_bgm:
+            # Check if the music is already playing
             if pygame.mixer.music.get_busy() and self.current_music_name == music_name:
                 self.log_debug(f"{music_name} is already playing.")
                 return
 
+            # Load and play the specified music track
             pygame.mixer.music.load(self.library_bgm[music_name])
             pygame.mixer.music.play(self.bgm_loop)
             self.current_music_name = music_name
             self.log_debug(f"Playing background music: {music_name}")
         else:
+            # Log a warning if the specified music track is not found
             self.log_warning(f"Cannot find {music_name} in the background music library.")
 
     def play_sound(self, sound_name):
@@ -242,9 +243,11 @@ class AudioManager(BaseManager):
             sound_name (str): Name of the sound effect to play.
         """
         if sound_name in self.library_sfx:
+            # Play the specified sound effect
             self.library_sfx[sound_name].play()
             self.log_debug(f"Playing sound effect: {sound_name}")
         else:
+            # Log a warning if the specified sound effect is not found
             self.log_warning(f"Cannot find {sound_name} in the sound effects library.")
 
     def play_voice(self, voice_name):
@@ -255,10 +258,12 @@ class AudioManager(BaseManager):
             voice_name (str): Name of the voice clip to play.
         """
         if voice_name in self.library_voice:
+            # Play the specified voice clip
             self.library_voice[voice_name].play()
             self.current_voice_clip_name = voice_name
             self.log_debug(f"Playing voice clip: {voice_name}")
         else:
+            # Log a warning if the specified voice clip is not found
             self.log_warning(f"Cannot find {voice_name} in the voice clips library.")
 
     def stop_music(self):

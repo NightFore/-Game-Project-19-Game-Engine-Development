@@ -70,8 +70,8 @@ class Logger:
         # Formatter
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
-        # Handler for session-specific log file
-        session_handler = RotatingFileHandler(self.log_file_path, maxBytes=1024000)  # Rotate after 1MB
+        # Handler for session-specific log file (Rotate after 1MB)
+        session_handler = RotatingFileHandler(self.log_file_path, maxBytes=1024000, encoding='utf-8')
         session_handler.setFormatter(formatter)
         session_handler.setLevel(logging.DEBUG)  # Adjust as needed
         self.logger.addHandler(session_handler)
@@ -79,6 +79,7 @@ class Logger:
         # Handler for console output (optional)
         console_handler = logging.StreamHandler()
         console_handler.setFormatter(formatter)
+        console_handler.encoding = 'utf-8'
         console_handler.setLevel(logging.DEBUG)  # Adjust as needed
         self.logger.addHandler(console_handler)
 

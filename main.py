@@ -159,11 +159,11 @@ class MainManager:
             # Debug
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
-                    self.audio_manager.play_music("bgm_eight_嘆きのスカーレット_(Nageki_no_Scarlet)", loop=True)
+                    self.audio_manager.play_music("bgm_eight_Lament_Scarlet")
                 elif event.key == pygame.K_2:
-                    self.audio_manager.play_music("bgm_nagumorizu_Strategy_Meeting", loop=True)
+                    self.audio_manager.play_music("bgm_nagumorizu_Strategy_Meeting")
                 elif event.key == pygame.K_3:
-                    self.audio_manager.play_music("bgm_tak_mfk_冷月の舞踏_(Reigetsu_no_Buto)", loop=True)
+                    self.audio_manager.play_music("bgm_tak_mfk_冷月の舞踏_(Reigetsu_no_Buto)")
 
         # Update mouse position based on display_factor
         self.mouse_pos = self.window_manager.get_adjusted_mouse_position()
