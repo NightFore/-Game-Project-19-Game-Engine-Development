@@ -32,6 +32,7 @@ class AudioManager(BaseManager):
             - bgm_loop (int): Indicates if background music should loop (0 for no loop, -1 for infinite loop).
             - current_music_name (str): Name of currently playing music track.
             - current_voice_clip_name (str): Name of currently playing voice clip.
+            - music_paused (bool): Indicates if the background music is currently paused.
     Methods:
         Instance Setup:
             - load_specific_components(): Loads specific audio components based on the configuration.
@@ -96,6 +97,7 @@ class AudioManager(BaseManager):
         self.bgm_loop = Optional[int]
         self.current_music_name = Optional[str]
         self.current_voice_clip_name = Optional[str]
+        self.music_paused = False
 
     """
     Instance Setup
@@ -221,16 +223,23 @@ class AudioManager(BaseManager):
             music_name (str): Name of the music track to play.
         """
         if music_name in self.library_bgm:
-            # Check if the music is already playing
-            if pygame.mixer.music.get_busy() and self.current_music_name == music_name:
-                self.log_debug(f"{music_name} is already playing.")
-                return
-
-            # Load and play the specified music track
-            pygame.mixer.music.load(self.library_bgm[music_name])
-            pygame.mixer.music.play(self.bgm_loop)
-            self.current_music_name = music_name
-            self.log_debug(f"Playing background music: {music_name}")
+            if self.current_music_name == music_name:
+                # Check if the music is already playing
+                if self.music_paused:
+                    # Resume the paused music playback
+                    pygame.mixer.music.unpause()
+                    self.music_paused = False
+                    self.log_debug(f"Resumed background music: {music_name}")
+                elif pygame.mixer.music.get_busy():
+                    # Music is already playing
+                    self.log_debug(f"{music_name} is already playing.")
+            else:
+                # Load and play the specified music track
+                pygame.mixer.music.load(self.library_bgm[music_name])
+                pygame.mixer.music.play(self.bgm_loop)
+                self.current_music_name = music_name
+                self.music_paused = False
+                self.log_debug(f"Playing background music: {music_name}")
         else:
             # Log a warning if the specified music track is not found
             self.log_warning(f"Cannot find {music_name} in the background music library.")
@@ -273,6 +282,7 @@ class AudioManager(BaseManager):
         if pygame.mixer.music.get_busy():
             pygame.mixer.music.stop()
             self.current_music_name = None
+            self.music_paused = False
             self.log_debug("Stopped background music.")
         else:
             self.log_debug("No background music is currently playing.")
@@ -299,7 +309,10 @@ class AudioManager(BaseManager):
         Set whether background music should loop.
 
         Args:
-            loop (bool): True to enable looping, False otherwise.
+            loop (int): Loop behavior for background music.
+                - -1: Infinite loop.
+                - 0: No loop.
+                - Any positive integer: Number of times to loop the music.
         """
         self.bgm_loop = loop
         self.log_debug(f"Music looping set to: {loop}")
@@ -309,13 +322,15 @@ class AudioManager(BaseManager):
         Toggle between pausing and unpausing the music playback.
         """
         if pygame.mixer.music.get_busy():
-            if pygame.mixer.music.get_pos() == -1:
-                pygame.mixer.music.unpause()
-                self.log_debug("Unpaused the music playback.")
-            else:
-                pygame.mixer.music.pause()
-                self.log_debug("Paused the music playback.")
+            pygame.mixer.music.pause()
+            self.music_paused = True
+            self.log_debug("Paused the music playback.")
+        elif self.music_paused:
+            pygame.mixer.music.unpause()
+            self.music_paused = False
+            self.log_debug("Unpaused the music playback.")
         else:
+            # No music is playing or paused
             self.log_warning("No music is currently playing to pause or unpause.")
 
     """
@@ -464,11 +479,11 @@ class AudioManager(BaseManager):
         """
         Unmute all audio.
         """
-        pygame.mixer.music.set_volume(self.volume_master)
+        pygame.mixer.music.set_volume(self.volume_master * self.volume_bgm)
         for sound in self.library_sfx.values():
-            sound.set_volume(self.volume_sfx)
+            sound.set_volume(self.volume_master * self.volume_sfx)
         for sound in self.library_voice.values():
-            sound.set_volume(self.volume_voice)
+            sound.set_volume(self.volume_master * self.volume_voice)
         self.mute = False
         self.log_debug("Audio unmuted.")
 

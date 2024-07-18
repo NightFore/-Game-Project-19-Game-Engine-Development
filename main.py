@@ -164,6 +164,26 @@ class MainManager:
                     self.audio_manager.play_music("bgm_nagumorizu_Strategy_Meeting")
                 elif event.key == pygame.K_3:
                     self.audio_manager.play_music("bgm_tak_mfk_冷月の舞踏_(Reigetsu_no_Buto)")
+                elif event.key == pygame.K_4:
+                    pass    # self.audio_manager.play_sound("sfx")
+                elif event.key == pygame.K_5:
+                    pass    # self.audio_manager.play_voice("voice")
+                elif event.key == pygame.K_m:
+                    self.audio_manager.toggle_music_playback()
+                elif event.key == pygame.K_v:
+                    self.audio_manager.stop_music()
+                elif event.key == pygame.K_b:
+                    self.audio_manager.stop_sound()
+                elif event.key == pygame.K_n:
+                    self.audio_manager.stop_voice()
+                elif event.key == pygame.K_o:
+                    self.audio_manager.set_bgm_loop(-1)  # Infinite loop
+                elif event.key == pygame.K_p:
+                    self.audio_manager.set_bgm_loop(0)   # No loop
+                elif event.key == pygame.K_i:
+                    self.audio_manager.set_master_volume(0.5)  # Set master volume to 0.5 (50%)
+                elif event.key == pygame.K_u:
+                    self.audio_manager.toggle_audio_mute()  # Toggle mute/unmute
 
         # Update mouse position based on display_factor
         self.mouse_pos = self.window_manager.get_adjusted_mouse_position()
