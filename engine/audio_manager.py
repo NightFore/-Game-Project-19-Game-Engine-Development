@@ -15,39 +15,45 @@ class AudioManager(BaseManager):
             - config (dict): Configuration dictionary loaded from config.json.
             - logger (logging.Logger): Logger instance for logging messages.
 
-        Volume Attributes:
-            - master_volume (float): Master volume level for all audio.
-            - bgm_volume (float): Background music volume level.
-            - sfx_volume (float): Sound effects volume level
-            - voice_volume (float): Voice clips volume level.
-            - mute (bool): Indicates if audio is muted.
-
         Audio Attributes:
             - library_path (str): Path to the audio library.
             - library_sfx (dict): Dictionary to store loaded sound effects.
             - library_bgm (dict): Dictionary to store loaded music tracks.
             - library_voice (dict): Dictionary to store loaded voice clips.
 
+        Volume Attributes:
+            - master_volume (float): Master volume level for all audio (0.0 to 1.0).
+            - bgm_volume (float): Background music volume level (0.0 to 1.0).
+            - sfx_volume (float): Sound effects volume level (0.0 to 1.0).
+            - voice_volume (float): Voice clips volume level (0.0 to 1.0).
+            - mute (bool): Indicates if audio is currently muted.
+
         Playback Attributes:
-            - bgm_loop (int): Indicates if background music should loop (0 for no loop, -1 for infinite loop).
+            - music_paused (bool): Indicates if the background music is currently paused.
             - current_music_name (str): Name of currently playing music track.
             - current_voice_clip_name (str): Name of currently playing voice clip.
-            - music_paused (bool): Indicates if the background music is currently paused.
+            - bgm_loop (int): Indicates if background music should loop (0 for no loop, -1 for infinite loop).
+            - fade (bool): Whether to apply default fade-in and fade-out when playing music.
+            - fade_in_duration (int): Duration in milliseconds for fade-in effect.
+            - fade_out_duration (int): Duration in milliseconds for fade-out effect.
+
     Methods:
         Instance Setup:
             - load_specific_components(): Loads specific audio components based on the configuration.
-            - load_settings(): Loads settings from the configuration.
-            - load_library(): Loads all audio assets from the specified library path.
             - load_audio_files(folder_path): Helper function to load audio files from a specified folder.
+            - load_library(): Loads all audio assets from the specified library path.
+            - load_settings(): Loads settings from the configuration.
 
         Playback Control:
-            - play_music(music_name): Plays the specified background music.
+            - play_music(music_name, fade=None): Plays the specified background music.
             - play_sound(sound_name): Plays the specified sound effect.
             - play_voice(voice_name): Plays the specified voice clip.
-            - stop_music(): Stops the currently playing background music.
+            - stop_music(fade=None): Stops the currently playing background music.
             - stop_sound(): Stops all currently playing sound effects.
             - stop_voice(): Stops all currently playing voice clips.
             - set_bgm_loop(loop): Set whether background music should loop.
+            - resume_music(): Resumes the currently paused background music.
+            - pause_music(): Pauses the currently playing background music.
             - toggle_music_playback(): Toggles between pausing and unpausing the music playback.
 
         Volume Control:
@@ -76,9 +82,18 @@ class AudioManager(BaseManager):
             "volume_voice": Optional[float],
             "library_path": Optional[str],
             "mute": Optional[bool],
-            "bgm_loop": Optional[int]
+            "bgm_loop": Optional[int],
+            "fade": Optional[bool],
+            "fade_in": Optional[int],
+            "fade_out": Optional[int]
         }
         self.logger = None
+
+        # Audio Attributes
+        self.library_path = Optional[str]
+        self.library_sfx = Optional[dict]
+        self.library_bgm = Optional[dict]
+        self.library_voice = Optional[dict]
 
         # Volume Attributes
         self.volume_master = Optional[float]
@@ -87,62 +102,29 @@ class AudioManager(BaseManager):
         self.volume_voice = Optional[float]
         self.mute = Optional[bool]
 
-        # Audio Attributes
-        self.library_path = Optional[str]
-        self.library_sfx = Optional[dict]
-        self.library_bgm = Optional[dict]
-        self.library_voice = Optional[dict]
-
         # Playback Attributes
-        self.bgm_loop = Optional[int]
+        self.music_paused = Optional[bool]
         self.current_music_name = Optional[str]
         self.current_voice_clip_name = Optional[str]
-        self.music_paused = False
+        self.bgm_loop = Optional[int]
+        self.fade = Optional[bool]
+        self.fade_in = Optional[int]
+        self.fade_out = Optional[int]
 
     """
     Instance Setup
         - load_specific_components
-        - load_settings
-        - load_library
         - load_audio_files
+        - load_library
+        - load_settings
     """
     def load_specific_components(self):
         """
         Load specific components based on the configuration.
         """
         # Set Manager attributes
-        self.load_settings()
         self.load_library()
-
-    def load_settings(self):
-        """
-        Load settings from configuration.
-        """
-        self.volume_master = self.config["volume_master"]
-        self.volume_bgm = self.config["volume_bgm"]
-        self.volume_sfx = self.config["volume_sfx"]
-        self.volume_voice = self.config["volume_voice"]
-        self.mute = self.config["mute"]
-        self.bgm_loop = self.config["bgm_loop"]
-
-    def load_library(self):
-        """
-        Load all audio assets from the specified library path.
-        """
-        # Set the library path from configuration
-        self.library_path = self.config["library_path"]
-
-        # Load background music (bgm)
-        bgm_path = os.path.join(self.library_path, "bgm")
-        self.library_bgm = self.load_audio_files(bgm_path)
-
-        # Load sound effects (sfx)
-        sfx_path = os.path.join(self.library_path, "sfx")
-        self.library_sfx = self.load_audio_files(sfx_path)
-
-        # Load voice clips (voice)
-        voice_path = os.path.join(self.library_path, "voice")
-        self.library_voice = self.load_audio_files(voice_path)
+        self.load_settings()
 
     def load_audio_files(self, folder_path):
         """
@@ -197,6 +179,39 @@ class AudioManager(BaseManager):
 
         return audio_library
 
+    def load_library(self):
+        """
+        Load all audio assets from the specified library path.
+        """
+        # Set the library path from configuration
+        self.library_path = self.config["library_path"]
+
+        # Load background music (bgm)
+        bgm_path = os.path.join(self.library_path, "bgm")
+        self.library_bgm = self.load_audio_files(bgm_path)
+
+        # Load sound effects (sfx)
+        sfx_path = os.path.join(self.library_path, "sfx")
+        self.library_sfx = self.load_audio_files(sfx_path)
+
+        # Load voice clips (voice)
+        voice_path = os.path.join(self.library_path, "voice")
+        self.library_voice = self.load_audio_files(voice_path)
+
+    def load_settings(self):
+        """
+        Load settings from configuration.
+        """
+        self.volume_master = self.config["volume_master"]
+        self.volume_bgm = self.config["volume_bgm"]
+        self.volume_sfx = self.config["volume_sfx"]
+        self.volume_voice = self.config["volume_voice"]
+        self.mute = self.config["mute"]
+        self.bgm_loop = self.config["bgm_loop"]
+        self.fade = self.config["fade"]
+        self.fade_in = self.config["fade_in"]
+        self.fade_out = self.config["fade_out"]
+
     """
     Playback Control
         - play_music
@@ -206,30 +221,50 @@ class AudioManager(BaseManager):
         - stop_sound
         - stop_voice
         - set_bgm_loop
+        - resume_music
+        - pause_music
         - toggle_music_playback
     """
-    def play_music(self, music_name):
+    def play_music(self, music_name, fade=None):
         """
         Play the specified background music.
 
         Args:
             music_name (str): Name of the music track to play.
+            fade (Optional[Union[bool, int]]):
+                If None, uses class default.
+                If False, no fade.
+                If int, specific fade-in duration.
         """
         if music_name in self.library_bgm:
             if self.current_music_name == music_name:
                 # Check if the music is already playing
                 if self.music_paused:
-                    # Resume the paused music playback
-                    pygame.mixer.music.unpause()
-                    self.music_paused = False
-                    self.log_debug(f"Resumed background music: {music_name}")
+                    self.resume_music()
                 elif pygame.mixer.music.get_busy():
                     # Music is already playing
                     self.log_debug(f"{music_name} is already playing.")
             else:
+                if fade is None and self.fade:
+                    # Use the default fade duration
+                    fade_in_duration = self.fade_in
+                    fade_out_duration = self.fade_out
+                elif isinstance(fade, int):
+                    # Use the specified fade duration
+                    fade_in_duration = fade
+                    fade_out_duration = fade
+                else:
+                    # No fade effect
+                    fade_in_duration = 0
+                    fade_out_duration = 0
+
+                # If there is currently music playing, fade it out first
+                if pygame.mixer.music.get_busy():
+                    pygame.mixer.music.fadeout(fade_out_duration)
+
                 # Load and play the specified music track
                 pygame.mixer.music.load(self.library_bgm[music_name])
-                pygame.mixer.music.play(self.bgm_loop)
+                pygame.mixer.music.play(self.bgm_loop, fade_ms=fade_in_duration)
                 self.current_music_name = music_name
                 self.music_paused = False
                 self.log_debug(f"Playing background music: {music_name}")
@@ -268,12 +303,34 @@ class AudioManager(BaseManager):
             # Log a warning if the specified voice clip is not found
             self.log_warning(f"Cannot find {voice_name} in the voice clips library.")
 
-    def stop_music(self):
+    def stop_music(self, fade=None):
         """
         Stop the currently playing background music.
+
+        Args:
+            fade (Optional[Union[bool, int]]):
+                If None, uses class default.
+                If False, no fade.
+                If int, specific fade-in duration.
         """
         if pygame.mixer.music.get_busy() or self.music_paused:
-            pygame.mixer.music.stop()
+            if fade is None and self.fade:
+                # Use the default fade duration
+                fade_duration = self.fade_out
+            elif isinstance(fade, int):
+                # Use the specified fade duration
+                fade_duration = fade
+            else:
+                # No fade effect
+                fade_duration = 0
+
+            if fade_duration:
+                # Fade out with specified duration
+                pygame.mixer.music.fadeout(fade_duration)
+            else:
+                # Stop immediately without fading
+                pygame.mixer.music.stop()
+
             self.current_music_name = None
             self.music_paused = False
             self.log_debug("Stopped background music.")
@@ -303,31 +360,42 @@ class AudioManager(BaseManager):
 
         Args:
             loop (int): Loop behavior for background music.
-                - -1: Infinite loop.
-                - 0: No loop.
-                - Any positive integer: Number of times to loop the music.
+                - If -1: Infinite loop.
+                - If 0: No loop.
+                - If int: Number of times to loop the music.
         """
         previous_loop = self.bgm_loop
         self.bgm_loop = loop
         self.log_debug(f"Updated bgm_loop: {previous_loop} -> {loop}")
 
+    def resume_music(self):
+        """
+        Resumes the currently paused background music.
+        """
+        if self.current_music_name and self.music_paused:
+            pygame.mixer.music.unpause()
+            self.music_paused = False
+            self.log_debug(f"Resumed background music: {self.current_music_name}")
+        else:
+            self.log_warning("No background music to resume.")
+
     def pause_music(self):
         """
-        Pause the currently playing background music.
+        Pauses the currently playing background music.
         """
         if pygame.mixer.music.get_busy():
             pygame.mixer.music.pause()
             self.music_paused = True
             self.log_debug(f"Paused background music: {self.current_music_name}")
         else:
-            self.log_debug("No background music is currently playing to pause.")
+            self.log_debug("No background music is currently playing.")
 
     def toggle_music_playback(self):
         """
         Toggle between pausing and unpausing the music playback.
         """
         if self.music_paused:
-            self.play_music(self.current_music_name)
+            self.resume_music()
         elif pygame.mixer.music.get_busy():
             self.pause_music()
         else:
