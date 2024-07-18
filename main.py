@@ -180,10 +180,12 @@ class MainManager:
                     self.audio_manager.set_bgm_loop(-1)  # Infinite loop
                 elif event.key == pygame.K_p:
                     self.audio_manager.set_bgm_loop(0)   # No loop
-                elif event.key == pygame.K_i:
-                    self.audio_manager.set_master_volume(0.5)  # Set master volume to 0.5 (50%)
                 elif event.key == pygame.K_u:
                     self.audio_manager.toggle_audio_mute()  # Toggle mute/unmute
+                elif event.key == pygame.K_KP_PLUS:
+                    self.audio_manager.adjust_volume("master", 0.05)
+                elif event.key == pygame.K_KP_MINUS:
+                    self.audio_manager.adjust_volume("master", -0.05)
 
         # Update mouse position based on display_factor
         self.mouse_pos = self.window_manager.get_adjusted_mouse_position()

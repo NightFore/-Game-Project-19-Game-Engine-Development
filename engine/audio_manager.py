@@ -114,13 +114,6 @@ class AudioManager(BaseManager):
         self.load_settings()
         self.load_library()
 
-        # Log initialization of AudioManager
-        self.log_info(f"AudioManager initialized"
-                      f": Master: {self.volume_master}"
-                      f", BGM: {self.volume_bgm}"
-                      f", SFX: {self.volume_sfx}"
-                      f", Voice: {self.volume_voice}")
-
     def load_settings(self):
         """
         Load settings from configuration.
@@ -279,7 +272,7 @@ class AudioManager(BaseManager):
         """
         Stop the currently playing background music.
         """
-        if pygame.mixer.music.get_busy():
+        if pygame.mixer.music.get_busy() or self.music_paused:
             pygame.mixer.music.stop()
             self.current_music_name = None
             self.music_paused = False
@@ -314,24 +307,32 @@ class AudioManager(BaseManager):
                 - 0: No loop.
                 - Any positive integer: Number of times to loop the music.
         """
+        previous_loop = self.bgm_loop
         self.bgm_loop = loop
-        self.log_debug(f"Music looping set to: {loop}")
+        self.log_debug(f"Updated bgm_loop: {previous_loop} -> {loop}")
+
+    def pause_music(self):
+        """
+        Pause the currently playing background music.
+        """
+        if pygame.mixer.music.get_busy():
+            pygame.mixer.music.pause()
+            self.music_paused = True
+            self.log_debug(f"Paused background music: {self.current_music_name}")
+        else:
+            self.log_debug("No background music is currently playing to pause.")
 
     def toggle_music_playback(self):
         """
         Toggle between pausing and unpausing the music playback.
         """
-        if pygame.mixer.music.get_busy():
-            pygame.mixer.music.pause()
-            self.music_paused = True
-            self.log_debug("Paused the music playback.")
-        elif self.music_paused:
-            pygame.mixer.music.unpause()
-            self.music_paused = False
-            self.log_debug("Unpaused the music playback.")
+        if self.music_paused:
+            self.play_music(self.current_music_name)
+        elif pygame.mixer.music.get_busy():
+            self.pause_music()
         else:
             # No music is playing or paused
-            self.log_warning("No music is currently playing to pause or unpause.")
+            self.log_warning("No background music is currently playing to pause or unpause.")
 
     """
     Volume Control:
@@ -355,7 +356,8 @@ class AudioManager(BaseManager):
         """
         if 0.0 <= volume <= 1.0:
             # Update master volume attribute
-            self.volume_master = volume
+            previous_volume = self.volume_master
+            self.volume_master = round(volume, 2)
 
             # Set master volume for background music
             pygame.mixer.music.set_volume(self.volume_master * self.volume_bgm)
@@ -368,7 +370,7 @@ class AudioManager(BaseManager):
             for sound in self.library_voice.values():
                 sound.set_volume(self.volume_master * self.volume_voice)
 
-            self.log_debug(f"Set master volume to: {volume}")
+            self.log_debug(f"Updated volume_master: {previous_volume} -> {self.volume_master}")
         else:
             self.log_warning("Volume value must be between 0.0 and 1.0.")
 
@@ -380,9 +382,10 @@ class AudioManager(BaseManager):
             volume (float): Background music volume level (0.0 to 1.0).
         """
         if 0.0 <= volume <= 1.0:
-            self.volume_bgm = volume
+            previous_volume = self.volume_bgm
+            self.volume_bgm = round(volume, 2)
             pygame.mixer.music.set_volume(self.volume_master * self.volume_bgm)
-            self.log_debug(f"Set background music volume to: {volume}")
+            self.log_debug(f"Updated volume_bgm: {previous_volume} -> {self.volume_bgm}")
         else:
             self.log_warning("Volume value must be between 0.0 and 1.0.")
 
@@ -394,10 +397,11 @@ class AudioManager(BaseManager):
             volume (float): Sound effects volume level (0.0 to 1.0).
         """
         if 0.0 <= volume <= 1.0:
-            self.volume_sfx = volume
+            previous_volume = self.volume_sfx
+            self.volume_sfx = round(volume, 2)
             for sound in self.library_sfx.values():
                 sound.set_volume(self.volume_master * self.volume_sfx)
-            self.log_debug(f"Set sound effects volume to: {volume}")
+            self.log_debug(f"Updated volume_sfx: {previous_volume} -> {self.volume_sfx}")
         else:
             self.log_warning("Volume value must be between 0.0 and 1.0.")
 
@@ -409,10 +413,11 @@ class AudioManager(BaseManager):
             volume (float): Voice clips volume level (0.0 to 1.0).
         """
         if 0.0 <= volume <= 1.0:
-            self.volume_sfx = volume
+            previous_volume = self.volume_sfx
+            self.volume_sfx = round(volume, 2)
             for sound in self.library_voice.values():
                 sound.set_volume(self.volume_master * self.volume_sfx)
-            self.log_debug(f"Set voice clips volume to: {volume}")
+            self.log_debug(f"Updated volume_voice: {previous_volume} -> {self.volume_sfx}")
         else:
             self.log_warning("Volume value must be between 0.0 and 1.0.")
 
@@ -440,8 +445,6 @@ class AudioManager(BaseManager):
 
         # Set the new volume level
         getattr(self, f'set_{volume_type}_volume')(new_volume)
-
-        self.log_debug(f"Adjusted {volume_type} volume by {step}. New volume: {new_volume}")
 
     def increment_volume(self, volume_type, step):
         """
@@ -472,8 +475,10 @@ class AudioManager(BaseManager):
             sound.set_volume(0)
         for sound in self.library_voice.values():
             sound.set_volume(0)
+        previous_mute = self.mute
         self.mute = True
-        self.log_debug("Audio muted.")
+        if self.mute != previous_mute:
+            self.log_debug(f"Updated mute: {previous_mute} -> {self.mute}")
 
     def unmute_audio(self):
         """
@@ -484,8 +489,10 @@ class AudioManager(BaseManager):
             sound.set_volume(self.volume_master * self.volume_sfx)
         for sound in self.library_voice.values():
             sound.set_volume(self.volume_master * self.volume_voice)
+        previous_mute = self.mute
         self.mute = False
-        self.log_debug("Audio unmuted.")
+        if self.mute != previous_mute:
+            self.log_debug(f"Updated mute: {previous_mute} -> {self.mute}")
 
     def toggle_audio_mute(self):
         """
@@ -493,7 +500,5 @@ class AudioManager(BaseManager):
         """
         if self.mute:
             self.unmute_audio()
-            self.log_debug("Unmuted the audio.")
         else:
             self.mute_audio()
-            self.log_debug("Muted the audio.")

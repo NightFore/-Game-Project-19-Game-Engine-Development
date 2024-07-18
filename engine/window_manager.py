@@ -123,9 +123,6 @@ class WindowManager(BaseManager):
         # Adjust the display based on new settings
         self.adjust_display()
 
-        # Log initialization of WindowManager
-        self.log_info(f"WindowManager initialized: Title: {self.title}, Size: {self.game_size}")
-
     def set_title(self):
         """
         Set the title of the window.
