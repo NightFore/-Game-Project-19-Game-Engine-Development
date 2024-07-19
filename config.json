@@ -19,46 +19,4 @@
         "fade_in": 50,
         "fade_out": 300
     },
-    "graphics": {
-        "background_color": "#000000",
-        "fps_limit": 60,
-        "anti_aliasing": true
-    },
-    "input": {
-        "keyboard": {
-            "move_up": "W",
-            "move_down": "S",
-            "move_left": "A",
-            "move_right": "D",
-            "action": "SPACE",
-            "cancel": "ESCAPE"
-        },
-        "mouse": {
-            "sensitivity": 1.0,
-            "invert_y_axis": false
-        },
-        "controller": {
-            "enabled": false,
-            "sensitivity": 1.0
-        }
-    },
-    "gameplay": {
-        "difficulty": "normal",
-        "language": "english",
-        "tutorial": true
-    },
-    "physics": {
-        "gravity": 9.81,
-        "air_friction": 0.01,
-        "ground_friction": 0.5
-    },
-    "ui": {
-        "font_size": 16,
-        "default_font": "Arial",
-        "show_fps": true
-    },
-    "save_system": {
-        "autosave": true,
-        "save_interval": 300
-    }
 }

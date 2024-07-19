@@ -165,9 +165,9 @@ class MainManager:
                 elif event.key == pygame.K_3:
                     self.audio_manager.play_music("bgm_tak_mfk_冷月の舞踏_(Reigetsu_no_Buto)")
                 elif event.key == pygame.K_4:
-                    pass    # self.audio_manager.play_sound("sfx")
+                    self.audio_manager.play_sound("maou_se_onepoint09")
                 elif event.key == pygame.K_5:
-                    pass    # self.audio_manager.play_voice("voice")
+                    self.audio_manager.play_voice("YouFulca_voice_07_cool_attack")
                 elif event.key == pygame.K_m:
                     self.audio_manager.toggle_music_playback()
                 elif event.key == pygame.K_v:
