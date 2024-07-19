@@ -7,17 +7,18 @@ from pygame.font import Font
 from engine.base_manager import BaseManager
 
 
-class UIElement:
-    def __init__(self, position, size, color):
+class BaseButton:
+    def __init__(self, position, size, color, text, click_callback=None, release_callback=None):
         self.rect = Rect(position, size)
         self.color = color
-
-
-class BaseButton(UIElement):
-    def __init__(self, position, size, color, text):
-        super().__init__(position, size, color)
+        self.default_color = color
         self.text = text
         self.font = Font(None, 32)  # Adjust font size here
+        self.click_callback = click_callback
+        self.release_callback = release_callback
+        self.hold_color = pygame.Color('red')  # Color when button is held
+        self.clicked = False
+        self.held = False
 
     def is_clicked(self, mouse_pos):
         """
@@ -31,6 +32,16 @@ class BaseButton(UIElement):
         """
         return self.rect.collidepoint(mouse_pos)
 
+    def draw(self, surface):
+        """
+        Draw the button on the given surface.
+
+        Args:
+            surface (pygame.Surface): Surface to draw the button on.
+        """
+        pygame.draw.rect(surface, self.color, self.rect)
+        self.draw_text_centered(surface)
+
     def draw_text_centered(self, surface):
         """
         Draw text centered within the button.
@@ -42,25 +53,86 @@ class BaseButton(UIElement):
         text_rect = text_render.get_rect(center=self.rect.center)
         surface.blit(text_render, text_rect)
 
+    def handle_event(self, event):
+        """
+        Handle events for the button.
+
+        Args:
+            event (pygame.event.Event): Pygame event to handle.
+        """
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:  # Left mouse button
+                mouse_pos = pygame.mouse.get_pos()
+                if self.is_clicked(mouse_pos) and not self.clicked:
+                    self.clicked = True
+                    if self.click_callback:
+                        self.click_callback(self)
+            elif event.button == 3:  # Right mouse button
+                mouse_pos = pygame.mouse.get_pos()
+                if self.is_clicked(mouse_pos):
+                    if self.on_right_click():
+                        return
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:  # Left mouse button release
+                self.clicked = False
+                if self.release_callback:
+                    self.release_callback(self)
+        elif event.type == pygame.MOUSEMOTION:
+            if self.clicked:
+                if self.on_hold():
+                    return
+
+    def on_click(self):
+        """
+        Handle click event for the button.
+        """
+        if self.click_callback:
+            self.click_callback(self)
+
+    def on_release(self):
+        """
+        Handle release event for the button.
+        """
+        if self.release_callback:
+            self.release_callback(self)
+
+    def on_hold(self):
+        """
+        Handle hold event for the button (change color while held).
+        """
+        if not self.held:
+            self.color = self.hold_color
+            self.held = True
+        return True
+
+    def on_right_click(self):
+        """
+        Handle right click event for the button (destroy the button).
+        """
+        return False
+
 
 class CountdownButton(BaseButton):
-    def __init__(self, position, size, color, text, countdown_start):
-        super().__init__(position, size, color, text)
+    def __init__(self, position, size, color, text, countdown_start, click_callback=None, release_callback=None):
+        super().__init__(position, size, color, text, click_callback, release_callback)
         self.countdown_start = countdown_start
         self.countdown = countdown_start
         self.timer_event = pygame.USEREVENT + 1
+        self.hold_event = pygame.USEREVENT + 2
 
     def start_countdown(self):
         """
         Start the countdown timer for the button.
         """
         pygame.time.set_timer(self.timer_event, 1000)
+        pygame.time.set_timer(self.hold_event, 1000)
 
     def stop_countdown(self):
         """
         Stop the countdown timer for the button.
         """
         pygame.time.set_timer(self.timer_event, 0)
+        pygame.time.set_timer(self.hold_event, 0)
 
     def update_text(self):
         """
@@ -70,10 +142,10 @@ class CountdownButton(BaseButton):
 
     def reset(self):
         """
-        Reset the button text and countdown.
+        Reset the countdown to a random number.
         """
-        self.text = self.initial_text
-        self.countdown = self.countdown_start
+        self.countdown = random.randint(5, 15)
+        self.update_text()
 
     def handle_event(self, event):
         """
@@ -82,75 +154,150 @@ class CountdownButton(BaseButton):
         Args:
             event (pygame.event.Event): Pygame event to handle.
         """
+        super().handle_event(event)
         if event.type == self.timer_event:
             self.countdown -= 1
             self.update_text()
             if self.countdown <= 0:
                 self.stop_countdown()
+        elif event.type == self.hold_event:
+            if self.clicked:
+                print(f"Current countdown number for '{self.text}': {self.countdown}")
+
+    def on_click(self):
+        """
+        Handle click event for CountdownButton.
+        """
+        super().on_click()
+        self.reset()
+
+    def on_release(self):
+        """
+        Handle release event for CountdownButton.
+        """
+        super().on_release()
+        self.color = self.default_color
+
+    def on_hold(self):
+        """
+        Handle hold event for CountdownButton (change color while held).
+        """
+        return super().on_hold()
+
+    def on_right_click(self):
+        """
+        Handle right click event for CountdownButton (destroy the button).
+        """
+        self.stop_countdown()
+        return True
 
 
 class UIManager(BaseManager):
     def __init__(self):
         super().__init__()
-        self.ui_elements = []
-        self.selected_button = None
+        self.buttons = []
 
-    def load_main_screen(self):
-        # Load main screen button
-        button_position = (300, 250)
-        button_size = (200, 50)
-        button_color = (50, 150, 255)
-        button_text = "Start Game"
-        main_button = BaseButton(button_position, button_size, button_color, button_text)
-        self.ui_elements.append(main_button)
+    def create_button(self, position, size, color, text, click_callback=None, release_callback=None):
+        button = BaseButton(position, size, color, text, click_callback, release_callback)
+        self.buttons.append(button)
 
-    def load_game_screen(self):
-        # Clear existing UI elements
-        self.ui_elements.clear()
+    def create_countdown_button(self, position, size, color, text, countdown_start, click_callback=None,
+                               release_callback=None):
+        button = CountdownButton(position, size, color, text, countdown_start, click_callback, release_callback)
+        self.buttons.append(button)
 
-        # Load a dozen CountdownButtons with countdown text
-        button_positions = [
-            (100, 100), (300, 100), (500, 100),
-            (100, 250), (300, 250), (500, 250),
-            (100, 400), (300, 400), (500, 400),
-            (100, 550), (300, 550), (500, 550)
-        ]
-        for pos in button_positions:
-            button_size = (100, 50)
-            button_color = (50, 150, 255)
-            button_text = "10"  # Initial countdown value
-            game_button = CountdownButton(pos, button_size, button_color, button_text, countdown_start=10)
-            self.ui_elements.append(game_button)
+    def handle_events(self, events):
+        """
+        Handle events for all UI elements.
 
-    def handle_events(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:  # Left mouse button
-                mouse_pos = pygame.mouse.get_pos()
-                for element in self.ui_elements:
-                    if isinstance(element, BaseButton):
-                        if element.is_clicked(mouse_pos):
-                            if element.text == "Start Game":
-                                self.load_game_screen()
-                            else:
-                                # Handle specific behavior for CountdownButton on click
-                                if isinstance(element, CountdownButton):
-                                    element.text = str(random.randint(1, 20))
-                                    element.start_countdown()
-        elif event.type == pygame.MOUSEMOTION:
-            mouse_pos = pygame.mouse.get_pos()
-            for element in self.ui_elements:
-                if isinstance(element, BaseButton):
-                    if element.rect.collidepoint(mouse_pos):
-                        element.color = (150, 150, 255)  # Light blue when mouse over
-                    else:
-                        element.color = (50, 150, 255)   # Normal color
-        else:
-            for element in self.ui_elements:
-                if isinstance(element, CountdownButton):
-                    element.handle_event(event)
+        Args:
+            events (list): List of pygame events to handle.
+        """
+        for event in events:
+            for button in self.buttons:
+                button.handle_event(event)
 
-    def draw_ui(self, surface):
-        for element in self.ui_elements:
-            if isinstance(element, BaseButton):
-                pygame.draw.rect(surface, element.color, element.rect)
-                element.draw_text_centered(surface)
+    def update(self):
+        """
+        Update UI elements.
+        """
+        for button in self.buttons:
+            if isinstance(button, CountdownButton):
+                button.update_text()
+
+    def draw(self, surface):
+        """
+        Draw UI elements on the given surface.
+
+        Args:
+            surface (pygame.Surface): Surface to draw UI elements on.
+        """
+        for button in self.buttons:
+            button.draw(surface)
+
+    def clear_buttons(self):
+        """
+        Clear all buttons from the UI manager.
+        """
+        self.buttons = []
+
+
+# Sample callback function for button clicks
+def button_click_callback(button):
+    print(f"Button '{button.text}' clicked!")
+
+
+# Sample callback function for countdown button clicks
+def countdown_button_click_callback(button):
+    print(f"Countdown Button '{button.text}' clicked!")
+
+
+# Sample callback function for creating a set of countdown buttons
+def create_countdown_buttons(ui_manager):
+    ui_manager.clear_buttons()
+    for i in range(10):
+        button_text = f"Button {i+1}"
+        ui_manager.create_countdown_button((random.randint(50, 750), random.randint(50, 550)),
+                                           (100, 50), pygame.Color('blue'), button_text,
+                                           random.randint(5, 15), countdown_button_click_callback)
+    for button in ui_manager.buttons:
+        button.start_countdown()
+
+
+# Sample callback function for initializing the UI manager and creating initial UI elements
+def initialize_ui_manager(ui_manager):
+    ui_manager.clear_buttons()
+    ui_manager.create_button((300, 250), (200, 100), pygame.Color('green'), "Start Game",
+                             lambda button: create_countdown_buttons(ui_manager))
+
+
+# Sample main function to demonstrate usage
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode((800, 600))
+    pygame.display.set_caption("UI Manager Demo")
+    clock = pygame.time.Clock()
+
+    ui_manager = UIManager()
+    initialize_ui_manager(ui_manager)
+
+    running = True
+    while running:
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                running = False
+
+        ui_manager.handle_events(events)
+        ui_manager.update()
+
+        screen.fill((30, 30, 30))
+        ui_manager.draw(screen)
+
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()
