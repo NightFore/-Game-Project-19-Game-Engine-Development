@@ -9,7 +9,7 @@
     },
     "AudioManager": {
         "library_path": "assets",
-        "volume_master": 1.0,
+        "volume_master": 0.3,
         "volume_bgm": 0.5,
         "volume_sfx": 0.5,
         "volume_voice": 0.5,
