@@ -1,5 +1,3 @@
-# main.py
-
 import pygame
 import random
 from pygame.locals import *
@@ -7,47 +5,11 @@ from config import load_config
 from logger import Logger
 from engine.audio_manager import AudioManager
 from engine.window_manager import WindowManager
-
+from engine.button import Button
 
 class MainManager:
     """
     MainManager handles the main game loop and overall game state management.
-
-    Attributes:
-        Game State Attributes:
-            - event (list): List to store pygame events.
-            - playing (bool): Flag to control the main game loop.
-            - paused (bool): Flag to indicate if the game is paused.
-            - debug_mode (bool): Flag to toggle debug mode.
-
-        Time Management Attributes:
-            - clock (pygame.time.Clock): Clock object to manage frame rate.
-            - dt (float): Delta time since the last frame.
-            - total_play_time (float): Total play time in seconds.
-
-        Input Handling Attributes:
-            - mouse_pos (tuple): Current mouse position.
-            - click (list): List to track mouse click states.
-
-        Project Settings Attributes:
-            - window_title (str): Title of the game window.
-            - project_title (str): Title of the project.
-            - FPS (int): Target frames per second.
-            - screen_size (tuple): Size of the game screen.
-
-        Miscellaneous Attributes:
-            - logger (GameLogger): Logger instance for logging events.
-
-        Manager Attributes:
-            - window_manager (WindowManager): Instance of the WindowManager.
-
-    Methods:
-        Game Loop:
-            - run(): Main game loop. Handles events, updates game state, and renders the frame.
-            - events(): Handle user input events.
-            - update(): Update the game state.
-            - draw(): Render the game frame.
-            - quit_game(): Quit the game and clean up resources.
     """
     def __init__(self):
         """
@@ -60,7 +22,6 @@ class MainManager:
         random.seed()
 
         # Game State Attributes
-        self.event = None
         self.playing = True
         self.paused = False
         self.debug_mode = False
@@ -95,14 +56,48 @@ class MainManager:
         self.window_manager.initialize(self.config, self.logger)
         self.gameDisplay = self.window_manager.get_surface()
 
-    """
-    Game Loop
-        - run
-        - events
-        - update
-        - draw
-        - quit_game
-    """
+        # Font for buttons
+        self.button_font = pygame.font.Font(None, 36)
+
+        # Initialize Button List
+        self.buttons = []
+
+        # Create start button
+        self.create_start_button()
+
+    def create_start_button(self):
+        """
+        Create the start button.
+        """
+        self.buttons.append(
+            Button(300, 250, 200, 50, 'Start', (70, 130, 180), self.button_font, self.start_game)
+        )
+
+    def start_game(self):
+        """
+        Create the main menu buttons and hide the start button.
+        """
+        # Add main menu buttons
+        self.buttons = [
+            Button(50, 50, 200, 50, 'Toggle Fullscreen', (70, 130, 180), self.button_font, self.window_manager.toggle_fullscreen),
+            Button(50, 120, 200, 50, 'Toggle Resizable', (70, 130, 180), self.button_font, self.window_manager.toggle_resizable),
+            Button(50, 190, 200, 50, 'Toggle Maximize', (70, 130, 180), self.button_font, self.window_manager.toggle_maximize),
+            Button(300, 120, 200, 50, 'Play Music 1', (70, 130, 180), self.button_font, lambda: self.audio_manager.play_music("bgm_eight_Lament_Scarlet")),
+            Button(300, 190, 200, 50, 'Play Music 2', (70, 130, 180), self.button_font, lambda: self.audio_manager.play_music("bgm_nagumorizu_Strategy_Meeting")),
+            Button(300, 260, 200, 50, 'Play Music 3', (70, 130, 180), self.button_font, lambda: self.audio_manager.play_music("bgm_tak_mfk_冷月の舞踏_(Reigetsu_no_Buto)")),
+            Button(300, 330, 200, 50, 'Play Sound', (70, 130, 180), self.button_font, lambda: self.audio_manager.play_sound("maou_se_onepoint09")),
+            Button(300, 400, 200, 50, 'Play Voice', (70, 130, 180), self.button_font, lambda: self.audio_manager.play_voice("YouFulca_voice_07_cool_attack")),
+            Button(550, 50, 200, 50, 'Toggle Music', (70, 130, 180), self.button_font, self.audio_manager.toggle_music_playback),
+            Button(550, 120, 200, 50, 'Stop Music', (70, 130, 180), self.button_font, self.audio_manager.stop_music),
+            Button(550, 190, 200, 50, 'Stop Sound', (70, 130, 180), self.button_font, self.audio_manager.stop_sound),
+            Button(550, 260, 200, 50, 'Stop Voice', (70, 130, 180), self.button_font, self.audio_manager.stop_voice),
+            Button(550, 330, 200, 50, 'Loop Music', (70, 130, 180), self.button_font, lambda: self.audio_manager.set_bgm_loop(-1)),  # Infinite loop
+            Button(550, 400, 200, 50, 'No Loop', (70, 130, 180), self.button_font, lambda: self.audio_manager.set_bgm_loop(0)),  # No loop
+            Button(550, 470, 200, 50, 'Toggle Mute', (70, 130, 180), self.button_font, self.audio_manager.toggle_audio_mute),
+            Button(550, 540, 200, 50, 'Volume Up', (70, 130, 180), self.button_font, lambda: self.audio_manager.adjust_volume("master", 0.05)),
+            Button(550, 610, 200, 50, 'Volume Down', (70, 130, 180), self.button_font, lambda: self.audio_manager.adjust_volume("master", -0.05))
+        ]
+
     def run(self):
         """
         Main game loop. Handles events, updates game state, and renders the frame.
@@ -139,6 +134,19 @@ class MainManager:
             if event.type == VIDEORESIZE:
                 self.window_manager.resize()
 
+            # Handle mouse click events
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    self.click[1] = True
+                elif event.button == 2:
+                    self.click[2] = True
+                elif event.button == 3:
+                    self.click[3] = True
+                elif event.button == 4:
+                    self.click[4] = True
+                elif event.button == 5:
+                    self.click[5] = True
+
             # Handle keyboard shortcuts
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -156,39 +164,13 @@ class MainManager:
             if event.type == pygame.QUIT:
                 self.quit_game()
 
-            # Debug
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_1:
-                    self.audio_manager.play_music("bgm_eight_Lament_Scarlet")
-                elif event.key == pygame.K_2:
-                    self.audio_manager.play_music("bgm_nagumorizu_Strategy_Meeting")
-                elif event.key == pygame.K_3:
-                    self.audio_manager.play_music("bgm_tak_mfk_冷月の舞踏_(Reigetsu_no_Buto)")
-                elif event.key == pygame.K_4:
-                    self.audio_manager.play_sound("maou_se_onepoint09")
-                elif event.key == pygame.K_5:
-                    self.audio_manager.play_voice("YouFulca_voice_07_cool_attack")
-                elif event.key == pygame.K_m:
-                    self.audio_manager.toggle_music_playback()
-                elif event.key == pygame.K_v:
-                    self.audio_manager.stop_music()
-                elif event.key == pygame.K_b:
-                    self.audio_manager.stop_sound()
-                elif event.key == pygame.K_n:
-                    self.audio_manager.stop_voice()
-                elif event.key == pygame.K_o:
-                    self.audio_manager.set_bgm_loop(-1)  # Infinite loop
-                elif event.key == pygame.K_p:
-                    self.audio_manager.set_bgm_loop(0)   # No loop
-                elif event.key == pygame.K_u:
-                    self.audio_manager.toggle_audio_mute()  # Toggle mute/unmute
-                elif event.key == pygame.K_KP_PLUS:
-                    self.audio_manager.adjust_volume("master", 0.05)
-                elif event.key == pygame.K_KP_MINUS:
-                    self.audio_manager.adjust_volume("master", -0.05)
-
         # Update mouse position based on display_factor
         self.mouse_pos = self.window_manager.get_adjusted_mouse_position()
+
+        # Check for button clicks
+        for button in self.buttons:
+            if button.is_hovered(self.mouse_pos) and any(self.click):
+                button.click()
 
     def update(self):
         """
@@ -208,19 +190,26 @@ class MainManager:
         self.gameDisplay.fill((30, 30, 30))
         pygame.draw.circle(self.gameDisplay, (255, 0, 0), (400, 300), 30)
 
+        # Draw the buttons
+        for button in self.buttons:
+            button.draw(self.gameDisplay)
+
         # Draw the game components
         self.window_manager.draw()
+
+        # Update the display
+        pygame.display.flip()
 
     def quit_game(self):
         """
         Quit the game and clean up resources.
         """
-        # pygame.image.save(self.gameDisplay, "screenshot.png")
         self.logger.info(f"Total game time: {self.total_play_time:.3f} seconds")
         pygame.quit()
         quit()
 
 
-game = MainManager()
-while True:
-    game.run()
+if __name__ == "__main__":
+    game = MainManager()
+    while True:
+        game.run()
