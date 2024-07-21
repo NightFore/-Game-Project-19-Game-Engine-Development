@@ -8,6 +8,10 @@ button_config = {
         }
     },
     'main_menu': {
+        'none': {
+            'x': 50, 'y': 260, 'width': 200, 'height': 50,
+            'label': 'None', 'color': (70, 130, 180), 'action': ''
+        },
         'test': {
             'x': 300, 'y': 50, 'width': 200, 'height': 50,
             'label': 'Test', 'color': (70, 130, 180), 'action': "debug((800, 600), 42, 'abcdefghijklmnopqrstuvwxyz', True)"
@@ -73,11 +77,11 @@ button_config = {
             'label': 'Toggle Mute', 'color': (70, 130, 180), 'action': 'audio_manager.toggle_audio_mute'
         },
         'volume_up': {
-            'x': 550, 'y': 540, 'width': 200, 'height': 50,
+            'x': 300, 'y': 470, 'width': 200, 'height': 50,
             'label': 'Volume Up', 'color': (70, 130, 180), 'action': 'audio_manager.adjust_volume("master", 0.05)'
         },
         'volume_down': {
-            'x': 550, 'y': 610, 'width': 200, 'height': 50,
+            'x': 300, 'y': 540, 'width': 200, 'height': 50,
             'label': 'Volume Down', 'color': (70, 130, 180), 'action': 'audio_manager.adjust_volume("master", -0.05)'
         }
     }

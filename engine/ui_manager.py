@@ -20,7 +20,7 @@ class UIManager(BaseManager):
             - default_font_size (int): Size of the default font.
             - font (pygame.font.Font): Pygame font object for rendering text.
             - display (pygame.Surface): Surface for rendering UI components.
-            - buttons (list): List of buttons in the current menu.
+            - buttons (dict): Dictionary of button instances with button IDs as keys.
             - current_menu (str): Name of the currently loaded menu.
 
     Methods:
@@ -56,7 +56,7 @@ class UIManager(BaseManager):
         self.default_font_size = Optional[int]
         self.font = Optional[pygame.font.Font]
         self.display = Optional[pygame.Surface]
-        self.buttons = []
+        self.buttons = Optional[dict]
         self.current_menu = Optional[str]
 
     """
@@ -70,7 +70,7 @@ class UIManager(BaseManager):
         self.default_font_name = self.config['default_font_name']
         self.default_font_size = self.config['default_font_size']
         self.font = pygame.font.Font(self.default_font_name, self.default_font_size)
-        self.buttons = []
+        self.buttons = {}
         self.current_menu = None
 
     def set_display(self, display):
@@ -96,7 +96,7 @@ class UIManager(BaseManager):
             menu_name (str): Name of the menu to load.
         """
         self.current_menu = menu_name
-        self.buttons = []
+        self.buttons = {}
 
         if menu_name in button_config:
             for button_id, config in button_config[menu_name].items():
@@ -107,20 +107,22 @@ class UIManager(BaseManager):
                 label = config['label']
                 color = config['color']
                 action_str = config.get('action')
-                action = self.resolve_action(action_str)
+                action = self.resolve_action(action_str, button_id)
 
                 button = Button(x, y, width, height, label, color, self.font, action)
-                self.buttons.append(button)
+                self.buttons[button_id] = button
 
-    def resolve_action(self, action_str):
+    def resolve_action(self, action_str, button_id):
         """
         Resolve action string to a callable function with arguments.
 
         Args:
             action_str (str): String representing the action to resolve.
+            button_id (str): ID of the button to associate with the action.
 
         Returns:
-            Callable function corresponding to the action string with arguments, or None if invalid.
+            Callable function corresponding to the action string with arguments,
+            or a default function that logs a warning if the action is not defined.
         """
         if not action_str:
             return None
@@ -142,13 +144,15 @@ class UIManager(BaseManager):
                 for part in method_parts[:-1]:
                     obj = getattr(obj, part, None)
                     if obj is None:
-                        raise AttributeError(f"Manager or method '{'.'.join(method_parts[:-1])}' not found.")
+                        self.log_warning(f"Manager or method '{'.'.join(method_parts[:-1])}' not found.")
+                        return lambda: self.default_action(button_id)
                 method_name = method_parts[-1]
                 if hasattr(obj, method_name):
                     method = getattr(obj, method_name)
                     return lambda: method(*args)
                 else:
                     self.log_warning(f"Method '{method_name}' not found in manager '{'.'.join(method_parts[:-1])}'.")
+                    return lambda: self.default_action(button_id)
             else:
                 # Direct method on UIManager
                 if hasattr(self, method_str):
@@ -156,10 +160,19 @@ class UIManager(BaseManager):
                     return lambda: method(*args)
                 else:
                     self.log_warning(f"Method '{method_str}' not found in UIManager.")
+                    return lambda: self.default_action(button_id)
         except Exception as e:
             self.log_error(f"Error resolving action '{action_str}': {e}")
+            return lambda: self.default_action(button_id)
 
-        return None
+    def default_action(self, button_id):
+        """
+        Default action to be used when a button action is not defined.
+
+        Args:
+            button_id (str): The ID of the button that triggered this action.
+        """
+        self.log_warning(f"Action for button '{button_id}' is not defined.")
 
     @staticmethod
     def parse_arguments(args_str):
@@ -204,7 +217,7 @@ class UIManager(BaseManager):
             mouse_pos: Current position of the mouse.
             mouse_clicks: List of mouse click states.
         """
-        for button in self.buttons:
+        for button_id, button in self.buttons.items():
             if button.is_hovered(mouse_pos) and mouse_clicks[1]:
                 button.click()
 
@@ -213,5 +226,5 @@ class UIManager(BaseManager):
         Render the game frame.
         """
         if self.display:
-            for button in self.buttons:
+            for button in self.buttons.values():
                 button.draw(self.display)
