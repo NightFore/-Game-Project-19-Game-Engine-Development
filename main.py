@@ -13,6 +13,10 @@ class MainManager:
     MainManager handles the main game loop and overall game state management.
 
     Attributes:
+        Common Attributes:
+            - config (dict): Configuration dictionary loaded from config.json.
+            - logger (logging.Logger): Logger instance for logging messages.
+
         Game State Attributes:
             - event (list): List to store pygame events.
             - playing (bool): Flag to control the main game loop.
@@ -20,22 +24,14 @@ class MainManager:
             - debug_mode (bool): Flag to toggle debug mode.
 
         Time Management Attributes:
+            - FPS (int): Target frames per second.
+            - total_play_time (float): Total play time in seconds.
             - clock (pygame.time.Clock): Clock object to manage frame rate.
             - dt (float): Delta time since the last frame.
-            - total_play_time (float): Total play time in seconds.
 
         Input Handling Attributes:
             - mouse_pos (tuple): Current mouse position.
             - click (list): List to track mouse click states.
-
-        Project Settings Attributes:
-            - window_title (str): Title of the game window.
-            - project_title (str): Title of the project.
-            - FPS (int): Target frames per second.
-            - screen_size (tuple): Size of the game screen.
-
-        Miscellaneous Attributes:
-            - logger (GameLogger): Logger instance for logging events.
 
         Manager Attributes:
             - window_manager (WindowManager): Instance of the WindowManager.
@@ -58,6 +54,10 @@ class MainManager:
         pygame.mixer.init()
         random.seed()
 
+        # Common Attributes
+        self.config = load_config()
+        self.logger = Logger()
+
         # Game State Attributes
         self.event = None
         self.playing = True
@@ -65,47 +65,49 @@ class MainManager:
         self.debug_mode = False
 
         # Time Management Attributes
-        self.clock = pygame.time.Clock()
-        self.dt = self.clock.tick()
+        self.FPS = 60
         self.total_play_time = 0
+        self.clock = pygame.time.Clock()
+        self.dt = self.clock.tick(self.FPS) / 1000
 
         # Input Handling Attributes
         self.mouse_pos = (0, 0)
         self.click = [None, False, False, False, False, False]
 
-        # Project Settings Attributes
-        self.window_title = "WINDOW_TITLE"
-        self.project_title = "PROJECT_TITLE"
-        self.FPS = 60
-        self.screen_size = self.screen_width, self.screen_height = (800, 600)
-
-        # Miscellaneous Attributes
-        self.logger = Logger()
-        self.logger.info(f"MainManager initialized")
-
-        self.config = load_config()
-
         # Manager Attributes
+        self.main_manager = self
         self.audio_manager = AudioManager()
+        self.ui_manager = UIManager()
         self.window_manager = WindowManager()
 
-        # Initialize Managers
-        self.audio_manager.initialize(self.config, self.logger)
-        self.window_manager.initialize(self.config, self.logger)
-        self.gameDisplay = self.window_manager.get_surface()
-
-        self.button_font = pygame.font.Font(None, 36)
-
-        # Pass managers to UIManager
-        self.ui_manager = UIManager(self.button_font, self.gameDisplay, {
-            'main_manager': self,
+        self.managers = {
+            'main_manager': self.main_manager,
             'audio_manager': self.audio_manager,
             'window_manager': self.window_manager
-        })
+        }
+
+        # Initialize Managers
+        self.audio_manager.initialize(self.config, self.managers, self.logger)
+        self.ui_manager.initialize(self.config, self.managers, self.logger)
+        self.window_manager.initialize(self.config, self.managers, self.logger)
+        self.display = self.window_manager.get_surface()
+
+        # Pass managers to UIManager
+        self.ui_manager.set_display(self.display)
 
         # Load the initial menu
         self.ui_manager.load_menu('start_menu')
 
+        self.logger.info(f"MainManager initialized")
+
+    """
+    Game Loop
+        - run
+        - events
+        - update
+        - draw
+        - quit_game
+    """
     def run(self):
         """
         Main game loop. Handles events, updates game state, and renders the frame.
@@ -175,8 +177,6 @@ class MainManager:
         # Update mouse position based on display_factor
         self.mouse_pos = self.window_manager.get_adjusted_mouse_position()
 
-        self.ui_manager.handle_events(self.event, self.mouse_pos, self.click)
-
     def update(self):
         """
         Update the game state.
@@ -184,20 +184,21 @@ class MainManager:
         # Update game components
         self.window_manager.update(self.clock.get_fps())
 
+        self.ui_manager.update(self.mouse_pos, self.click)
+
     def draw(self):
         """
         Render the game frame.
         """
         # Clear the display
-        self.gameDisplay.fill((0, 0, 0))
+        self.display.fill((0, 0, 0))
 
         # Debug
-        self.gameDisplay.fill((30, 30, 30))
-        pygame.draw.circle(self.gameDisplay, (255, 0, 0), (400, 300), 30)
-
-        self.ui_manager.draw()
+        self.display.fill((30, 30, 30))
+        pygame.draw.circle(self.display, (255, 0, 0), (400, 300), 30)
 
         # Draw the game components
+        self.ui_manager.draw()
         self.window_manager.draw()
 
         # Update the display

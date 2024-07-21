@@ -13,7 +13,6 @@ class AudioManager(BaseManager):
     Attributes:
         Common Attributes:
             - config (dict): Configuration dictionary loaded from config.json.
-            - logger (logging.Logger): Logger instance for logging messages.
 
         Audio Attributes:
             - library_path (str): Path to the audio library.
@@ -87,7 +86,6 @@ class AudioManager(BaseManager):
             "fade_in": Optional[int],
             "fade_out": Optional[int]
         }
-        self.logger = None
 
         # Audio Attributes
         self.library_path = Optional[str]

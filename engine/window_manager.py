@@ -15,7 +15,6 @@ class WindowManager(BaseManager):
     Attributes:
         Common Attributes:
             - config (dict): Configuration dictionary loaded from config.json.
-            - logger (logging.Logger): Logger instance for logging messages.
 
         Game Attributes:
             - title (str): The title of the window.
@@ -60,9 +59,9 @@ class WindowManager(BaseManager):
         Input Handling:
             - get_adjusted_mouse_position(): Get the adjusted mouse position based on display_factor.
 
-        Update and Drawing:
-            - update(frame_rate): Update the display with the current frame rate.
-            - draw(): Draw the game surface onto the display.
+        Game Loop:
+            - update(frame_rate): Update the game state.
+            - draw(): Render the game frame.
     """
     def __init__(self):
         """
@@ -79,7 +78,6 @@ class WindowManager(BaseManager):
             "resizable": Optional[bool],
             "maximized": Optional[bool]
         }
-        self.logger = None
 
         # Set the environment variable to center the game window.
         os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -375,13 +373,13 @@ class WindowManager(BaseManager):
         return adjusted_x, adjusted_y
 
     """
-    Update and Drawing
+    Game Loop
         - update
         - draw
     """
     def update(self, frame_rate):
         """
-        Update the display.
+        Update the game state.
 
         Args:
             frame_rate (float): Current frame rate in frames per second.
@@ -391,7 +389,7 @@ class WindowManager(BaseManager):
 
     def draw(self):
         """
-        Draw the game surface onto the display.
+        Render the game frame.
         """
         # Scale and blit the game surface onto the display
         scaled_surface = pygame.transform.scale(self.surface, self.screen_scaled)

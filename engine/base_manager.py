@@ -8,12 +8,19 @@ class BaseManager:
     Base class for all managers.
 
     Attributes:
-        config (dict or None): Configuration dictionary.
-        logger (logging.Logger or None): Logger instance.
+        Common Attributes:
+            - config (dict or None): Configuration dictionary.
+            - managers (dict or None): Dictionary of manager instances.
+            - logger (logging.Logger or None): Logger instance.
+
+        Specific Manager References:
+            - main_manager (object or None): Reference to the main manager instance.
+            - audio_manager (object or None): Reference to the audio manager instance.
+            - window_manager (object or None): Reference to the window manager instance.
 
     Methods:
         Instance Setup:
-            - initialize(config, logger=None): Initialize the manager with configuration and logger.
+            - initialize(config, managers=None, logger=None): Initialize the manager.
             - update_config(new_config, check_all_params=False): Update the configuration with new settings.
             - load_components(): Load necessary components based on the configuration.
             - load_specific_components(): Template method to be implemented in subclasses.
@@ -27,8 +34,15 @@ class BaseManager:
             - log_critical(message): Log a message at CRITICAL level and optionally raise an exception.
     """
     def __init__(self):
+        # Common Attributes
         self.config = None
+        self.managers = None
         self.logger = None
+
+        # Specific Manager References
+        self.main_manager = None
+        self.audio_manager = None
+        self.window_manager = None
 
     """
     Instance Setup:
@@ -37,16 +51,24 @@ class BaseManager:
         - load_components
         - load_specific_components
     """
-    def initialize(self, config, logger=None):
+    def initialize(self, config, managers=None, logger=None):
         """
-        Initialize the manager with configuration and logger.
+        Initialize the manager.
 
         Args:
             config (dict): Configuration dictionary.
+            managers (dict or None): Dictionary of manager instances.
             logger (logging.Logger or None): Logger instance.
         """
         # Set the logger
         self.logger = logger
+
+        # Set up references to managers
+        if managers:
+            self.managers = managers
+            self.main_manager = self.managers['main_manager']
+            self.audio_manager = self.managers['audio_manager']
+            self.window_manager = self.managers['window_manager']
 
         # Set the initial configuration
         self.update_config(config)

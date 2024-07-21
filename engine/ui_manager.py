@@ -1,32 +1,99 @@
+# ui_manager.py
+
+import pygame
+from typing import Optional
 from button import Button
 from button_config import button_config
+from engine.base_manager import BaseManager
 
 
-class UIManager:
-    def __init__(self, font, screen, managers):
+class UIManager(BaseManager):
+    """
+    UIManager handles the user interface components, such as buttons and menus.
+
+    Attributes:
+        Common Attributes:
+            - config (dict): Configuration dictionary loaded from config.json.
+
+        UI Attributes:
+            - default_font_name (str): Name of the default font.
+            - default_font_size (int): Size of the default font.
+            - font (pygame.font.Font): Pygame font object for rendering text.
+            - display (pygame.Surface): Surface for rendering UI components.
+            - buttons (list): List of buttons in the current menu.
+            - current_menu (str): Name of the currently loaded menu.
+
+    Methods:
+        Instance Setup:
+            - load_specific_components(): Load specific components based on the configuration.
+
+        Menu Management:
+            - load_menu(menu_name): Load a menu from configuration.
+            - resolve_action(action_str): Resolve action string to a callable function with arguments.
+            - parse_arguments(args_str): Parse a string of arguments into a tuple of arguments.
+
+        Game Control:
+            - start_game(): Switch to the main menu.
+
+        Game Loop:
+            - update(mouse_pos, mouse_clicks): Update the UI state.
+            - draw(): Render the UI frame.
+    """
+    def __init__(self):
         """
-        Initialize UIManager with font, screen, and managers.
-
-        Args:
-            font: Font object for rendering text.
-            screen: Surface object for rendering UI.
-            managers: Dictionary of manager instances.
+        Initialize the UIManager instance.
         """
-        self.font = font
-        self.screen = screen
-        self.managers = managers
-        self.main_manager = self.managers['main_manager']
-        self.audio_manager = self.managers['audio_manager']
-        self.window_manager = self.managers['window_manager']
+        super().__init__()
+
+        # Common Attributes
+        self.config = {
+            "default_font_name": Optional[str],
+            "default_font_size": Optional[int]
+        }
+
+        # UI Attributes
+        self.default_font_name = Optional[str]
+        self.default_font_size = Optional[int]
+        self.font = Optional[pygame.font.Font]
+        self.display = Optional[pygame.Surface]
+        self.buttons = []
+        self.current_menu = Optional[str]
+
+    """
+    Instance Setup
+        - load_specific_components
+    """
+    def load_specific_components(self):
+        """
+        Load specific components based on the configuration.
+        """
+        self.default_font_name = self.config['default_font_name']
+        self.default_font_size = self.config['default_font_size']
+        self.font = pygame.font.Font(self.default_font_name, self.default_font_size)
         self.buttons = []
         self.current_menu = None
 
+    def set_display(self, display):
+        """
+        Set the display surface for rendering UI components.
+
+        Args:
+            display (pygame.Surface): The display surface to set.
+        """
+        self.display = display
+
+    """
+    Menu Management
+        - load_menu
+        - resolve_action
+        - parse_arguments
+    """
     def load_menu(self, menu_name):
         """
         Load a menu from configuration.
 
         Args:
-            menu_name: Name of the menu to load.
+            menu_name (str): Name of the menu to load.
         """
         self.current_menu = menu_name
         self.buttons = []
@@ -50,10 +117,10 @@ class UIManager:
         Resolve action string to a callable function with arguments.
 
         Args:
-            action_str: String representing the action to resolve.
+            action_str (str): String representing the action to resolve.
 
         Returns:
-            Callable function corresponding to the action string with arguments.
+            Callable function corresponding to the action string with arguments, or None if invalid.
         """
         if not action_str:
             return None
@@ -80,29 +147,33 @@ class UIManager:
                 if hasattr(obj, method_name):
                     method = getattr(obj, method_name)
                     return lambda: method(*args)
+                else:
+                    self.log_warning(f"Method '{method_name}' not found in manager '{'.'.join(method_parts[:-1])}'.")
             else:
                 # Direct method on UIManager
                 if hasattr(self, method_str):
                     method = getattr(self, method_str)
                     return lambda: method(*args)
+                else:
+                    self.log_warning(f"Method '{method_str}' not found in UIManager.")
         except Exception as e:
-            print(f"Error resolving action '{action_str}': {e}")
+            self.log_error(f"Error resolving action '{action_str}': {e}")
 
         return None
 
-    def parse_arguments(self, args_str):
+    @staticmethod
+    def parse_arguments(args_str):
         """
         Parse a string of arguments into a tuple of arguments.
 
         Args:
-            args_str: String representing arguments in the format 'arg1, arg2, ...'
+            args_str (str): String representing arguments in the format 'arg1, arg2, ...'
 
         Returns:
             Tuple of parsed arguments.
         """
         import ast
 
-        # Convert the arguments string to a tuple of arguments
         try:
             args = ast.literal_eval(f"({args_str})")
             return args if isinstance(args, tuple) else (args,)
@@ -110,19 +181,26 @@ class UIManager:
             print(f"Error parsing arguments '{args_str}': {e}")
             return ()
 
-    def draw(self):
+    """
+    Game Control
+        - start_game
+    """
+    def start_game(self):
         """
-        Draw all buttons in the current menu.
+        Switch to the main menu.
         """
-        for button in self.buttons:
-            button.draw(self.screen)
+        self.load_menu('main_menu')
 
-    def handle_events(self, events, mouse_pos, mouse_clicks):
+    """
+    Game Loop
+        - update
+        - draw
+    """
+    def update(self, mouse_pos, mouse_clicks):
         """
-        Handle button clicks.
+        Update the game state.
 
         Args:
-            events: List of pygame events.
             mouse_pos: Current position of the mouse.
             mouse_clicks: List of mouse click states.
         """
@@ -130,8 +208,10 @@ class UIManager:
             if button.is_hovered(mouse_pos) and mouse_clicks[1]:
                 button.click()
 
-    def start_game(self):
+    def draw(self):
         """
-        Switch to the main menu.
+        Render the game frame.
         """
-        self.load_menu('main_menu')
+        if self.display:
+            for button in self.buttons:
+                button.draw(self.display)

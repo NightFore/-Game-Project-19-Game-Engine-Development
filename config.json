@@ -18,5 +18,9 @@
         "fade": true,
         "fade_in": 50,
         "fade_out": 300
+    },
+    "UIManager": {
+        "default_font_name": null,
+        "default_font_size": 36
     }
 }

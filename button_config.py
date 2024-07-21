@@ -8,6 +8,10 @@ button_config = {
         }
     },
     'main_menu': {
+        'test': {
+            'x': 300, 'y': 50, 'width': 200, 'height': 50,
+            'label': 'Test', 'color': (70, 130, 180), 'action': "debug((800, 600), 42, 'abcdefghijklmnopqrstuvwxyz', True)"
+        },
         'fullscreen': {
             'x': 50, 'y': 50, 'width': 200, 'height': 50,
             'label': 'Toggle Fullscreen', 'color': (70, 130, 180), 'action': 'window_manager.toggle_fullscreen'
