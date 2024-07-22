@@ -170,6 +170,37 @@ class MainManager:
                 elif event.key == pygame.K_F11:
                     self.window_manager.toggle_fullscreen()
 
+            # Debug
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    self.audio_manager.play_music("bgm_eight_Lament_Scarlet")
+                elif event.key == pygame.K_2:
+                    self.audio_manager.play_music("bgm_nagumorizu_Strategy_Meeting")
+                elif event.key == pygame.K_3:
+                    self.audio_manager.play_music("bgm_tak_mfk_冷月の舞踏_(Reigetsu_no_Buto)")
+                elif event.key == pygame.K_4:
+                    self.audio_manager.play_sound("maou_se_onepoint09")
+                elif event.key == pygame.K_5:
+                    self.audio_manager.play_voice("YouFulca_voice_07_cool_attack")
+                elif event.key == pygame.K_m:
+                    self.audio_manager.toggle_music_playback()
+                elif event.key == pygame.K_v:
+                    self.audio_manager.stop_music()
+                elif event.key == pygame.K_b:
+                    self.audio_manager.stop_sound()
+                elif event.key == pygame.K_n:
+                    self.audio_manager.stop_voice()
+                elif event.key == pygame.K_o:
+                    self.audio_manager.set_bgm_loop(-1)  # Infinite loop
+                elif event.key == pygame.K_p:
+                    self.audio_manager.set_bgm_loop(0)   # No loop
+                elif event.key == pygame.K_u:
+                    self.audio_manager.toggle_audio_mute()  # Toggle mute/unmute
+                elif event.key == pygame.K_KP_PLUS:
+                    self.audio_manager.adjust_volume("master", 0.05)
+                elif event.key == pygame.K_KP_MINUS:
+                    self.audio_manager.adjust_volume("master", -0.05)
+
             # Handle quit event
             if event.type == pygame.QUIT:
                 self.quit_game()
@@ -200,9 +231,6 @@ class MainManager:
         # Draw the game components
         self.ui_manager.draw()
         self.window_manager.draw()
-
-        # Update the display
-        pygame.display.flip()
 
     def quit_game(self):
         """

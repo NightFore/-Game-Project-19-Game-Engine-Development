@@ -98,8 +98,11 @@ class UIManager(BaseManager):
         self.current_menu = menu_name
         self.buttons = {}
 
+        # Check if the specified menu name exists in the button configuration
         if menu_name in button_config:
+            # Iterate through each button configuration in the specified menu
             for button_id, config in button_config[menu_name].items():
+                # Extract button properties from the configuration
                 x = config['x']
                 y = config['y']
                 width = config['width']
@@ -107,10 +110,18 @@ class UIManager(BaseManager):
                 label = config['label']
                 color = config['color']
                 action_str = config.get('action')
+
+                # Resolve the action string to a callable function or default action
                 action = self.resolve_action(action_str, button_id)
 
+                # Create a Button instance with the extracted properties and action
                 button = Button(x, y, width, height, label, color, self.font, action)
+
+                # Store the created button instance in the buttons dictionary using button_id as the key
                 self.buttons[button_id] = button
+        else:
+            # Log a warning if the specified menu name does not exist in the button configuration
+            self.log_warning(f"Menu '{menu_name}' does not exist in the button configuration.")
 
     def resolve_action(self, action_str, button_id):
         """
@@ -124,19 +135,22 @@ class UIManager(BaseManager):
             Callable function corresponding to the action string with arguments,
             or a default function that logs a warning if the action is not defined.
         """
+        # If no action string is provided, return None
         if not action_str:
             return None
 
         try:
-            # Extract method and arguments from action_str
+            # Split the action string to extract method name and arguments
             action_parts = action_str.split('(', 1)
             method_str = action_parts[0].strip()
-            args_str = action_parts[1][:-1] if len(action_parts) > 1 else ''  # Remove trailing ')'
 
-            # Parse arguments
+            # Remove trailing ')'
+            args_str = action_parts[1][:-1] if len(action_parts) > 1 else ''
+
+            # Convert arguments string into a tuple
             args = self.parse_arguments(args_str)
 
-            # Handle nested method calls
+            # Handle nested method calls (e.g., manager.method)
             method_parts = method_str.split('.')
             if len(method_parts) > 1:
                 # Method is in a nested manager

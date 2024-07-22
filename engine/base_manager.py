@@ -12,6 +12,7 @@ class BaseManager:
             - config (dict or None): Configuration dictionary.
             - managers (dict or None): Dictionary of manager instances.
             - logger (logging.Logger or None): Logger instance.
+            - class_name (str): Name of the class.
 
         Specific Manager References:
             - main_manager (object or None): Reference to the main manager instance.
@@ -38,6 +39,7 @@ class BaseManager:
         self.config = None
         self.managers = None
         self.logger = None
+        self.class_name = None
 
         # Specific Manager References
         self.main_manager = None
@@ -60,6 +62,9 @@ class BaseManager:
             managers (dict or None): Dictionary of manager instances.
             logger (logging.Logger or None): Logger instance.
         """
+        # Get the class name
+        self.class_name = self.__class__.__name__
+
         # Set the logger
         self.logger = logger
 
@@ -74,7 +79,7 @@ class BaseManager:
         self.update_config(config)
 
         # Log initialization
-        self.log_info(f"{self.__class__.__name__} initialized")
+        self.log_info(f"{self.class_name} initialized.")
 
     def update_config(self, new_config, check_all_params=False):
         """
@@ -84,21 +89,19 @@ class BaseManager:
             new_config (dict): New configuration settings.
             check_all_params (bool): Flag to check if all parameters are present in new_config.
         """
-        # Get the class name
-        class_name = self.__class__.__name__
 
         # Log configuration update
-        self.logger.info(f"Configuration update for {class_name}...")
+        self.logger.info(f"Configuration update for {self.class_name}...")
 
         # Check if self.config is None
         if self.config is None:
-            self.log_error(f"Configuration for {class_name} is not initialized.",
+            self.log_error(f"Configuration for {self.class_name} is not initialized.",
                            ValueError)
 
         # Get class-specific configuration from new_config
-        class_config = new_config.get(class_name)
+        class_config = new_config.get(self.class_name)
         if class_config is None:
-            self.log_error(f"Configuration for {class_name} not found in new_config.",
+            self.log_error(f"Configuration for {self.class_name} not found in new_config.",
                            ValueError)
 
         # Check for missing parameters if check_all_params is True
@@ -123,23 +126,22 @@ class BaseManager:
         # Load components after configuration update
         if updated:
             self.load_components()
-            self.log_info(f"Configuration update for {class_name} completed.")
+            self.log_info(f"Configuration update for {self.class_name} completed.")
         else:
-            self.log_info(f"No configuration update detected for {class_name}.")
+            self.log_info(f"No configuration update detected for {self.class_name}.")
 
     def load_components(self):
         """
         Load necessary components based on the configuration.
         """
-        class_name = self.__class__.__name__
-        self.log_info(f"Loading components for {class_name}...")
+        self.log_info(f"Loading components for {self.class_name}...")
 
         try:
             # Call the subclass-specific method to load components
             self.load_specific_components()
-            self.log_info(f"Loading components for {class_name} completed.")
+            self.log_info(f"Loading components for {self.class_name} completed.")
         except Exception as e:
-            self.log_error(f"Error loading components for {class_name}: {e}",
+            self.log_error(f"Error loading components for {self.class_name}: {e}",
                            RuntimeError)
 
     def load_specific_components(self):
