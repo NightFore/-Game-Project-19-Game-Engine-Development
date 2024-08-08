@@ -102,20 +102,8 @@ class UIManager(BaseManager):
         if menu_name in button_config:
             # Iterate through each button configuration in the specified menu
             for button_id, config in button_config[menu_name].items():
-                # Extract button properties from the configuration
-                x = config['x']
-                y = config['y']
-                width = config['width']
-                height = config['height']
-                label = config['label']
-                color = config['color']
-                action_str = config.get('action')
-
-                # Resolve the action string to a callable function or default action
-                action = self.resolve_action(action_str, button_id)
-
-                # Create a Button instance with the extracted properties and action
-                button = Button(x, y, width, height, label, color, self.font, action)
+                # Create a Button instance using the create_button method
+                button = self.create_button(button_id, config)
 
                 # Store the created button instance in the buttons dictionary using button_id as the key
                 self.buttons[button_id] = button
@@ -207,6 +195,32 @@ class UIManager(BaseManager):
         except (SyntaxError, ValueError) as e:
             print(f"Error parsing arguments '{args_str}': {e}")
             return ()
+
+    def create_button(self, button_id, config):
+        """
+        Create a Button instance from the given configuration.
+
+        Args:
+            button_id (str): ID of the button to be created.
+            config (dict): Configuration dictionary for the button.
+
+        Returns:
+            Button: An instance of the Button class.
+        """
+        # Extract button properties from the configuration
+        x = config['x']
+        y = config['y']
+        width = config['width']
+        height = config['height']
+        label = config['label']
+        color = config['color']
+        action_str = config.get('action')
+
+        # Resolve the action string to a callable function or default action
+        action = self.resolve_action(action_str, button_id)
+
+        # Create and return a Button instance
+        return Button(x, y, width, height, label, color, self.font, action)
 
     """
     Game Control

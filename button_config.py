@@ -38,7 +38,7 @@ button_config = {
         },
         'play_music_3': {
             'x': 300, 'y': 260, 'width': 200, 'height': 50,
-            'label': 'Play Music 3', 'color': (70, 130, 180), 'action': 'audio_manager.play_music("bgm_tak_mfk_冷月の舞踏_(Reigetsu_no_Buto)")'
+            'label': 'Play Music 3', 'color': (70, 130, 180), 'action': 'audio_manager.play_music("bgm_tak_mfk_Dance_of_the_Cold_Moon")'
         },
         'play_sound': {
             'x': 300, 'y': 330, 'width': 200, 'height': 50,

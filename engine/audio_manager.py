@@ -42,6 +42,7 @@ class AudioManager(BaseManager):
             - load_audio_files(folder_path): Helper function to load audio files from a specified folder.
             - load_library(): Loads all audio assets from the specified library path.
             - load_settings(): Loads settings from the configuration.
+            - apply_settings(): Apply the loaded settings to the audio manager.
 
         Playback Control:
             - play_music(music_name, fade=None): Plays the specified background music.
@@ -115,6 +116,7 @@ class AudioManager(BaseManager):
         - load_audio_files
         - load_library
         - load_settings
+        - apply_settings
     """
     def load_specific_components(self):
         """
@@ -123,6 +125,9 @@ class AudioManager(BaseManager):
         # Set Manager attributes
         self.load_library()
         self.load_settings()
+
+        # Apply the loaded settings
+        self.apply_settings()
 
     def load_audio_files(self, folder_path):
         """
@@ -173,7 +178,7 @@ class AudioManager(BaseManager):
 
         # Log the number of files loaded
         num_files_loaded = len(audio_library)
-        self.log_info(f"Loaded {num_files_loaded} audio files from {folder_path}")
+        self.log_debug(f"Loaded {num_files_loaded} audio files from {folder_path}")
 
         return audio_library
 
@@ -209,6 +214,22 @@ class AudioManager(BaseManager):
         self.fade = self.config["fade"]
         self.fade_in = self.config["fade_in"]
         self.fade_out = self.config["fade_out"]
+
+    def apply_settings(self):
+        """
+        Apply the loaded settings to the audio manager.
+        """
+        # Set volumes based on the configuration
+        self.set_master_volume(self.volume_master)
+        self.set_bgm_volume(self.volume_bgm)
+        self.set_sfx_volume(self.volume_sfx)
+        self.set_voice_volume(self.volume_voice)
+
+        # Mute all audio if mute is enabled
+        if self.mute:
+            self.mute_audio()
+
+        self.log_info("Audio settings have been applied.")
 
     """
     Playback Control
