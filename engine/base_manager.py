@@ -91,7 +91,7 @@ class BaseManager:
         """
 
         # Log configuration update
-        self.logger.info(f"Configuration update for {self.class_name}...")
+        self.log_info(f"Configuration update for {self.class_name}...")
 
         # Check if self.config is None
         if self.config is None:
@@ -178,7 +178,7 @@ class BaseManager:
             message (str): Message to be logged.
         """
         if self.logger:
-            self.logger.debug(message)
+            self.logger.log_debug(message)
         else:
             print(message)
 
@@ -190,7 +190,7 @@ class BaseManager:
             message (str): Message to be logged.
         """
         if self.logger:
-            self.logger.info(message)
+            self.logger.log_info(message)
         else:
             print(message)
 
@@ -202,7 +202,7 @@ class BaseManager:
             message (str): Message to be logged.
         """
         if self.logger:
-            self.logger.warning(message)
+            self.logger.log_warning(message)
         else:
             print(message)
 
@@ -215,7 +215,7 @@ class BaseManager:
             exception (type or None): Exception class to raise (default: None).
         """
         if self.logger:
-            self.logger.error(message, exception)
+            self.logger.log_error(message, exception)
         else:
             print(message)
 
@@ -228,6 +228,6 @@ class BaseManager:
             exception (type or None): Exception class to raise (default: None).
         """
         if self.logger:
-            self.logger.critical(message, exception)
+            self.logger.log_critical(message, exception)
         else:
             print(message)

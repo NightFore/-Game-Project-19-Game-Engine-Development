@@ -4,7 +4,7 @@ import pygame
 
 
 class UIElement:
-    def __init__(self, config, element_type, element_id, logger):
+    def __init__(self, config, element_type, element_id, managers, logger):
         """
         Initialize the UIElement.
 
@@ -12,11 +12,14 @@ class UIElement:
             config (dict): Configuration dictionary for the element.
             element_type (str): The type of the UI element (e.g., 'button', 'image').
             element_id (str): ID of the UI element.
+            managers (dict): Dictionary of all manager instances.
             logger (Logger): Logger instance for logging.
         """
-        self.logger = logger
+        self.config = config
         self.element_type = element_type
         self.element_id = element_id
+        self.managers = managers
+        self.logger = logger
 
         # Load properties from config
         self.x = config['x']
@@ -30,19 +33,61 @@ class UIElement:
         self.image_path = config.get('image')
         self.action_str = config.get('action')
 
+        self.image = None
+        self.rect = None
+        self.text_rect = None
+        self.text_surface = None
+
         #
         if self.font:
             pass
 
         #
-        self.image = pygame.image.load(self.image_path) if self.image_path else None
-        if not self.image:
-            self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        else:
-            self.rect = self.image.get_rect(topleft=(self.x, self.y))
+        self.setup_graphics()
 
         # Resolve action
         self.action = self.resolve_action(self.action_str)
+
+    def setup_graphics(self):
+        """
+        Set up graphical properties for the UI element, such as images, rectangles, fonts, and colors.
+        """
+        # Load image if specified
+        if self.image_path:
+            try:
+                self.image = pygame.image.load(self.image_path)
+                self.rect = self.image.get_rect(topleft=(self.x, self.y))
+                self.logger.log_info(f"Image loaded for {self.element_id} from {self.image_path}.")
+            except pygame.error as e:
+                self.logger.log_error(f"Failed to load image for {self.element_id} from {self.image_path}: {e}")
+                self.image = None
+                self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        else:
+            self.image = None
+            self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+
+        # Set up label and font if specified
+        if self.label and self.font:
+            try:
+                self.font = pygame.font.Font(self.font['name'], self.font['size'])
+                self.text_surface = self.font.render(self.label, True, self.color)
+                self.text_rect = self.text_surface.get_rect(center=self.rect.center)
+                self.logger.log_info(f"Font loaded for {self.element_id} with label '{self.label}'.")
+            except pygame.error as e:
+                self.logger.log_error(f"Failed to load font for {self.element_id}: {e}")
+                self.text_surface = None
+                self.text_rect = None
+        else:
+            self.text_surface = None
+            self.text_rect = None
+
+        # Set up color if specified and no image is loaded
+        if not self.image and self.color:
+            self.surface = pygame.Surface((self.width, self.height))
+            self.surface.fill(self.color)
+            self.logger.log_info(f"Color filled for {self.element_id} with {self.color}.")
+        else:
+            self.surface = None
 
     def resolve_action(self, action_str):
         """
@@ -70,14 +115,14 @@ class UIElement:
                 for part in method_parts[:-1]:
                     obj = getattr(obj, part, None)
                     if obj is None:
-                        self.logger.warning(f"Manager or method '{'.'.join(method_parts[:-1])}' not found.")
+                        self.logger.log_warning(f"Manager or method '{'.'.join(method_parts[:-1])}' not found.")
                         return lambda: self.default_action()
                 method_name = method_parts[-1]
                 if hasattr(obj, method_name):
                     method = getattr(obj, method_name)
                     return lambda: method(*args)
                 else:
-                    self.logger.warning(f"Method '{method_name}' not found in manager"
+                    self.logger.log_warning(f"Method '{method_name}' not found in manager"
                                         f" '{'.'.join(method_parts[:-1])}'.")
                     return lambda: self.default_action()
             else:
@@ -85,17 +130,17 @@ class UIElement:
                     method = getattr(self, method_str)
                     return lambda: method(*args)
                 else:
-                    self.logger.warning(f"Method '{method_str}' not found in UIElement.")
+                    self.logger.log_warning(f"Method '{method_str}' not found in UIElement.")
                     return lambda: self.default_action()
         except Exception as e:
-            self.logger.error(f"Error resolving action '{action_str}': {e}")
+            self.logger.log_error(f"Error resolving action '{action_str}': {e}")
             return lambda: self.default_action()
 
     def default_action(self):
         """
         Default action to be used when an element action is not defined.
         """
-        self.logger.warning(f"Action for element '{self.element_id}' is not defined.")
+        self.logger.log_warning(f"Action for element '{self.element_id}' is not defined.")
 
     @staticmethod
     def parse_arguments(args_str):
@@ -152,4 +197,4 @@ class UIElement:
             try:
                 self.action()
             except Exception as e:
-                self.logger.error(f"Error executing action for element '{self.element_id}': {e}")
+                self.logger.log_error(f"Error executing action for element '{self.element_id}': {e}")

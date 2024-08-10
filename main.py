@@ -98,7 +98,7 @@ class MainManager:
         # Load the initial menu
         self.ui_manager.load_menu('start_menu')
 
-        self.logger.info(f"MainManager initialized")
+        self.logger.log_info(f"MainManager initialized")
 
     """
     Game Loop
@@ -236,7 +236,7 @@ class MainManager:
         """
         Quit the game and clean up resources.
         """
-        self.logger.info(f"Total game time: {self.total_play_time:.3f} seconds")
+        self.logger.log_info(f"Total game time: {self.total_play_time:.3f} seconds")
         pygame.quit()
         quit()
 

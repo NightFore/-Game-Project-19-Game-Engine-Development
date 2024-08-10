@@ -28,12 +28,12 @@ class Logger:
 
     Methods:
         Logging Methods:
-            - debug(message): Log a message at DEBUG level.
-            - info(message): Log a message at INFO level.
-            - warning(message): Log a message at WARNING level.
-            - error(message, exception=None): Log a message at ERROR level and optionally raise an exception.
-            - critical(message, exception=None): Log a message at CRITICAL level and optionally raise an exception.
-            - event(message): Log a unique event message with context.
+            - log_debug(message): Log a message at DEBUG level.
+            - log_info(message): Log a message at INFO level.
+            - log_warning(message): Log a message at WARNING level.
+            - log_error(message, exception=None): Log a message at ERROR level and optionally raise an exception.
+            - log_critical(message, exception=None): Log a message at CRITICAL level and optionally raise an exception.
+            - log_event(message): Log a unique event message with context.
 
         Helper Methods:
             - log_message(level, message): Log a message at a specified logging level.
@@ -84,21 +84,21 @@ class Logger:
         self.logger.addHandler(console_handler)
 
         # Log message indicating log file creation
-        self.logger.info(f"Log file created: {self.log_file_path}")
+        self.log_info(f"Log file created: {self.log_file_path}")
 
         # Dictionary to store unique events with timestamps
         self.unique_events = {}
 
     """
     Logging Methods
-        - debug
-        - info
-        - warning
-        - error
-        - critical
-        - event
+        - log_debug
+        - log_info
+        - log_warning
+        - log_error
+        - log_critical
+        - log_event
     """
-    def debug(self, message):
+    def log_debug(self, message):
         """
         Log a message at DEBUG level.
 
@@ -107,7 +107,7 @@ class Logger:
         """
         self.log_message(logging.DEBUG, message)
 
-    def info(self, message):
+    def log_info(self, message):
         """
         Log a message at INFO level.
 
@@ -116,7 +116,7 @@ class Logger:
         """
         self.log_message(logging.INFO, message)
 
-    def warning(self, message):
+    def log_warning(self, message):
         """
         Log a message at WARNING level.
 
@@ -125,7 +125,7 @@ class Logger:
         """
         self.log_message(logging.WARNING, message)
 
-    def error(self, message, exception=None):
+    def log_error(self, message, exception=None):
         """
         Log a message at ERROR level and raise .
 
@@ -138,7 +138,7 @@ class Logger:
         if exception:
             raise exception(message)
 
-    def critical(self, message, exception=None):
+    def log_critical(self, message, exception=None):
         """
         Log a message at CRITICAL level and optionally raise an exception.
 
@@ -151,7 +151,7 @@ class Logger:
         if exception:
             raise exception(message)
 
-    def event(self, event_message):
+    def log_event(self, event_message):
         """
         Log a unique event message with context.
 
@@ -160,7 +160,7 @@ class Logger:
         """
         if self.should_log_event(event_message):
             calling_class = self.get_calling_class_name()
-            self.logger.info(f"{calling_class} - {event_message}")
+            self.log_info(f"{calling_class} - {event_message}")
             self.unique_events[event_message] = datetime.now()
 
     """
