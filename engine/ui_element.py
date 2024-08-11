@@ -1,9 +1,13 @@
 # ui_element.py
 
 import pygame
+from utils import setup_managers
 
 
 class UIElement:
+    """
+
+    """
     def __init__(self, config, element_type, element_id, managers, logger):
         """
         Initialize the UIElement.
@@ -15,11 +19,15 @@ class UIElement:
             managers (dict): Dictionary of all manager instances.
             logger (Logger): Logger instance for logging.
         """
+        #
         self.config = config
         self.element_type = element_type
         self.element_id = element_id
         self.managers = managers
         self.logger = logger
+
+        # Set up references to managers using the helper function
+        setup_managers(self, managers)
 
         # Load properties from config
         self.x = config['x']
@@ -27,20 +35,29 @@ class UIElement:
         self.width = config['width']
         self.height = config['height']
         self.label = config.get('label')
-        self.font = config.get('font')
+        self.font_name = config.get('font_name')
+        self.font_size = config.get('font_size')
         self.color = config.get('color')
         self.action_str = config.get('action')
         self.image_path = config.get('image')
         self.action_str = config.get('action')
 
+        #
+        self.font = None
         self.image = None
         self.rect = None
         self.text_rect = None
         self.text_surface = None
+        self.surface = None
 
         #
         if self.font:
             pass
+
+        # Debug (To Be Deleted)
+        self.font_name = None
+        self.font_size = 36
+        self.font = pygame.font.Font(self.font_name, self.font_size)
 
         #
         self.setup_graphics()
@@ -67,16 +84,10 @@ class UIElement:
             self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
         # Set up label and font if specified
-        if self.label and self.font:
-            try:
-                self.font = pygame.font.Font(self.font['name'], self.font['size'])
-                self.text_surface = self.font.render(self.label, True, self.color)
-                self.text_rect = self.text_surface.get_rect(center=self.rect.center)
-                self.logger.log_info(f"Font loaded for {self.element_id} with label '{self.label}'.")
-            except pygame.error as e:
-                self.logger.log_error(f"Failed to load font for {self.element_id}: {e}")
-                self.text_surface = None
-                self.text_rect = None
+        if self.label and self.font_name:
+            self.font = pygame.font.Font(self.font_name, self.font_size)
+            self.text_surface = self.font.render(self.label, True, self.color)
+            self.text_rect = self.text_surface.get_rect(center=self.rect.center)
         else:
             self.text_surface = None
             self.text_rect = None
@@ -85,7 +96,6 @@ class UIElement:
         if not self.image and self.color:
             self.surface = pygame.Surface((self.width, self.height))
             self.surface.fill(self.color)
-            self.logger.log_info(f"Color filled for {self.element_id} with {self.color}.")
         else:
             self.surface = None
 
@@ -123,7 +133,7 @@ class UIElement:
                     return lambda: method(*args)
                 else:
                     self.logger.log_warning(f"Method '{method_name}' not found in manager"
-                                        f" '{'.'.join(method_parts[:-1])}'.")
+                                            f" '{'.'.join(method_parts[:-1])}'.")
                     return lambda: self.default_action()
             else:
                 if hasattr(self, method_str):
@@ -161,22 +171,6 @@ class UIElement:
             print(f"Error parsing arguments '{args_str}': {e}")
             return ()
 
-    def draw(self, surface):
-        """
-        Draw the UI element on the given surface.
-
-        Args:
-            surface (pygame.Surface): The surface to draw the element on.
-        """
-        if self.image:
-            surface.blit(self.image, self.rect)
-        else:
-            pygame.draw.rect(surface, self.color, self.rect)
-            if self.label and self.font:
-                text_surface = self.font.render(self.label, True, (255, 255, 255))
-                text_rect = text_surface.get_rect(center=self.rect.center)
-                surface.blit(text_surface, text_rect)
-
     def is_hovered(self, mouse_pos):
         """
         Check if the UI element is hovered by the mouse.
@@ -198,3 +192,22 @@ class UIElement:
                 self.action()
             except Exception as e:
                 self.logger.log_error(f"Error executing action for element '{self.element_id}': {e}")
+
+    def draw(self, surface):
+        """
+        Draw the UI element on the given surface.
+
+        Args:
+            surface (pygame.Surface): The surface to draw the element on.
+        """
+        if self.image:
+            surface.blit(self.image, self.rect)
+        else:
+            pygame.draw.rect(surface, self.color, self.rect)
+            if self.label and self.font:
+                text_surface = self.font.render(self.label, True, (255, 255, 255))
+                text_rect = text_surface.get_rect(center=self.rect.center)
+                surface.blit(text_surface, text_rect)
+
+    def update(self):
+        pass

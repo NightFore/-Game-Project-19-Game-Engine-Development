@@ -105,7 +105,7 @@ class UIManager(BaseManager):
                                                              self.managers, self.logger)
         else:
             self.log_error(f"Menu '{menu_name}' does not exist in the configuration.",
-                             ValueError)
+                           ValueError)
 
     """
     Game Loop

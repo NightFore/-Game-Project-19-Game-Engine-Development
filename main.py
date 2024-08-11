@@ -81,9 +81,10 @@ class MainManager:
         self.window_manager = WindowManager()
 
         self.managers = {
-            'main_manager': self.main_manager,
-            'audio_manager': self.audio_manager,
-            'window_manager': self.window_manager
+            "main_manager": self.main_manager,
+            "audio_manager": self.audio_manager,
+            "ui_manager": self.ui_manager,
+            "window_manager": self.window_manager
         }
 
         # Initialize Managers
@@ -177,7 +178,7 @@ class MainManager:
                 elif event.key == pygame.K_2:
                     self.audio_manager.play_music("bgm_nagumorizu_Strategy_Meeting")
                 elif event.key == pygame.K_3:
-                    self.audio_manager.play_music("bgm_tak_mfk_冷月の舞踏_(Reigetsu_no_Buto)")
+                    self.audio_manager.play_music("bgm_tak_mfk_Dance_of_the_Cold_Moon")
                 elif event.key == pygame.K_4:
                     self.audio_manager.play_sound("maou_se_onepoint09")
                 elif event.key == pygame.K_5:

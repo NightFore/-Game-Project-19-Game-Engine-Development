@@ -1,6 +1,8 @@
 # base_manager.py
+
 import inspect
 import logging
+from utils import setup_managers
 
 
 class BaseManager:
@@ -68,12 +70,8 @@ class BaseManager:
         # Set the logger
         self.logger = logger
 
-        # Set up references to managers
-        if managers:
-            self.managers = managers
-            self.main_manager = self.managers['main_manager']
-            self.audio_manager = self.managers['audio_manager']
-            self.window_manager = self.managers['window_manager']
+        # Set up references to managers using the helper function
+        setup_managers(self, managers)
 
         # Set the initial configuration
         self.update_config(config)
