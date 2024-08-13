@@ -20,7 +20,5 @@
         "fade_out": 300
     },
     "UIManager": {
-        "default_font_name": null,
-        "default_font_size": 36
     }
 }
