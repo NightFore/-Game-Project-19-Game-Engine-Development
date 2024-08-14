@@ -2,9 +2,11 @@
 
 import pygame
 from typing import Optional
+
 from menu_config import menu_config
 from engine.base_manager import BaseManager
 from engine.ui_element import UIElement
+from engine.ui_button import UIButton
 
 
 class UIManager(BaseManager):
@@ -91,8 +93,10 @@ class UIManager(BaseManager):
             # Iterate over the elements in the menu configuration and initialize UIElements
             for element_type, elements in menu_config[menu_name].items():
                 for element_id, config in elements.items():
-                    self.ui_elements[element_id] = UIElement(config, element_type, element_id,
-                                                             self.managers, self.logger)
+                    if element_type == 'button':
+                        self.ui_elements[element_id] = UIButton(element_id, config, self.managers, self.logger)
+                    else:
+                        self.ui_elements[element_id] = UIElement(element_type, element_id, config, self.managers, self.logger)
         else:
             self.log_error(f"Menu '{menu_name}' does not exist in the configuration.",
                            ValueError)
