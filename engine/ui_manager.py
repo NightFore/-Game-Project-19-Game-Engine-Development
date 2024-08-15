@@ -7,6 +7,7 @@ from menu_config import menu_config
 from engine.base_manager import BaseManager
 from engine.ui_element import UIElement
 from engine.ui_button import UIButton
+from engine.ui_label import UILabel
 
 
 class UIManager(BaseManager):
@@ -95,6 +96,8 @@ class UIManager(BaseManager):
                 for element_id, config in elements.items():
                     if element_type == 'button':
                         self.ui_elements[element_id] = UIButton(element_id, config, self.managers, self.logger)
+                    elif element_type == 'label':
+                        self.ui_elements[element_id] = UILabel(element_id, config, self.managers, self.logger)
                     else:
                         self.ui_elements[element_id] = UIElement(element_type, element_id, config, self.managers, self.logger)
         else:

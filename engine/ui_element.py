@@ -150,13 +150,13 @@ class UIElement:
     """
     def update(self, mouse_pos, mouse_clicks):
         """
-        Update the UI element's state based on mouse interactions.
+        Update the UIElement state.
         """
         pass
 
     def draw(self, surface):
         """
-        Draw the UI element on the given surface.
+        Draw the UIElement on the given surface.
 
         Args:
             surface (pygame.Surface): The surface to draw the UI element on.

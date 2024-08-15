@@ -7,6 +7,12 @@ menu_config = {
                 'x': 300, 'y': 250, 'width': 200, 'height': 50, 'label': 'Start', 'color': (70, 130, 180),
                 'action': "ui_manager.load_menu('main_menu')"
             }
+        },
+        "label": {
+            'title': {
+                'x': 250, 'y': 150, 'width': 300, 'height': 100, 'label': 'Welcome to the Game!', 'color': (255, 255, 255),
+                'font_name': 'Arial', 'font_size': 36, 'alignment': 'center'
+            }
         }
     },
     'main_menu': {
@@ -86,6 +92,12 @@ menu_config = {
             'volume_down': {
                 'x': 300, 'y': 540, 'width': 200, 'height': 50, 'label': 'Volume Down', 'color': (70, 130, 180),
                 'action': 'audio_manager.adjust_volume("master", -0.05)'
+            }
+        },
+        "label": {
+            'header': {
+                'x': 250, 'y': 20, 'width': 300, 'height': 25, 'label': 'Main Menu', 'color': (255, 255, 255),
+                'font_name': 'Arial', 'font_size': 36, 'alignment': 'center'
             }
         }
     }

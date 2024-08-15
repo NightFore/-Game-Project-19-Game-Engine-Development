@@ -171,7 +171,7 @@ class UIButton(UIElement):
     """
     def update(self, mouse_pos, mouse_clicks):
         """
-        Update the UIButton's state.
+        Update the UIButton state.
 
         Args:
             mouse_pos (tuple): Current position of the mouse.
