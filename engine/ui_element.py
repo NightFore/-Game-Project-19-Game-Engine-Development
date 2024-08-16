@@ -1,67 +1,10 @@
-# ui_element.py
-
 import pygame
 from utils import setup_managers
 
 
 class UIElement:
-    """
-    UIElement represents a graphical interface component.
-
-    Attributes:
-        Common Attributes:
-            - element_type (str): The type of the UI element (e.g., 'button', 'image').
-            - element_id (str): ID of the UI element.
-            - config (dict): Configuration dictionary for the element.
-            - managers (dict): Dictionary of manager instances.
-            - logger (Logger): Logger instance for logging.
-
-        Positional Attributes:
-            - x (int): The x-coordinate of the UI element.
-            - y (int): The y-coordinate of the UI element.
-            - width (int): The width of the UI element.
-            - height (int): The height of the UI element.
-
-        Text Attributes:
-            - label (str or None): The text label of the UI element.
-            - font_name (str or None): The name of the font for the label.
-            - font_size (int): The font size of the label.
-            - color (tuple): The color of the UI element's text in RGB format.
-
-        Image Attributes:
-            - image_path (str or None): The file path of the image used for the UI element.
-
-        Action Attributes:
-            - action_str (str or None): The string representing the action to resolve.
-
-        Pygame Objects:
-            - font (pygame.font.Font or None): The font object used for rendering text.
-            - image (pygame.Surface or None): The surface object for the image.
-            - rect (pygame.Rect): The rectangle defining the element's position and size.
-            - text_rect (pygame.Rect or None): The rectangle defining the position of the text.
-            - text_surface (pygame.Surface or None): The surface object for the rendered text.
-            - surface (pygame.Surface or None): The surface object used for drawing the element.
-
-    Methods:
-        Instance Setup:
-            - setup_graphics(): Set up graphical properties for the UI element.
-
-        Game Loop:
-            - update(): Update the UI element's state.
-            - draw(surface): Draw the UI element on the given surface.
-    """
     def __init__(self, element_type, element_id, config, managers, logger):
-        """
-        Initialize the UIElement.
-
-        Args:
-            element_type (str): The type of the UI element (e.g., 'button', 'image').
-            element_id (str): ID of the UI element.
-            config (dict): Configuration dictionary for the element.
-            managers (dict): Dictionary of manager instances.
-            logger (Logger): Logger instance for logging.
-        """
-        # Store provided arguments
+        # Existing attributes
         self.element_type = element_type
         self.element_id = element_id
         self.config = config
@@ -89,6 +32,18 @@ class UIElement:
         # Action Attributes
         self.action_str = config.get('action')
 
+        # New Attributes
+        self.border_color = config.get('border_color', (0, 0, 0))
+        self.border_width = config.get('border_width', 0)
+        self.hover_color = config.get('hover_color', None)
+        self.click_color = config.get('click_color', None)
+        self.opacity = config.get('opacity', 255)
+        self.visible = config.get('visible', True)
+        self.enabled = config.get('enabled', True)
+        self.padding = config.get('padding', (0, 0))
+        self.margin = config.get('margin', (0, 0))
+        self.text_align = config.get('text_align', 'center')
+
         # Initialize graphical properties
         self.font = None
         self.image = None
@@ -105,18 +60,12 @@ class UIElement:
         # Set up the graphical elements
         self.setup_graphics()
 
-    """
-    Instance Setup
-        - setup_graphics
-    """
     def setup_graphics(self):
-        """
-        Set up graphical properties for the UI element, such as images, rectangles, fonts, and colors.
-        """
         # Load image if specified
         if self.image_path:
             try:
-                self.image = pygame.image.load(self.image_path)
+                self.image = pygame.image.load(self.image_path).convert_alpha()
+                self.image.set_alpha(self.opacity)
                 self.rect = self.image.get_rect(topleft=(self.x, self.y))
                 self.logger.log_info(f"Image loaded for {self.element_id} from {self.image_path}.")
             except pygame.error as e:
@@ -132,6 +81,10 @@ class UIElement:
             self.font = pygame.font.Font(self.font_name, self.font_size)
             self.text_surface = self.font.render(self.label, True, self.color)
             self.text_rect = self.text_surface.get_rect(center=self.rect.center)
+            if self.text_align == 'left':
+                self.text_rect.midleft = self.rect.midleft
+            elif self.text_align == 'right':
+                self.text_rect.midright = self.rect.midright
         else:
             self.text_surface = None
             self.text_rect = None
@@ -140,28 +93,26 @@ class UIElement:
         if not self.image and self.color:
             self.surface = pygame.Surface((self.width, self.height))
             self.surface.fill(self.color)
+            self.surface.set_alpha(self.opacity)
         else:
             self.surface = None
 
-    """
-    Game Loop
-        - update
-        - draw
-    """
     def update(self, mouse_pos, mouse_clicks):
-        """
-        Update the UIElement state.
-        """
-        pass
+        if not self.visible:
+            return
+
+        if self.rect.collidepoint(mouse_pos):
+            if self.hover_color:
+                self.surface.fill(self.hover_color)
+            if any(mouse_clicks):
+                if self.click_color:
+                    self.surface.fill(self.click_color)
 
     def draw(self, surface):
-        """
-        Draw the UIElement on the given surface.
+        if not self.visible:
+            return
 
-        Args:
-            surface (pygame.Surface): The surface to draw the UI element on.
-        """
-
+        # Draw the element
         if self.image:
             surface.blit(self.image, self.rect)
         elif self.surface:
@@ -169,6 +120,11 @@ class UIElement:
         else:
             pygame.draw.rect(surface, self.color, self.rect)
 
+        # Draw the border if specified
+        if self.border_width > 0:
+            pygame.draw.rect(surface, self.border_color, self.rect, self.border_width)
+
+        # Draw the label
         if self.label and self.font:
             text_surface = self.font.render(self.label, True, (255, 255, 255))
             text_rect = text_surface.get_rect(center=self.rect.center)
