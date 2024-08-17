@@ -60,6 +60,49 @@ class UIElement:
         # Set up the graphical elements
         self.setup_graphics()
 
+        """
+        WIP
+        """
+        self.relative_position = None
+        self.relative_to = None
+
+        self.align = None
+
+        self.padding = None
+        self.margin = None
+
+        self.text_wrap = False
+
+        self.opacity = None
+
+        self.corner_radius = None
+
+        self.shadow_enabled = None
+        self.shadow_color = None
+        self.shadow_offset = None
+        self.shadow_blur = None
+
+        self.tooltip_text = None
+        self.tooltip_font = None
+        self.tooltip_text_color = None
+        self.tooltip_background_color = None
+
+        self.draggable = None
+
+        self.enabled = None
+
+        self.auto_hide = None
+
+        self.parent = None
+        self.children = None
+
+        self.scrollable = None
+        self.scroll_offset = None
+
+        self.outline_mode = None
+        self.outline_color = None
+        self.outline_thickness = None
+
     def setup_graphics(self):
         # Load image if specified
         if self.image_path:
