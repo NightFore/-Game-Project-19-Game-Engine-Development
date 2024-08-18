@@ -6,14 +6,18 @@ menu_config = {
             'start': {
                 'x': 300, 'y': 250, 'width': 200, 'height': 50, 'label': 'Start', 'color': (70, 130, 180),
                 'action': "ui_manager.load_menu('main_menu')"
+            },
+            'test_features': {
+                'x': 300, 'y': 350, 'width': 200, 'height': 50, 'label': 'Test Features', 'color': (70, 130, 180),
+                'action': "ui_manager.load_menu('test_menu')"
             }
         },
         "label": {
             'title': {
                 'x': 250, 'y': 150, 'width': 300, 'height': 100, 'label': 'Welcome to the Game!', 'color': (255, 255, 255),
-                'font_name': 'Arial', 'font_size': 36, 'alignment': 'center'
+                'font_name': None, 'font_size': 36, 'alignment': 'center'
             }
-        }
+        },
     },
     'main_menu': {
         "button": {
@@ -97,7 +101,21 @@ menu_config = {
         "label": {
             'header': {
                 'x': 250, 'y': 20, 'width': 300, 'height': 25, 'label': 'Main Menu', 'color': (255, 255, 255),
-                'font_name': 'Arial', 'font_size': 36, 'alignment': 'center'
+                'font_name': None, 'font_size': 36, 'alignment': 'center'
+            }
+        }
+    },
+    'test_menu': {
+        "button": {
+            'back_to_start': {
+                'x': 300, 'y': 400, 'width': 200, 'height': 50, 'label': 'Back to Start', 'color': (70, 130, 180),
+                'action': "ui_manager.load_menu('start_menu')"
+            }
+        },
+        "label": {
+            'test_header': {
+                'x': 250, 'y': 20, 'width': 300, 'height': 25, 'label': 'Test New Features', 'color': (255, 255, 255),
+                'font_name': None, 'font_size': 36, 'alignment': 'center'
             }
         }
     }

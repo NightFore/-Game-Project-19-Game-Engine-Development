@@ -4,7 +4,7 @@ from utils import setup_managers
 
 class UIElement:
     def __init__(self, element_type, element_id, config, managers, logger):
-        # Existing attributes
+        # Core Attributes
         self.element_type = element_type
         self.element_id = element_id
         self.config = config
@@ -15,16 +15,16 @@ class UIElement:
         setup_managers(self, managers)
 
         # Positional Attributes
-        self.x = config['x']
-        self.y = config['y']
-        self.width = config['width']
-        self.height = config['height']
+        self.x = config.get('x', 0)
+        self.y = config.get('y', 0)
+        self.width = config.get('width', 100)
+        self.height = config.get('height', 50)
 
         # Text Attributes
-        self.label = config.get('label')
-        self.font_name = config.get('font_name')
-        self.font_size = config.get('font_size')
-        self.color = config.get('color')
+        self.label = config.get('label', '')
+        self.font_name = config.get('font_name', None)
+        self.font_size = config.get('font_size', 24)
+        self.color = config.get('color', (255, 255, 255))
 
         # Image Attributes
         self.image_path = config.get('image')
@@ -32,25 +32,43 @@ class UIElement:
         # Action Attributes
         self.action_str = config.get('action')
 
-        # New Attributes
+        # Enhanced Attributes
         self.border_color = config.get('border_color', (0, 0, 0))
         self.border_width = config.get('border_width', 0)
-        self.hover_color = config.get('hover_color', None)
-        self.click_color = config.get('click_color', None)
+        self.hover_color = config.get('hover_color')
+        self.click_color = config.get('click_color')
         self.opacity = config.get('opacity', 255)
         self.visible = config.get('visible', True)
         self.enabled = config.get('enabled', True)
-        self.padding = config.get('padding', (0, 0))
-        self.margin = config.get('margin', (0, 0))
+        self.padding = config.get('padding', (0, 0, 0, 0))  # top, right, bottom, left
+        self.margin = config.get('margin', (0, 0, 0, 0))  # top, right, bottom, left
         self.text_align = config.get('text_align', 'center')
+        self.corner_radius = config.get('corner_radius', 0)
+        self.shadow_enabled = config.get('shadow_enabled', False)
+        self.shadow_color = config.get('shadow_color', (0, 0, 0))
+        self.shadow_offset = config.get('shadow_offset', (5, 5))
+        self.shadow_blur = config.get('shadow_blur', 5)
+        self.tooltip_text = config.get('tooltip_text', '')
+        self.tooltip_font = config.get('tooltip_font', self.font_name)
+        self.tooltip_text_color = config.get('tooltip_text_color', (255, 255, 255))
+        self.tooltip_background_color = config.get('tooltip_background_color', (0, 0, 0))
+        self.draggable = config.get('draggable', False)
+        self.auto_hide = config.get('auto_hide', False)
+        self.parent = None
+        self.children = []
+        self.scrollable = config.get('scrollable', False)
+        self.scroll_offset = config.get('scroll_offset', (0, 0))
+        self.outline_mode = config.get('outline_mode', False)
+        self.outline_color = config.get('outline_color', (255, 0, 0))
+        self.outline_thickness = config.get('outline_thickness', 1)
 
-        # Initialize graphical properties
-        self.font = None
+        # Initialize Graphical Properties
+        self.font = pygame.font.Font(self.font_name, self.font_size)
         self.image = None
-        self.rect = None
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.text_rect = None
         self.text_surface = None
-        self.surface = None
+        self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
         # Debug (To Be Deleted)
         self.font_name = None
@@ -59,49 +77,6 @@ class UIElement:
 
         # Set up the graphical elements
         self.setup_graphics()
-
-        """
-        WIP
-        """
-        self.relative_position = None
-        self.relative_to = None
-
-        self.align = None
-
-        self.padding = None
-        self.margin = None
-
-        self.text_wrap = False
-
-        self.opacity = None
-
-        self.corner_radius = None
-
-        self.shadow_enabled = None
-        self.shadow_color = None
-        self.shadow_offset = None
-        self.shadow_blur = None
-
-        self.tooltip_text = None
-        self.tooltip_font = None
-        self.tooltip_text_color = None
-        self.tooltip_background_color = None
-
-        self.draggable = None
-
-        self.enabled = None
-
-        self.auto_hide = None
-
-        self.parent = None
-        self.children = None
-
-        self.scrollable = None
-        self.scroll_offset = None
-
-        self.outline_mode = None
-        self.outline_color = None
-        self.outline_thickness = None
 
     def setup_graphics(self):
         # Load image if specified
