@@ -15,10 +15,10 @@ class UIElement:
         setup_managers(self, managers)
 
         # Positional Attributes
-        self.x = config.get('x', 0)
-        self.y = config.get('y', 0)
-        self.width = config.get('width', 100)
-        self.height = config.get('height', 50)
+        self.x = config.get('x')
+        self.y = config.get('y')
+        self.width = config.get('width')
+        self.height = config.get('height')
 
         # Text Attributes
         self.label = config.get('label', '')
@@ -75,26 +75,50 @@ class UIElement:
         self.font_size = 36
         self.font = pygame.font.Font(self.font_name, self.font_size)
 
+        self.image_width = config.get('image_width')
+        self.image_height = config.get('image_height')
+        self.image_rect = None
+
         # Set up the graphical elements
         self.setup_graphics()
 
     def setup_graphics(self):
-        # Load image if specified
-        if self.image_path:
-            try:
-                self.image = pygame.image.load(self.image_path).convert_alpha()
-                self.image.set_alpha(self.opacity)
-                self.rect = self.image.get_rect(topleft=(self.x, self.y))
-                self.logger.log_info(f"Image loaded for {self.element_id} from {self.image_path}.")
-            except pygame.error as e:
-                self.logger.log_error(f"Failed to load image for {self.element_id} from {self.image_path}: {e}")
-                self.image = None
-                self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        else:
-            self.image = None
-            self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        """Initialize and set up all graphical components."""
+        self.setup_rect()
+        self.setup_image()
+        self.setup_text()
+        self.setup_color()
 
-        # Set up label and font if specified
+    def setup_rect(self):
+        """
+        Set up the rectangle for the UI element, used for background or borders.
+        """
+        # Initialize rectangle with the specified size or default
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+
+    def setup_image(self):
+        """
+        Load and set up the image for the UI element.
+        Image size can be used to set the rectangle size if no explicit size is provided.
+        """
+        if self.image_path:
+            # Load and process the image
+            self.image = pygame.image.load(self.image_path).convert_alpha()
+
+            # Use provided image size if specified
+            if self.image_width and self.image_height:
+                self.image = pygame.transform.scale(self.image, (self.image_width, self.image_height))
+                self.image_rect = pygame.Rect(self.x, self.y, self.image_width, self.image_height)
+            else:
+                self.image_rect = self.image.get_rect(topleft=(self.x, self.y))
+
+            # Apply opacity if specified
+            self.image.set_alpha(self.opacity)
+
+    def setup_text(self):
+        """
+        Set up the text for the UI element, including font and alignment.
+        """
         if self.label and self.font_name:
             self.font = pygame.font.Font(self.font_name, self.font_size)
             self.text_surface = self.font.render(self.label, True, self.color)
@@ -103,17 +127,15 @@ class UIElement:
                 self.text_rect.midleft = self.rect.midleft
             elif self.text_align == 'right':
                 self.text_rect.midright = self.rect.midright
-        else:
-            self.text_surface = None
-            self.text_rect = None
 
-        # Set up color if specified and no image is loaded
+    def setup_color(self):
+        """
+        Set up the color for the UI element if no image is provided.
+        """
         if not self.image and self.color:
             self.surface = pygame.Surface((self.width, self.height))
             self.surface.fill(self.color)
             self.surface.set_alpha(self.opacity)
-        else:
-            self.surface = None
 
     def update(self, mouse_pos, mouse_clicks):
         if not self.visible:

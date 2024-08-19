@@ -110,12 +110,23 @@ menu_config = {
             'back_to_start': {
                 'x': 300, 'y': 400, 'width': 200, 'height': 50, 'label': 'Back to Start', 'color': (70, 130, 180),
                 'action': "ui_manager.load_menu('start_menu')"
+            },
+            'quit_game': {
+                'x': 400, 'y': 500, 'image_width': 64, 'image_height': 64,
+                'image': 'assets/images/ui/ui_original_icon_exit.png',
+                'action': 'main_manager.quit_game()'
             }
         },
         "label": {
             'test_header': {
-                'x': 250, 'y': 20, 'width': 300, 'height': 25, 'label': 'Test New Features', 'color': (255, 255, 255),
-                'font_name': None, 'font_size': 36, 'alignment': 'center'
+                'x': 250, 'y': 50, 'width': 300, 'height': 100, 'label': 'Test New Features',
+                'color': (255, 255, 255),
+                'font_name': None,
+                'font_size': 36,
+                'alignment': 'center',
+                'rect_color': (70, 130, 180),  # Background color of the box
+                'border_color': (255, 255, 255),  # White border
+                'border_width': 5  # Border thickness
             }
         }
     }
