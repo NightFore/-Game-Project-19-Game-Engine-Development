@@ -65,10 +65,10 @@ class UIElement:
         # Initialize Graphical Properties
         self.font = pygame.font.Font(self.font_name, self.font_size)
         self.image = None
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.rect = None
         self.text_rect = None
         self.text_surface = None
-        self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        self.surface = None
 
         # Debug (To Be Deleted)
         self.font_name = None
@@ -78,42 +78,112 @@ class UIElement:
         self.image_width = config.get('image_width')
         self.image_height = config.get('image_height')
         self.image_rect = None
+        self.collision_width = None
+        self.collision_height = None
+        self.collision_rect = None
 
         # Set up the graphical elements
         self.setup_graphics()
 
     def setup_graphics(self):
         """Initialize and set up all graphical components."""
+        # Set up the primary rect, which is optional
         self.setup_rect()
+
+        # Set up the image, which may have its own independent rect
         self.setup_image()
+
+        # Set up the collision rect based on either rect or image rect, if needed
+        self.setup_collision_rect()
+
+        # Set up the surface, which might be a combination of rect and/or image
+        self.setup_surface()
+
+        # Set up text and color after rects are defined
         self.setup_text()
         self.setup_color()
 
+        # Debug
+        if not self.rect:
+            self.rect = self.collision_rect
+
     def setup_rect(self):
         """
-        Set up the rectangle for the UI element, used for background or borders.
+        Set up the primary Pygame rectangle for the UI element.
+        This rect is only created if width and height are defined.
         """
-        # Initialize rectangle with the specified size or default
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        if self.width and self.height:
+            self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        else:
+            self.rect = None  # No rect if width and height are not defined
 
     def setup_image(self):
         """
         Load and set up the image for the UI element.
-        Image size can be used to set the rectangle size if no explicit size is provided.
+        This image can have an independent rect.
         """
         if self.image_path:
             # Load and process the image
             self.image = pygame.image.load(self.image_path).convert_alpha()
 
-            # Use provided image size if specified
+            # Determine the image's rect based on provided dimensions or natural size
             if self.image_width and self.image_height:
                 self.image = pygame.transform.scale(self.image, (self.image_width, self.image_height))
                 self.image_rect = pygame.Rect(self.x, self.y, self.image_width, self.image_height)
             else:
                 self.image_rect = self.image.get_rect(topleft=(self.x, self.y))
+                self.image_width, self.image_height = self.image_rect.size
 
             # Apply opacity if specified
             self.image.set_alpha(self.opacity)
+        else:
+            self.image = None
+            self.image_rect = None  # No image rect if image path is not defined
+
+    def setup_collision_rect(self):
+        """
+        Set up the collision rectangle for the UI element.
+        This rect is used for hit detection and is created only if necessary.
+        """
+        if self.collision_width and self.collision_height:
+            # Use explicitly provided collision dimensions
+            collision_width = self.collision_width
+            collision_height = self.collision_height
+        elif self.rect:
+            # Fall back to the size of the main rect if collision size is not defined
+            collision_width = self.rect.width
+            collision_height = self.rect.height
+        elif self.image_rect:
+            # Fall back to the size of the image rect if neither rect nor collision size is defined
+            collision_width = self.image_rect.width
+            collision_height = self.image_rect.height
+        else:
+            collision_width = collision_height = 0  # No collision rect if no dimensions are available
+
+        if collision_width and collision_height:
+            self.collision_rect = pygame.Rect(self.x, self.y, collision_width, collision_height)
+        else:
+            self.collision_rect = None  # No collision rect if width and height are not defined
+
+    def setup_surface(self):
+        """
+        Set up the surface for the UI element, which can be a combination of color and image.
+        """
+        if self.rect:
+            # Create a surface based on the rect size
+            self.surface = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
+
+            # If a color is provided, fill the surface with it
+            if self.color:
+                self.surface.fill(self.color)
+
+            # If an image is provided, blit it onto the surface
+            if self.image:
+                image_pos = self.image_rect.topleft if self.image_rect else (0, 0)
+                self.surface.blit(self.image, image_pos)
+        elif self.image:
+            # If only an image is defined, the surface is the image itself
+            self.surface = self.image.copy()
 
     def setup_text(self):
         """
@@ -122,18 +192,23 @@ class UIElement:
         if self.label and self.font_name:
             self.font = pygame.font.Font(self.font_name, self.font_size)
             self.text_surface = self.font.render(self.label, True, self.color)
-            self.text_rect = self.text_surface.get_rect(center=self.rect.center)
-            if self.text_align == 'left':
-                self.text_rect.midleft = self.rect.midleft
-            elif self.text_align == 'right':
-                self.text_rect.midright = self.rect.midright
+
+            # Align text relative to the main rect if it exists
+            if self.rect:
+                self.text_rect = self.text_surface.get_rect(center=self.rect.center)
+                if self.text_align == 'left':
+                    self.text_rect.midleft = self.rect.midleft
+                elif self.text_align == 'right':
+                    self.text_rect.midright = self.rect.midright
+            else:
+                self.text_rect = None  # No text alignment if rect is not defined
 
     def setup_color(self):
         """
         Set up the color for the UI element if no image is provided.
         """
-        if not self.image and self.color:
-            self.surface = pygame.Surface((self.width, self.height))
+        if not self.image and self.color and self.rect:
+            self.surface = pygame.Surface((self.rect.width, self.rect.height))
             self.surface.fill(self.color)
             self.surface.set_alpha(self.opacity)
 
@@ -141,7 +216,7 @@ class UIElement:
         if not self.visible:
             return
 
-        if self.rect.collidepoint(mouse_pos):
+        if self.collision_rect.collidepoint(mouse_pos):
             if self.hover_color:
                 self.surface.fill(self.hover_color)
             if any(mouse_clicks):
@@ -154,7 +229,7 @@ class UIElement:
 
         # Draw the element
         if self.image:
-            surface.blit(self.image, self.rect)
+            surface.blit(self.image, self.image_rect)
         elif self.surface:
             surface.blit(self.surface, self.rect)
         else:
