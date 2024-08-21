@@ -11,76 +11,87 @@ class UIElement:
         self.managers = managers
         self.logger = logger
 
-        # Set up references to managers using the helper function
+        # Set up references to managers
         setup_managers(self, managers)
 
         # Positional Attributes
         self.x = config.get('x')
         self.y = config.get('y')
+
+        # Size and Rect Attributes
         self.width = config.get('width')
         self.height = config.get('height')
+        self.rect = None
 
-        # Text Attributes
-        self.label = config.get('label', '')
-        self.font_name = config.get('font_name', None)
-        self.font_size = config.get('font_size', 24)
-        self.color = config.get('color', (255, 255, 255))
+        # Color and Border Attributes
+        self.color = config.get('color')
+        self.border_color = config.get('border_color')
+        self.border_width = config.get('border_width')
 
         # Image Attributes
         self.image_path = config.get('image')
-
-        # Action Attributes
-        self.action_str = config.get('action')
-
-        # Enhanced Attributes
-        self.border_color = config.get('border_color', (0, 0, 0))
-        self.border_width = config.get('border_width', 0)
-        self.hover_color = config.get('hover_color')
-        self.click_color = config.get('click_color')
-        self.opacity = config.get('opacity', 255)
-        self.visible = config.get('visible', True)
-        self.enabled = config.get('enabled', True)
-        self.padding = config.get('padding', (0, 0, 0, 0))  # top, right, bottom, left
-        self.margin = config.get('margin', (0, 0, 0, 0))  # top, right, bottom, left
-        self.text_align = config.get('text_align', 'center')
-        self.corner_radius = config.get('corner_radius', 0)
-        self.shadow_enabled = config.get('shadow_enabled', False)
-        self.shadow_color = config.get('shadow_color', (0, 0, 0))
-        self.shadow_offset = config.get('shadow_offset', (5, 5))
-        self.shadow_blur = config.get('shadow_blur', 5)
-        self.tooltip_text = config.get('tooltip_text', '')
-        self.tooltip_font = config.get('tooltip_font', self.font_name)
-        self.tooltip_text_color = config.get('tooltip_text_color', (255, 255, 255))
-        self.tooltip_background_color = config.get('tooltip_background_color', (0, 0, 0))
-        self.draggable = config.get('draggable', False)
-        self.auto_hide = config.get('auto_hide', False)
-        self.parent = None
-        self.children = []
-        self.scrollable = config.get('scrollable', False)
-        self.scroll_offset = config.get('scroll_offset', (0, 0))
-        self.outline_mode = config.get('outline_mode', False)
-        self.outline_color = config.get('outline_color', (255, 0, 0))
-        self.outline_thickness = config.get('outline_thickness', 1)
-
-        # Initialize Graphical Properties
-        self.font = pygame.font.Font(self.font_name, self.font_size)
         self.image = None
-        self.rect = None
-        self.text_rect = None
-        self.text_surface = None
-        self.surface = None
-
-        # Debug (To Be Deleted)
-        self.font_name = None
-        self.font_size = 36
-        self.font = pygame.font.Font(self.font_name, self.font_size)
-
         self.image_width = config.get('image_width')
         self.image_height = config.get('image_height')
         self.image_rect = None
-        self.collision_width = None
-        self.collision_height = None
+
+        # Collision Attributes
+        self.collision_width = config.get('collision_width')
+        self.collision_height = config.get('collision_height')
         self.collision_rect = None
+
+        # Text Attributes
+        self.label = config.get('label', '')
+        self.text_align = config.get('text_align', 'center')
+        self.text_rect = None
+        self.text_surface = None
+
+        # Font Attributes
+        self.font_name = config.get('font_name')
+        self.font_size = config.get('font_size')
+        self.font = pygame.font.Font(None, 36)  # Debug
+
+        # Action Attributes
+        self.action_str = config.get('action')
+        self.hover_color = config.get('hover_color')
+        self.click_color = config.get('click_color')
+
+        # Visibility and Interaction Attributes
+        self.opacity = config.get('opacity')
+        self.visible = config.get('visible', True)
+        self.enabled = config.get('enabled', True)
+
+        # Layout Attributes
+        self.padding = config.get('padding')
+        self.margin = config.get('margin')
+        self.corner_radius = config.get('corner_radius')
+
+        # Shadow Attributes
+        self.shadow_enabled = config.get('shadow_enabled')
+        self.shadow_color = config.get('shadow_color')
+        self.shadow_offset = config.get('shadow_offset')
+        self.shadow_blur = config.get('shadow_blur')
+
+        # Outline Attributes
+        self.outline_color = config.get('outline_color')
+        self.outline_thickness = config.get('outline_thickness')
+
+        # Scroll Attributes
+        self.scrollable = config.get('scrollable')
+        self.scroll_offset = config.get('scroll_offset')
+
+        # Tooltip Attributes
+        self.tooltip_text = config.get('tooltip_text')
+        self.tooltip_font = config.get('tooltip_font')
+        self.tooltip_text_color = config.get('tooltip_text_color')
+        self.tooltip_background_color = config.get('tooltip_background_color')
+
+        # Hierarchy Attributes
+        self.parent = None
+        self.children = []
+
+        # Initialize Graphical Properties
+        self.surface = None
 
         # Set up the graphical elements
         self.setup_graphics()
@@ -114,8 +125,6 @@ class UIElement:
         """
         if self.width and self.height:
             self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        else:
-            self.rect = None  # No rect if width and height are not defined
 
     def setup_image(self):
         """
@@ -228,15 +237,13 @@ class UIElement:
             return
 
         # Draw the element
+        if self.surface:
+            surface.blit(self.surface, self.rect)
         if self.image:
             surface.blit(self.image, self.image_rect)
-        elif self.surface:
-            surface.blit(self.surface, self.rect)
-        else:
-            pygame.draw.rect(surface, self.color, self.rect)
 
         # Draw the border if specified
-        if self.border_width > 0:
+        if self.border_width and self.border_width > 0:
             pygame.draw.rect(surface, self.border_color, self.rect, self.border_width)
 
         # Draw the label

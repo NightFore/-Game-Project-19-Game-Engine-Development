@@ -112,7 +112,9 @@ menu_config = {
                 'action': "ui_manager.load_menu('start_menu')"
             },
             'quit_game': {
-                'x': 400, 'y': 500, 'image_width': 64, 'image_height': 64,
+                'x': 400, 'y': 500,
+                "width": 128, "height": 128, 'color': (70, 130, 180),
+                'image_width': 64, 'image_height': 64,
                 'image': 'assets/images/ui/ui_original_icon_exit.png',
                 'action': 'main_manager.quit_game()'
             }
