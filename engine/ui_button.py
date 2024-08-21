@@ -49,6 +49,9 @@ class UIButton(UIElement):
         """
         super().__init__('button', element_id, config, managers, logger)
 
+        # Action Attributes
+        self.action_str = config.get('action')
+
         # UIButton Attributes
         self.hover_color = config.get('hover_color')
         self.default_color = self.color
@@ -152,9 +155,9 @@ class UIButton(UIElement):
         """
         hovered = self.rect.collidepoint(mouse_pos)
         if hovered and self.hover_color:
-            self.surface.fill(self.hover_color)
+            self.rect_surface.fill(self.hover_color)
         elif self.default_color:
-            self.surface.fill(self.default_color)
+            self.rect_surface.fill(self.default_color)
         return hovered
 
     def click(self):

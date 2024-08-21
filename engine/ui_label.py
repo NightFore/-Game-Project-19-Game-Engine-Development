@@ -63,14 +63,4 @@ class UILabel(UIElement):
         Args:
             surface (pygame.Surface): The surface to draw the UILabel on.
         """
-        if self.label and self.font:
-            self.text_surface = self.font.render(self.label, True, self.color)
-            if self.alignment == 'left':
-                self.text_rect = self.text_surface.get_rect(topleft=self.rect.topleft)
-            elif self.alignment == 'right':
-                self.text_rect = self.text_surface.get_rect(topright=self.rect.topright)
-            elif self.alignment == 'center':
-                self.text_rect = self.text_surface.get_rect(center=self.rect.center)
-            else:
-                self.text_rect = self.text_surface.get_rect()
-            surface.blit(self.text_surface, self.text_rect)
+        super().draw(surface)
