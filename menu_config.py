@@ -140,8 +140,6 @@ menu_config = {
                 'rect_color': (70, 130, 180), 'image_path': 'assets/images/ui/ui_original_icon_exit.png',
                 'image_width': 64, 'image_height': 64,
                 'action': 'main_manager.quit_game()',
-                'shadow_enabled': True, 'shadow_color': (255, 255, 255),
-                'shadow_offset': (100, 100), 'shadow_blur': 150
             }
         },
         "label": {

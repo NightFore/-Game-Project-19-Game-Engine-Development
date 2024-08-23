@@ -1,13 +1,26 @@
 import pygame
 from utils import setup_managers
 
+DEFAULT_CONFIG = {
+    'position_x': 0,
+    'position_y': 0,
+    'shadow_enabled': True,
+    'shadow_color': (255, 255, 255),
+    'shadow_offset': (5, 5),
+    'shadow_blur': 150,
+    'text_color': (255, 255, 255),
+    'text_align': 'center',
+    'font_size': 36,
+    'hover_color': (255, 0, 0)
+}
+
 
 class UIElement:
     def __init__(self, element_type, element_id, config, managers, logger):
         # Core Attributes
         self.element_type = element_type
         self.element_id = element_id
-        self.config = config
+        self.config = {**DEFAULT_CONFIG, **config}
         self.managers = managers
         self.logger = logger
 
@@ -15,40 +28,41 @@ class UIElement:
         setup_managers(self, managers)
 
         # Position Attributes
-        self.position_x = config.get('position_x')
-        self.position_y = config.get('position_y')
+        self.position_x = self.config.get('position_x')
+        self.position_y = self.config.get('position_y')
 
         # Rect Attributes
-        self.rect_width = config.get('rect_width')
-        self.rect_height = config.get('rect_height')
-        self.rect_color = config.get('rect_color')
+        self.rect_width = self.config.get('rect_width')
+        self.rect_height = self.config.get('rect_height')
+        self.rect_color = self.config.get('rect_color')
         self.rect_surface = None
         self.rect = None
 
         # Image Attributes
-        self.image_path = config.get('image_path')
-        self.image_width = config.get('image_width')
-        self.image_height = config.get('image_height')
+        self.image_path = self.config.get('image_path')
+        self.image_width = self.config.get('image_width')
+        self.image_height = self.config.get('image_height')
         self.image = None
         self.image_surface = None
         self.image_rect = None
 
         # Shadow Attributes
-        self.shadow_enabled = config.get('shadow_enabled')
-        self.shadow_color = config.get('shadow_color')
-        self.shadow_offset = config.get('shadow_offset')
-        self.shadow_blur = config.get('shadow_blur')
+        self.shadow_enabled = self.config.get('shadow_enabled')
+        self.shadow_color = self.config.get('shadow_color')
+        self.shadow_offset = self.config.get('shadow_offset')
+        self.shadow_blur = self.config.get('shadow_blur')
         self.shadow_surface = None
 
         # Text Attributes
-        self.text_label = config.get('text_label', '')
-        self.text_align = config.get('text_align', 'center')
+        self.text_label = self.config.get('text_label')
+        self.text_color = self.config.get('text_color')
+        self.text_align = self.config.get('text_align')
         self.text_surface = None
         self.text_rect = None
 
         # Font Attributes
-        self.font_name = config.get('font_name')
-        self.font_size = config.get('font_size')
+        self.font_name = self.config.get('font_name')
+        self.font_size = self.config.get('font_size')
         self.font = None
 
         # Initialize Graphical Properties
@@ -62,18 +76,6 @@ class UIElement:
         # Scroll Attributes
         # Tooltip Attributes
         # Hierarchy Attributes
-
-        # Debug
-        self.color = self.rect_color
-        self.shadow_enabled = True
-        self.shadow_offset = (5, 5)
-        self.shadow_color = (255, 255, 255)
-        self.font_size = 36
-        self.text_color = (255, 255, 255)
-
-        width = self.rect_width + self.shadow_offset[0]
-        height = self.rect_height + self.shadow_offset[1]
-        self.final_surface = pygame.Surface((width, height), pygame.SRCALPHA)
 
         # Set up the graphical elements
         self.setup_graphics()
@@ -91,7 +93,7 @@ class UIElement:
         Create and set up the surface for the rectangle.
         """
         if self.rect_width and self.rect_height:
-            self.rect_surface = pygame.Surface((self.rect_width, self.rect_height), pygame.SRCALPHA)
+            self.rect_surface = pygame.Surface((self.rect_width, self.rect_height))
             self.rect_surface.fill(self.rect_color)
             self.rect = pygame.Rect(self.position_x, self.position_y, self.rect_width, self.rect_height)
 
@@ -127,10 +129,7 @@ class UIElement:
         """
         Set up the text for the UI element, including font and alignment.
         """
-        if self.text_label and self.font_name:
-            pass
-
-        if True:
+        if self.text_label:
             self.font = pygame.font.Font(self.font_name, self.font_size)
             self.text_surface = self.font.render(self.text_label, True, self.text_color)
             self.text_rect = self.text_surface.get_rect()
@@ -156,7 +155,7 @@ class UIElement:
             self.final_surface.blit(self.text_surface, self.text_rect.topleft)
 
     def update(self, mouse_pos, mouse_clicks):
-        pass
+        self.compose_final_surface()
 
     def draw(self, surface):
         if self.final_surface:
