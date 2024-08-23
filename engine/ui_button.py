@@ -19,8 +19,7 @@ class UIButton(UIElement):
               font, image, rect, text_rect, text_surface, surface
 
         UIButton Attributes:
-            - hover_color (tuple): Color when the button is hovered (optional).
-            - default_color (tuple): Default color of the button.
+            - action_str (str)
             - action (Callable): The action to be executed when the button is clicked.
 
     Methods:
@@ -30,7 +29,6 @@ class UIButton(UIElement):
             - parse_arguments(args_str): Parses a string of arguments into a tuple of arguments.
 
         Interaction:
-            - is_hovered(mouse_pos): Triggers the action associated with hovering over the button.
             - click(): Triggers the action associated with clicking the button.
 
         Game Loop:
@@ -51,11 +49,6 @@ class UIButton(UIElement):
 
         # Action Attributes
         self.action_str = self.config.get('action')
-
-        # UIButton Attributes
-        self.hover_color = self.config.get('hover_color')
-
-        # Resolve the action associated with this button
         self.action = self.resolve_action(self.action_str)
 
     """
@@ -139,26 +132,8 @@ class UIButton(UIElement):
 
     """
     Interaction
-        - is_hovered
         - click
     """
-    def is_hovered(self, mouse_pos):
-        """
-        Triggers the action associated with hovering over the button.
-
-        Args:
-            mouse_pos (tuple): The (x, y) position of the mouse cursor.
-
-        Returns:
-            bool: True if the mouse is hovering over the button, False otherwise.
-        """
-        hovered = self.rect.collidepoint(mouse_pos)
-        if hovered and self.hover_color:
-            self.rect_surface.fill(self.hover_color)
-        elif self.rect_color:
-            self.rect_surface.fill(self.rect_color)
-        return hovered
-
     def click(self):
         """
         Triggers the action associated with clicking the button.
@@ -180,7 +155,7 @@ class UIButton(UIElement):
             mouse_clicks (list): List of mouse click states.
         """
         super().update(mouse_pos, mouse_clicks)
-        if self.is_hovered(mouse_pos) and mouse_clicks[1]:
+        if self.hovered_state and mouse_clicks[1]:
             self.click()
 
     def draw(self, surface):
