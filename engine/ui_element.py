@@ -6,6 +6,7 @@ from utils import setup_managers
 DEFAULT_CONFIG = {
     'pos_x': 0,
     'pos_y': 0,
+    'align': 'center',
     'shadow_enabled': True,
     'shadow_color': (255, 255, 255),
     'shadow_offset': (5, 5),
@@ -36,15 +37,16 @@ class UIElement:
         setup_managers(self, managers)
 
         # Position Attributes
-        self.pos_x = self.config.get('position_x')
-        self.pos_y = self.config.get('position_y')
+        self.pos_x = self.config.get('pos_x')
+        self.pos_y = self.config.get('pos_y')
+        self.align = self.config.get('align')
 
         # Rect Attributes
         self.rect_width = self.config.get('rect_width')
         self.rect_height = self.config.get('rect_height')
         self.rect_color = self.config.get('rect_color')
-        self.rect_surface = None
         self.rect = None
+        self.rect_surface = None
 
         # Image Attributes
         self.image_path = self.config.get('image_path')
@@ -60,6 +62,7 @@ class UIElement:
         self.shadow_offset = self.config.get('shadow_offset')
         self.shadow_blur = self.config.get('shadow_blur')
         self.shadow_surface = None
+        self.shadow_rect = None
 
         # Text Attributes
         self.text_label = self.config.get('text_label')
@@ -77,8 +80,8 @@ class UIElement:
         self.outline_enabled = self.config.get('outline_enabled')
         self.outline_color = self.config.get('outline_color')
         self.outline_border = self.config.get('outline_border')
-        self.outline_surface = None
         self.outline_rect = None
+        self.outline_surface = None
 
         # Collision Attributes
         self.collision_enabled = self.config.get('collision_enabled')
@@ -86,16 +89,12 @@ class UIElement:
         self.collision_height = self.config.get('collision_height')
         self.collision_color = self.config.get('collision_color')
         self.collision_border = self.config.get('collision_border')
-        self.collision_surface = None
         self.collision_rect = None
+        self.collision_surface = None
 
         # Hover Attributes
         self.hover_color = self.config.get('hover_color')
         self.hovered_state = False
-
-        # Initialize Graphical Properties
-        self.final_surface = None
-        self.final_rect = None
 
         # Visibility Attributes
         # Layout Attributes
@@ -112,105 +111,146 @@ class UIElement:
         self.setup_image()
         self.setup_text()
         self.setup_shadow()
-        self.update_final_surface()
 
     def setup_rect(self):
         """
         Create and set up the surface for the rectangle.
         """
         if self.rect_width and self.rect_height:
+            # Create the rect surface
             self.rect_surface = pygame.Surface((self.rect_width, self.rect_height))
             self.rect_surface.fill(self.rect_color)
+
+            # Create the rect
             self.rect = pygame.Rect(self.pos_x, self.pos_y, self.rect_width, self.rect_height)
+
+            # Align the object
+            self.align_rect(self.rect, self.align, (self.pos_x, self.pos_y))
 
     def setup_image(self):
         """
         Load and set up the image for the UI element.
         """
         if self.image_path:
+            # Load the image surface with alpha transparency
             self.image = pygame.image.load(self.image_path).convert_alpha()
             self.image_surface = self.image.copy()
 
+            # Check if specific dimensions for the image are provided
             if self.image_width and self.image_height:
+                # Resize the image to the specified dimensions
                 self.image_surface = pygame.transform.scale(self.image_surface, (self.image_width, self.image_height))
-                self.image_rect = pygame.Rect(self.pos_x, self.pos_y, self.image_width, self.image_height)
             else:
-                self.image_rect = self.image.get_rect(topleft=(self.pos_x, self.pos_y))
-                self.image_width, self.image_height = self.image_rect.size
+                # If dimensions are not specified, get the original size of the image
+                self.image_width, self.image_height = self.image_surface.get_size()
+
+            # Create the image rect
+            self.image_rect = self.image_surface.get_rect()
+
+            # Align the object
+            self.align_rect(self.image_rect, self.align, (self.pos_x, self.pos_y))
 
     def setup_shadow(self):
         """
         Create and set up the shadow surface.
         """
         if self.shadow_enabled:
-            # Calculate the dimensions of the shadow surface to include the shadow offset
-            shadow_width = self.rect_width + abs(self.shadow_offset[0])
-            shadow_height = self.rect_height + abs(self.shadow_offset[1])
-            self.shadow_surface = pygame.Surface((shadow_width, shadow_height), pygame.SRCALPHA)
+            # Create the shadow surface
+            self.shadow_surface = pygame.Surface((self.rect_width, self.rect_height), pygame.SRCALPHA)
+            self.shadow_surface.fill(self.shadow_color)
+            self.shadow_surface.set_alpha(self.shadow_blur)
 
-            # Create a smaller surface for the shadow itself
-            shadow = pygame.Surface((self.rect_width, self.rect_height), pygame.SRCALPHA)
-            shadow.fill(self.shadow_color)
-            shadow.set_alpha(self.shadow_blur)
-
-            # Calculate the offset position for the shadow
-            offset_x = max(0, self.shadow_offset[0])
-            offset_y = max(0, self.shadow_offset[1])
-
-            # Blit the shadow onto the shadow surface at the calculated offset
-            self.shadow_surface.blit(shadow, (offset_x, offset_y))
+            # Create the shadow rect
+            self.shadow_rect = pygame.Rect(
+                self.rect.x + self.shadow_offset[0],
+                self.rect.y + self.shadow_offset[1],
+                self.rect_width,
+                self.rect_height
+            )
 
     def setup_text(self):
         """
         Set up the text for the UI element, including font and alignment.
         """
         if self.text_label:
+            # Load the font with the specified name and size
             self.font = pygame.font.Font(self.font_name, self.font_size)
+
+            # Create the text surface with the specified color
             self.text_surface = self.font.render(self.text_label, True, self.text_color)
+
+            # Create the text rect based on the rendered surface
             self.text_rect = self.text_surface.get_rect()
 
-    def update_final_surface(self):
-        """Update the final surface size based on all graphical components."""
-        width, height = self.rect_width, self.rect_height
-        if self.shadow_enabled:
-            width += self.shadow_offset[0]
-            height += self.shadow_offset[1]
-        self.final_surface = pygame.Surface((width, height), pygame.SRCALPHA)
-        self.final_rect = self.final_surface.get_rect()
+            # Align the text rect based on the alignment configuration and position
+            self.align_rect(self.text_rect, self.text_align, (self.pos_x, self.pos_y))
+
+    @staticmethod
+    def align_rect(rect, align, position):
+        if align == 'center':
+            rect.center = position
+        elif align == 'topleft':
+            rect.topleft = position
+        elif align == 'topright':
+            rect.topright = position
+        elif align == 'bottomleft':
+            rect.bottomleft = position
+        elif align == 'bottomright':
+            rect.bottomright = position
+        elif align == 'midtop':
+            rect.midtop = position
+        elif align == 'midbottom':
+            rect.midbottom = position
+        elif align == 'midleft':
+            rect.midleft = position
+        elif align == 'midright':
+            rect.midright = position
 
     def update_outline(self):
-        """Create and set up the surface for the outline."""
+        """Create and set up the surface for the outline, considering all defined rectangles."""
         if self.outline_enabled:
-            # Create the outline rect and surface
-            self.outline_rect = self.final_rect.copy()
+            # Initialize a list for all defined rectangles
+            rects = [self.rect, self.shadow_rect, self.image_rect]
+
+            # Remove None values from the list
+            rects = [r for r in rects if r]
+
+            # Calculate the min and max coordinates to encapsulate all rectangles
+            min_x = min(r.x for r in rects)
+            min_y = min(r.y for r in rects)
+            max_x = max(r.right for r in rects)
+            max_y = max(r.bottom for r in rects)
+
+            # Define the outline rect based on the min and max coordinates
+            self.outline_rect = pygame.Rect(min_x, min_y, max_x - min_x, max_y - min_y)
+
+            # Create the surface for the outline
             self.outline_surface = pygame.Surface(self.outline_rect.size, pygame.SRCALPHA)
 
-            # Draw the outline border
+            # Draw the outline border on the outline surface
             pygame.draw.rect(self.outline_surface, self.outline_color,
                              self.outline_surface.get_rect(), self.outline_border)
 
     def update_collision(self):
         """
-        Create and set up the collision surface based on various fallback sizes:
+        Create and set up the collision surface based on available sizes:
         - Config-defined size
         - Rect size
         - Image size
-        - Final surface size
         """
         if self.collision_enabled:
-            # Determine the collision rect based on available attributes
+            # Create the collision rect
             if self.collision_width and self.collision_height:
-                collision_rect = pygame.Rect(self.pos_x, self.pos_y, self.collision_width, self.collision_height)
+                self.collision_rect = pygame.Rect(self.pos_x, self.pos_y, self.collision_width, self.collision_height)
             elif self.rect:
-                collision_rect = self.rect.copy()
+                self.collision_rect = self.rect.copy()
             elif self.image_rect:
-                collision_rect = self.image_rect.copy()
+                self.collision_rect = self.image_rect.copy()
             else:
-                collision_rect = self.final_rect.copy()
+                self.collision_rect = pygame.Rect(self.pos_x, self.pos_y, 0, 0)
 
-            # Create the collision surface and set its rect
-            self.collision_surface = pygame.Surface(collision_rect.size, pygame.SRCALPHA)
-            self.collision_rect = collision_rect
+            # Create the collision surface
+            self.collision_surface = pygame.Surface(self.collision_rect.size, pygame.SRCALPHA)
 
             # Draw the collision border on the collision surface
             pygame.draw.rect(self.collision_surface, self.collision_color,
@@ -223,35 +263,28 @@ class UIElement:
         Args:
             mouse_pos (tuple): The (x, y) position of the mouse cursor.
         """
-        self.hovered_state = self.collision_rect.collidepoint(mouse_pos)
-        if self.hovered_state and self.hover_color:
-            self.rect_surface.fill(self.hover_color)
-        elif self.rect_color:
-            self.rect_surface.fill(self.rect_color)
+        self.hovered_state = self.rect.collidepoint(mouse_pos)
+        if self.rect_surface and self.hover_color:
+            if self.hovered_state:
+                self.rect_surface.fill(self.hover_color)
+            else:
+                self.rect_surface.fill(self.rect_color)
 
     def update(self, mouse_pos, mouse_clicks):
-        self.update_final_surface()
         self.update_outline()
         self.update_collision()
         self.update_hover(mouse_pos)
 
     def draw(self, surface):
-        # Clear the final surface before blit
-        self.final_surface.fill((0, 0, 0, 0))
-
-        # Draw the elements
         if self.shadow_surface:
-            self.final_surface.blit(self.shadow_surface, (0, 0))
+            surface.blit(self.shadow_surface, self.shadow_rect)
         if self.rect_surface:
-            self.final_surface.blit(self.rect_surface, (0, 0))
+            surface.blit(self.rect_surface, self.rect)
         if self.image_surface:
-            self.final_surface.blit(self.image_surface, (0, 0))
+            surface.blit(self.image_surface, self.image_rect)
         if self.text_surface:
-            self.final_surface.blit(self.text_surface, (0, 0))
+            surface.blit(self.text_surface, self.text_rect)
         if self.outline_surface:
-            self.final_surface.blit(self.outline_surface, (0, 0))
+            surface.blit(self.outline_surface, self.outline_rect)
         if self.collision_surface:
-            self.final_surface.blit(self.collision_surface, (0, 0))
-
-        # Blit final surface to the main screen
-        surface.blit(self.final_surface, (self.pos_x, self.pos_y))
+            surface.blit(self.collision_surface, self.collision_rect)
