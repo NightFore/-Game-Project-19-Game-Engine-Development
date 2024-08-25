@@ -21,6 +21,9 @@ DEFAULT_CONFIG = {
     'collision_enabled': True,
     'collision_color': (255, 0, 0),
     'collision_border': 1,
+    'active': True,
+    'visible': True,
+    'layer': 0,
 }
 
 
@@ -96,7 +99,11 @@ class UIElement:
         self.hover_color = self.config.get('hover_color')
         self.hovered_state = False
 
-        # Visibility Attributes
+        # State Attributes
+        self.active = self.config.get('active')
+        self.visible = self.config.get('visible')
+        self.layer = self.config.get('layer')
+
         # Layout Attributes
         # Scroll Attributes
         # Tooltip Attributes
@@ -185,26 +192,28 @@ class UIElement:
             # Align the text rect based on the alignment configuration and position
             self.align_rect(self.text_rect, self.text_align, (self.pos_x, self.pos_y))
 
-    @staticmethod
-    def align_rect(rect, align, position):
+    def align_rect(self, rect, align, position):
         if align == 'center':
             rect.center = position
-        elif align == 'topleft':
+        elif align == 'nw':
             rect.topleft = position
-        elif align == 'topright':
-            rect.topright = position
-        elif align == 'bottomleft':
-            rect.bottomleft = position
-        elif align == 'bottomright':
-            rect.bottomright = position
-        elif align == 'midtop':
+        elif align == 'n':
             rect.midtop = position
-        elif align == 'midbottom':
-            rect.midbottom = position
-        elif align == 'midleft':
-            rect.midleft = position
-        elif align == 'midright':
+        elif align == 'ne':
+            rect.topright = position
+        elif align == 'e':
             rect.midright = position
+        elif align == 'se':
+            rect.bottomright = position
+        elif align == 's':
+            rect.midbottom = position
+        elif align == 'sw':
+            rect.bottomleft = position
+        elif align == 'w':
+            rect.midleft = position
+        else:
+            self.logger.log_warning(
+                f"Unsupported alignment value '{align}' provided.")
 
     def update_outline(self):
         """Create and set up the surface for the outline, considering all defined rectangles."""
@@ -271,11 +280,19 @@ class UIElement:
                 self.rect_surface.fill(self.rect_color)
 
     def update(self, mouse_pos, mouse_clicks):
+        if not self.active:
+            return
+
         self.update_outline()
         self.update_collision()
         self.update_hover(mouse_pos)
+        self.update_drag(mouse_pos, mouse_clicks)
+        self.setup_graphics()
 
     def draw(self, surface):
+        if not self.visible:
+            return
+
         if self.shadow_surface:
             surface.blit(self.shadow_surface, self.shadow_rect)
         if self.rect_surface:

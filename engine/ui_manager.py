@@ -126,6 +126,9 @@ class UIManager(BaseManager):
         Render the UI elements on the display surface.
         """
         if self.display:
+            # Sort UI elements by their layer
+            sorted_elements = sorted(self.ui_elements.values(), key=lambda e: e.layer)
+
             # Draw each UI element on the display surface
-            for element in self.ui_elements.values():
+            for element in sorted_elements:
                 element.draw(self.display)
