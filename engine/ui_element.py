@@ -24,6 +24,7 @@ DEFAULT_CONFIG = {
     'active': True,
     'visible': True,
     'layer': 0,
+    'draggable': True
 }
 
 
@@ -103,6 +104,12 @@ class UIElement:
         self.active = self.config.get('active')
         self.visible = self.config.get('visible')
         self.layer = self.config.get('layer')
+
+        # Drag Attributes
+        self.draggable = self.config.get('draggable')
+        self.dragging = False
+        self.drag_start_pos = (0, 0)
+        self.drag_offset = (0, 0)
 
         # Layout Attributes
         # Scroll Attributes
@@ -279,6 +286,31 @@ class UIElement:
             else:
                 self.rect_surface.fill(self.rect_color)
 
+    def update_drag(self, mouse_pos):
+        """
+        Handle dragging logic if the element is draggable.
+
+        Args:
+            mouse_pos (tuple): The (x, y) position of the mouse cursor.
+        """
+        if self.draggable:
+            if pygame.mouse.get_pressed()[0]:  # Left mouse button is pressed
+                if self.dragging:
+                    # Update position based on mouse movement
+                    self.pos_x = mouse_pos[0] - self.drag_offset[0]
+                    self.pos_y = mouse_pos[1] - self.drag_offset[1]
+                    self.rect.topleft = (self.pos_x, self.pos_y)
+                else:
+                    # Check if the mouse is within the element
+                    if self.rect.collidepoint(mouse_pos):
+                        self.dragging = True
+                        self.drag_start_pos = mouse_pos
+                        # Calculate the offset from the top-left corner of the element
+                        self.drag_offset = (mouse_pos[0] - self.rect.x, mouse_pos[1] - self.rect.y)
+            else:
+                if self.dragging:
+                    self.dragging = False
+
     def update(self, mouse_pos, mouse_clicks):
         if not self.active:
             return
@@ -286,7 +318,7 @@ class UIElement:
         self.update_outline()
         self.update_collision()
         self.update_hover(mouse_pos)
-        self.update_drag(mouse_pos, mouse_clicks)
+        self.update_drag(mouse_pos)
         self.setup_graphics()
 
     def draw(self, surface):
