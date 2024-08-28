@@ -296,17 +296,28 @@ class UIElement:
         if self.draggable:
             if pygame.mouse.get_pressed()[0]:  # Left mouse button is pressed
                 if self.dragging:
-                    # Update position based on mouse movement
+                    # Update position based on mouse movement, adjusted for the calculated offset
                     self.pos_x = mouse_pos[0] - self.drag_offset[0]
                     self.pos_y = mouse_pos[1] - self.drag_offset[1]
-                    self.rect.topleft = (self.pos_x, self.pos_y)
+                    # Update the rect position based on new coordinates and alignment
+                    self.align_rect(self.rect, self.align, (self.pos_x, self.pos_y))
                 else:
                     # Check if the mouse is within the element
                     if self.rect.collidepoint(mouse_pos):
                         self.dragging = True
+                        # Calculate the offset based on the current alignment
                         self.drag_start_pos = mouse_pos
-                        # Calculate the offset from the top-left corner of the element
-                        self.drag_offset = (mouse_pos[0] - self.rect.x, mouse_pos[1] - self.rect.y)
+                        # Calculate the offset differently based on alignment
+                        if self.align in ('center', 'n', 's'):
+                            self.drag_offset = (mouse_pos[0] - self.rect.centerx, mouse_pos[1] - self.rect.centery)
+                        elif self.align in ('ne', 'e', 'se'):
+                            self.drag_offset = (mouse_pos[0] - self.rect.right, mouse_pos[1] - self.rect.centery)
+                        elif self.align in ('nw', 'w', 'sw'):
+                            self.drag_offset = (mouse_pos[0] - self.rect.left, mouse_pos[1] - self.rect.centery)
+                        elif self.align in ('n', 's'):
+                            self.drag_offset = (mouse_pos[0] - self.rect.centerx, mouse_pos[1] - self.rect.top)
+                        else:  # default to top-left
+                            self.drag_offset = (mouse_pos[0] - self.rect.left, mouse_pos[1] - self.rect.top)
             else:
                 if self.dragging:
                     self.dragging = False
