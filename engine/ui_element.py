@@ -107,9 +107,8 @@ class UIElement:
 
         # Drag Attributes
         self.draggable = self.config.get('draggable')
+        self.drag_offset = None
         self.dragging = False
-        self.drag_start_pos = (0, 0)
-        self.drag_offset = (0, 0)
 
         # Layout Attributes
         # Scroll Attributes
@@ -296,31 +295,37 @@ class UIElement:
         if self.draggable:
             if pygame.mouse.get_pressed()[0]:  # Left mouse button is pressed
                 if self.dragging:
-                    # Update position based on mouse movement, adjusted for the calculated offset
+                    # Update position based on the current mouse position and the calculated drag offset
                     self.pos_x = mouse_pos[0] - self.drag_offset[0]
                     self.pos_y = mouse_pos[1] - self.drag_offset[1]
-                    # Update the rect position based on new coordinates and alignment
-                    self.align_rect(self.rect, self.align, (self.pos_x, self.pos_y))
                 else:
-                    # Check if the mouse is within the element
+                    # Check if the mouse is within the element's rectangle to start dragging
                     if self.rect.collidepoint(mouse_pos):
                         self.dragging = True
-                        # Calculate the offset based on the current alignment
-                        self.drag_start_pos = mouse_pos
-                        # Calculate the offset differently based on alignment
-                        if self.align in ('center', 'n', 's'):
-                            self.drag_offset = (mouse_pos[0] - self.rect.centerx, mouse_pos[1] - self.rect.centery)
-                        elif self.align in ('ne', 'e', 'se'):
-                            self.drag_offset = (mouse_pos[0] - self.rect.right, mouse_pos[1] - self.rect.centery)
-                        elif self.align in ('nw', 'w', 'sw'):
-                            self.drag_offset = (mouse_pos[0] - self.rect.left, mouse_pos[1] - self.rect.centery)
-                        elif self.align in ('n', 's'):
-                            self.drag_offset = (mouse_pos[0] - self.rect.centerx, mouse_pos[1] - self.rect.top)
-                        else:  # default to top-left
-                            self.drag_offset = (mouse_pos[0] - self.rect.left, mouse_pos[1] - self.rect.top)
+
+                        # Calculate the drag offset differently based on the alignment
+                        offset_x = mouse_pos[0] - self.rect.centerx
+                        offset_y = mouse_pos[1] - self.rect.centery
+
+                        # Adjust the offset if the alignment is not centered
+                        if self.align != 'center':
+                            # Adjust the x-offset based on horizontal alignment
+                            if 'w' in self.align:
+                                offset_x = mouse_pos[0] - self.rect.left
+                            elif 'e' in self.align:
+                                offset_x = mouse_pos[0] - self.rect.right
+
+                            # Adjust the y-offset based on vertical alignment
+                            if 'n' in self.align:
+                                offset_y = mouse_pos[1] - self.rect.top
+                            elif 's' in self.align:
+                                offset_y = mouse_pos[1] - self.rect.bottom
+
+                        # Store the calculated drag offset
+                        self.drag_offset = (offset_x, offset_y)
             else:
-                if self.dragging:
-                    self.dragging = False
+                # Stop dragging when the mouse button is released
+                self.dragging = False
 
     def update(self, mouse_pos, mouse_clicks):
         if not self.active:
