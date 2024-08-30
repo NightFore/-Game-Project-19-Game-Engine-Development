@@ -109,6 +109,7 @@ class UIElement:
         self.draggable = self.config.get('draggable')
         self.drag_offset = None
         self.dragging = False
+        self.original_pos = None
 
         # Layout Attributes
         # Scroll Attributes
@@ -293,15 +294,24 @@ class UIElement:
             mouse_pos (tuple): The (x, y) position of the mouse cursor.
         """
         if self.draggable:
-            if pygame.mouse.get_pressed()[0]:  # Left mouse button is pressed
+            mouse_buttons = pygame.mouse.get_pressed()
+
+            if mouse_buttons[0]:  # Left mouse button is pressed
                 if self.dragging:
                     # Update position based on the current mouse position and the calculated drag offset
                     self.pos_x = mouse_pos[0] - self.drag_offset[0]
                     self.pos_y = mouse_pos[1] - self.drag_offset[1]
+
+                    if mouse_buttons[2]:
+                        self.dragging = False
+                        self.pos_x, self.pos_y = self.original_pos
                 else:
                     # Check if the mouse is within the element's rectangle to start dragging
                     if self.rect.collidepoint(mouse_pos):
                         self.dragging = True
+
+                        # Store the original position before starting the drag
+                        self.original_pos = (self.pos_x, self.pos_y)
 
                         # Calculate the drag offset differently based on the alignment
                         offset_x = mouse_pos[0] - self.rect.centerx
