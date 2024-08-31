@@ -279,10 +279,10 @@ class UIElement:
         Args:
             mouse_pos (tuple): The (x, y) position of the mouse cursor.
         """
-        self.hovered_state = self.rect.collidepoint(mouse_pos)
+        self.hovered_state = self.collision_rect.collidepoint(mouse_pos)
         if self.rect_surface and self.hover_color:
             if self.hovered_state:
-                self.rect_surface.fill(self.hover_color)
+                self.rect_surface.fill(self.collision_color)
             else:
                 self.rect_surface.fill(self.rect_color)
 
@@ -345,7 +345,6 @@ class UIElement:
         self.update_collision()
         self.update_hover(mouse_pos)
         self.update_drag(mouse_pos)
-        self.setup_graphics()
 
     def draw(self, surface):
         if not self.visible:
