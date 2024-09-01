@@ -305,42 +305,57 @@ class UIElement:
                     if mouse_buttons[2]:
                         self.dragging = False
                         self.pos_x, self.pos_y = self.original_pos
-                else:
+                elif self.collision_rect.collidepoint(mouse_pos):
                     # Check if the mouse is within the element's rectangle to start dragging
-                    if self.rect.collidepoint(mouse_pos):
-                        self.dragging = True
+                    self.dragging = True
 
-                        # Store the original position before starting the drag
-                        self.original_pos = (self.pos_x, self.pos_y)
+                    # Store the original position before starting the drag
+                    self.original_pos = (self.pos_x, self.pos_y)
 
-                        # Calculate the drag offset differently based on the alignment
-                        offset_x = mouse_pos[0] - self.rect.centerx
-                        offset_y = mouse_pos[1] - self.rect.centery
+                    # Calculate the drag offset differently based on the alignment
+                    offset_x = mouse_pos[0] - self.rect.centerx
+                    offset_y = mouse_pos[1] - self.rect.centery
 
-                        # Adjust the offset if the alignment is not centered
-                        if self.align != 'center':
-                            # Adjust the x-offset based on horizontal alignment
-                            if 'w' in self.align:
-                                offset_x = mouse_pos[0] - self.rect.left
-                            elif 'e' in self.align:
-                                offset_x = mouse_pos[0] - self.rect.right
+                    # Adjust the offset if the alignment is not centered
+                    if self.align != 'center':
+                        # Adjust the x-offset based on horizontal alignment
+                        if 'w' in self.align:
+                            offset_x = mouse_pos[0] - self.rect.left
+                        elif 'e' in self.align:
+                            offset_x = mouse_pos[0] - self.rect.right
 
-                            # Adjust the y-offset based on vertical alignment
-                            if 'n' in self.align:
-                                offset_y = mouse_pos[1] - self.rect.top
-                            elif 's' in self.align:
-                                offset_y = mouse_pos[1] - self.rect.bottom
+                        # Adjust the y-offset based on vertical alignment
+                        if 'n' in self.align:
+                            offset_y = mouse_pos[1] - self.rect.top
+                        elif 's' in self.align:
+                            offset_y = mouse_pos[1] - self.rect.bottom
 
-                        # Store the calculated drag offset
-                        self.drag_offset = (offset_x, offset_y)
+                    # Store the calculated drag offset
+                    self.drag_offset = (offset_x, offset_y)
             else:
                 # Stop dragging when the mouse button is released
                 self.dragging = False
+
+    def update_rect(self):
+        if self.rect:
+            self.align_rect(self.rect, self.align, (self.pos_x, self.pos_y))
+        if self.image_rect:
+            self.align_rect(self.image_rect, self.align, (self.pos_x, self.pos_y))
+        if self.text_rect:
+            self.align_rect(self.text_rect, self.text_align, (self.pos_x, self.pos_y))
+        if self.shadow_rect:
+            self.shadow_rect = pygame.Rect(
+                self.rect.x + self.shadow_offset[0],
+                self.rect.y + self.shadow_offset[1],
+                self.rect_width,
+                self.rect_height
+            )
 
     def update(self, mouse_pos, mouse_clicks):
         if not self.active:
             return
 
+        self.update_rect()
         self.update_outline()
         self.update_collision()
         self.update_hover(mouse_pos)
