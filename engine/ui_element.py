@@ -219,8 +219,7 @@ class UIElement:
         elif align == 'w':
             rect.midleft = position
         else:
-            self.logger.log_warning(
-                f"Unsupported alignment value '{align}' provided.")
+            self.logger.log_warning(f"Unsupported alignment value '{align}' provided.")
 
     def update_outline(self):
         """Create and set up the surface for the outline, considering all defined rectangles."""
@@ -344,12 +343,9 @@ class UIElement:
         if self.text_rect:
             self.align_rect(self.text_rect, self.text_align, (self.pos_x, self.pos_y))
         if self.shadow_rect:
-            self.shadow_rect = pygame.Rect(
-                self.rect.x + self.shadow_offset[0],
-                self.rect.y + self.shadow_offset[1],
-                self.rect_width,
-                self.rect_height
-            )
+            shadow_pos_x = self.rect.x + self.shadow_offset[0]
+            shadow_pos_y = self.rect.y + self.shadow_offset[1]
+            self.align_rect(self.shadow_rect, 'nw', (shadow_pos_x, shadow_pos_y))
 
     def update(self, mouse_pos, mouse_clicks):
         if not self.active:
