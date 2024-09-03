@@ -67,6 +67,8 @@ class UIElement:
         self.shadow_blur = self.config.get('shadow_blur')
         self.shadow_surface = None
         self.shadow_rect = None
+        self.shadow_pos_x = None
+        self.shadow_pos_y = None
 
         # Text Attributes
         self.text_label = self.config.get('text_label')
@@ -86,6 +88,8 @@ class UIElement:
         self.outline_border = self.config.get('outline_border')
         self.outline_rect = None
         self.outline_surface = None
+        self.outline_pos_x = None
+        self.outline_pos_y = None
 
         # Collision Attributes
         self.collision_enabled = self.config.get('collision_enabled')
@@ -128,22 +132,19 @@ class UIElement:
 
     def setup_rect(self):
         """
-        Create and set up the surface for the rectangle.
+        Set up the rectangle surface and rect.
         """
         if self.rect_width and self.rect_height:
-            # Create the rect surface
+            # Create the rectangle surface and rect
             self.rect_surface = pygame.Surface((self.rect_width, self.rect_height))
-            self.rect_surface.fill(self.rect_color)
-
-            # Create the rect
             self.rect = pygame.Rect(self.pos_x, self.pos_y, self.rect_width, self.rect_height)
 
-            # Align the object
-            self.align_rect(self.rect, self.align, (self.pos_x, self.pos_y))
+            # Fill the rectangle surface
+            self.rect_surface.fill(self.rect_color)
 
     def setup_image(self):
         """
-        Load and set up the image for the UI element.
+        Set up the image surface and rect.
         """
         if self.image_path:
             # Load the image surface with alpha transparency
@@ -161,45 +162,35 @@ class UIElement:
             # Create the image rect
             self.image_rect = self.image_surface.get_rect()
 
-            # Align the object
-            self.align_rect(self.image_rect, self.align, (self.pos_x, self.pos_y))
-
     def setup_shadow(self):
         """
-        Create and set up the shadow surface.
+        Set up the shadow surface and rect.
         """
         if self.shadow_enabled:
-            # Create the shadow surface
+            # Create the shadow surface and rect
             self.shadow_surface = pygame.Surface((self.rect_width, self.rect_height), pygame.SRCALPHA)
+            self.shadow_rect = self.shadow_surface.get_rect()
+
+            # Fill the rectangle surface and apply blur
             self.shadow_surface.fill(self.shadow_color)
             self.shadow_surface.set_alpha(self.shadow_blur)
 
-            # Create the shadow rect
-            self.shadow_rect = pygame.Rect(
-                self.rect.x + self.shadow_offset[0],
-                self.rect.y + self.shadow_offset[1],
-                self.rect_width,
-                self.rect_height
-            )
-
     def setup_text(self):
         """
-        Set up the text for the UI element, including font and alignment.
+        Set up the text surface and rect.
         """
         if self.text_label:
-            # Load the font with the specified name and size
+            # Initialize the font
             self.font = pygame.font.Font(self.font_name, self.font_size)
 
-            # Create the text surface with the specified color
+            # Create the text surface and rect
             self.text_surface = self.font.render(self.text_label, True, self.text_color)
-
-            # Create the text rect based on the rendered surface
             self.text_rect = self.text_surface.get_rect()
 
-            # Align the text rect based on the alignment configuration and position
-            self.align_rect(self.text_rect, self.text_align, (self.pos_x, self.pos_y))
-
     def align_rect(self, rect, align, position):
+        """
+        Align the rectangle based on the provided alignment and position.
+        """
         if align == 'center':
             rect.center = position
         elif align == 'nw':
@@ -221,73 +212,97 @@ class UIElement:
         else:
             self.logger.log_warning(f"Unsupported alignment value '{align}' provided.")
 
+    def update_rect(self):
+        """
+        Update the positions of the rects based on alignment and position.
+        """
+        if self.rect:
+            self.align_rect(self.rect, self.align, (self.pos_x, self.pos_y))
+        if self.image_rect:
+            self.align_rect(self.image_rect, self.align, (self.pos_x, self.pos_y))
+        if self.collision_rect:
+            self.align_rect(self.collision_rect, self.align, (self.pos_x, self.pos_y))
+
+        if self.text_rect:
+            self.align_rect(self.text_rect, self.text_align, (self.pos_x, self.pos_y))
+
+        if self.outline_rect:
+            self.align_rect(self.outline_rect, 'nw', (self.outline_pos_x, self.outline_pos_y))
+        if self.shadow_rect:
+            self.shadow_pos_x = self.rect.x + self.shadow_offset[0]
+            self.shadow_pos_y = self.rect.y + self.shadow_offset[1]
+            self.align_rect(self.shadow_rect, 'nw', (self.shadow_pos_x, self.shadow_pos_y))
+
     def update_outline(self):
-        """Create and set up the surface for the outline, considering all defined rectangles."""
+        """
+        Update the outline surface and rect.
+        """
         if self.outline_enabled:
             # Initialize a list for all defined rectangles
-            rects = [self.rect, self.shadow_rect, self.image_rect]
+            rects = [self.rect, self.image_rect, self.shadow_rect, self.text_rect]
 
             # Remove None values from the list
             rects = [r for r in rects if r]
 
-            # Calculate the min and max coordinates to encapsulate all rectangles
+            # Calculate the bounding box that contains all the rects
             min_x = min(r.x for r in rects)
             min_y = min(r.y for r in rects)
             max_x = max(r.right for r in rects)
             max_y = max(r.bottom for r in rects)
+            width = max_x - min_x
+            height = max_y - min_y
 
-            # Define the outline rect based on the min and max coordinates
-            self.outline_rect = pygame.Rect(min_x, min_y, max_x - min_x, max_y - min_y)
+            # Create a new outline rect if the bounding box has changed
+            if pygame.Rect(min_x, min_y, width, height) != self.outline_rect:
+                # Update the outline position
+                self.outline_pos_x, self.outline_pos_y = (min_x, min_y)
 
-            # Create the surface for the outline
-            self.outline_surface = pygame.Surface(self.outline_rect.size, pygame.SRCALPHA)
+                # Create the outline surface and rect
+                self.outline_surface = pygame.Surface((width, height), pygame.SRCALPHA)
+                self.outline_rect = self.outline_surface.get_rect()
 
-            # Draw the outline border on the outline surface
-            pygame.draw.rect(self.outline_surface, self.outline_color,
-                             self.outline_surface.get_rect(), self.outline_border)
+                # Draw the outline on the surface
+                pygame.draw.rect(self.outline_surface, self.outline_color, self.outline_rect, self.outline_border)
 
     def update_collision(self):
         """
-        Create and set up the collision surface based on available sizes:
-        - Config-defined size
-        - Rect size
-        - Image size
+        Update the collision surface and rect.
         """
         if self.collision_enabled:
-            # Create the collision rect
             if self.collision_width and self.collision_height:
-                self.collision_rect = pygame.Rect(self.pos_x, self.pos_y, self.collision_width, self.collision_height)
+                size = (self.collision_width, self.collision_height)
             elif self.rect:
-                self.collision_rect = self.rect.copy()
+                size = self.rect_surface.get_size()
             elif self.image_rect:
-                self.collision_rect = self.image_rect.copy()
+                size = self.image_surface.get_size()
             else:
-                self.collision_rect = pygame.Rect(self.pos_x, self.pos_y, 0, 0)
+                size = (0, 0)
 
-            # Create the collision surface
-            self.collision_surface = pygame.Surface(self.collision_rect.size, pygame.SRCALPHA)
+            if size:
+                # Create the collision surface and rect
+                self.collision_surface = pygame.Surface(size, pygame.SRCALPHA)
+                self.collision_rect = self.collision_surface.get_rect()
 
-            # Draw the collision border on the collision surface
-            pygame.draw.rect(self.collision_surface, self.collision_color,
-                             self.collision_surface.get_rect(), self.collision_border)
+                # Draw the collision on the collision surface
+                pygame.draw.rect(self.collision_surface, self.collision_color,
+                                 self.collision_rect, self.collision_border)
 
     def update_hover(self, mouse_pos):
         """
-        Updates the hover state of the UI element based on mouse position.
+        Handle the hover logic.
 
         Args:
             mouse_pos (tuple): The (x, y) position of the mouse cursor.
         """
+        # Determine if the mouse is hovering over the collision rect
         self.hovered_state = self.collision_rect.collidepoint(mouse_pos)
         if self.rect_surface and self.hover_color:
-            if self.hovered_state:
-                self.rect_surface.fill(self.collision_color)
-            else:
-                self.rect_surface.fill(self.rect_color)
+            # Change the rect color based on the hover state
+            self.rect_surface.fill(self.hover_color if self.hovered_state else self.rect_color)
 
     def update_drag(self, mouse_pos):
         """
-        Handle dragging logic if the element is draggable.
+        Handle the drag logic.
 
         Args:
             mouse_pos (tuple): The (x, y) position of the mouse cursor.
@@ -295,12 +310,14 @@ class UIElement:
         if self.draggable:
             mouse_buttons = pygame.mouse.get_pressed()
 
-            if mouse_buttons[0]:  # Left mouse button is pressed
+            # Left mouse button is pressed
+            if mouse_buttons[0]:
                 if self.dragging:
                     # Update position based on the current mouse position and the calculated drag offset
                     self.pos_x = mouse_pos[0] - self.drag_offset[0]
                     self.pos_y = mouse_pos[1] - self.drag_offset[1]
 
+                    # Right mouse button cancels dragging
                     if mouse_buttons[2]:
                         self.dragging = False
                         self.pos_x, self.pos_y = self.original_pos
@@ -335,25 +352,13 @@ class UIElement:
                 # Stop dragging when the mouse button is released
                 self.dragging = False
 
-    def update_rect(self):
-        if self.rect:
-            self.align_rect(self.rect, self.align, (self.pos_x, self.pos_y))
-        if self.image_rect:
-            self.align_rect(self.image_rect, self.align, (self.pos_x, self.pos_y))
-        if self.text_rect:
-            self.align_rect(self.text_rect, self.text_align, (self.pos_x, self.pos_y))
-        if self.shadow_rect:
-            shadow_pos_x = self.rect.x + self.shadow_offset[0]
-            shadow_pos_y = self.rect.y + self.shadow_offset[1]
-            self.align_rect(self.shadow_rect, 'nw', (shadow_pos_x, shadow_pos_y))
-
     def update(self, mouse_pos, mouse_clicks):
         if not self.active:
             return
 
-        self.update_rect()
         self.update_outline()
         self.update_collision()
+        self.update_rect()
         self.update_hover(mouse_pos)
         self.update_drag(mouse_pos)
 
