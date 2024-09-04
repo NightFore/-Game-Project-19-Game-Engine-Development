@@ -142,6 +142,9 @@ class UIElement:
             # Fill the rectangle surface
             self.rect_surface.fill(self.rect_color)
 
+            # Align the rectangle rect
+            self.align_rect(self.rect, self.align, (self.pos_x, self.pos_y))
+
     def setup_image(self):
         """
         Set up the image surface and rect.
@@ -162,6 +165,9 @@ class UIElement:
             # Create the image rect
             self.image_rect = self.image_surface.get_rect()
 
+            # Align the image rect
+            self.align_rect(self.image_rect, self.align, (self.pos_x, self.pos_y))
+
     def setup_shadow(self):
         """
         Set up the shadow surface and rect.
@@ -175,6 +181,11 @@ class UIElement:
             self.shadow_surface.fill(self.shadow_color)
             self.shadow_surface.set_alpha(self.shadow_blur)
 
+            # Align the shadow rect
+            self.shadow_pos_x = self.rect.x + self.shadow_offset[0]
+            self.shadow_pos_y = self.rect.y + self.shadow_offset[1]
+            self.align_rect(self.shadow_rect, 'nw', (self.shadow_pos_x, self.shadow_pos_y))
+
     def setup_text(self):
         """
         Set up the text surface and rect.
@@ -186,6 +197,9 @@ class UIElement:
             # Create the text surface and rect
             self.text_surface = self.font.render(self.text_label, True, self.text_color)
             self.text_rect = self.text_surface.get_rect()
+
+            # Align the text rect
+            self.align_rect(self.text_rect, self.text_align, (self.pos_x, self.pos_y))
 
     def align_rect(self, rect, align, position):
         """
@@ -220,18 +234,12 @@ class UIElement:
             self.align_rect(self.rect, self.align, (self.pos_x, self.pos_y))
         if self.image_rect:
             self.align_rect(self.image_rect, self.align, (self.pos_x, self.pos_y))
-        if self.collision_rect:
-            self.align_rect(self.collision_rect, self.align, (self.pos_x, self.pos_y))
-
-        if self.text_rect:
-            self.align_rect(self.text_rect, self.text_align, (self.pos_x, self.pos_y))
-
-        if self.outline_rect:
-            self.align_rect(self.outline_rect, 'nw', (self.outline_pos_x, self.outline_pos_y))
         if self.shadow_rect:
             self.shadow_pos_x = self.rect.x + self.shadow_offset[0]
             self.shadow_pos_y = self.rect.y + self.shadow_offset[1]
             self.align_rect(self.shadow_rect, 'nw', (self.shadow_pos_x, self.shadow_pos_y))
+        if self.text_rect:
+            self.align_rect(self.text_rect, self.text_align, (self.pos_x, self.pos_y))
 
     def update_outline(self):
         """
@@ -264,6 +272,9 @@ class UIElement:
                 # Draw the outline on the surface
                 pygame.draw.rect(self.outline_surface, self.outline_color, self.outline_rect, self.outline_border)
 
+                # Align the outline rect
+                self.align_rect(self.outline_rect, 'nw', (self.outline_pos_x, self.outline_pos_y))
+
     def update_collision(self):
         """
         Update the collision surface and rect.
@@ -286,6 +297,9 @@ class UIElement:
                 # Draw the collision on the collision surface
                 pygame.draw.rect(self.collision_surface, self.collision_color,
                                  self.collision_rect, self.collision_border)
+
+                # Align the collision rect
+                self.align_rect(self.collision_rect, self.align, (self.pos_x, self.pos_y))
 
     def update_hover(self, mouse_pos):
         """
@@ -356,9 +370,9 @@ class UIElement:
         if not self.active:
             return
 
+        self.update_rect()
         self.update_outline()
         self.update_collision()
-        self.update_rect()
         self.update_hover(mouse_pos)
         self.update_drag(mouse_pos)
 
