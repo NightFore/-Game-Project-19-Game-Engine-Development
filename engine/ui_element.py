@@ -129,6 +129,7 @@ class UIElement:
         self.setup_image()
         self.setup_text()
         self.setup_shadow()
+        self.setup_collision()
 
     def setup_rect(self):
         """
@@ -201,6 +202,31 @@ class UIElement:
             # Align the text rect
             self.align_rect(self.text_rect, self.text_align, (self.pos_x, self.pos_y))
 
+    def setup_collision(self):
+        """
+        Update the collision surface and rect.
+        """
+        if self.collision_enabled:
+            if self.collision_width and self.collision_height:
+                size = (self.collision_width, self.collision_height)
+            elif self.rect_width and self.rect_height:
+                size = self.rect_surface.get_size()
+            elif self.image_path:
+                size = self.image_surface.get_size()
+            else:
+                size = (0, 0)
+                self.logger.log_warning(f"Collision rect for element '{self.element_id}' could not be initialized.")
+
+            # Create the collision surface and rect
+            self.collision_surface = pygame.Surface(size, pygame.SRCALPHA)
+            self.collision_rect = self.collision_surface.get_rect()
+
+            # Draw the collision on the surface
+            pygame.draw.rect(self.collision_surface, self.collision_color, self.collision_rect, self.collision_border)
+
+            # Align the collision rect
+            self.align_rect(self.collision_rect, self.align, (self.pos_x, self.pos_y))
+
     def align_rect(self, rect, align, position):
         """
         Align the rectangle based on the provided alignment and position.
@@ -240,6 +266,8 @@ class UIElement:
             self.align_rect(self.shadow_rect, 'nw', (self.shadow_pos_x, self.shadow_pos_y))
         if self.text_rect:
             self.align_rect(self.text_rect, self.text_align, (self.pos_x, self.pos_y))
+        if self.collision_rect:
+            self.align_rect(self.collision_rect, self.align, (self.pos_x, self.pos_y))
 
     def update_outline(self):
         """
@@ -274,32 +302,6 @@ class UIElement:
 
                 # Align the outline rect
                 self.align_rect(self.outline_rect, 'nw', (self.outline_pos_x, self.outline_pos_y))
-
-    def update_collision(self):
-        """
-        Update the collision surface and rect.
-        """
-        if self.collision_enabled:
-            if self.collision_width and self.collision_height:
-                size = (self.collision_width, self.collision_height)
-            elif self.rect:
-                size = self.rect_surface.get_size()
-            elif self.image_rect:
-                size = self.image_surface.get_size()
-            else:
-                size = (0, 0)
-
-            if size:
-                # Create the collision surface and rect
-                self.collision_surface = pygame.Surface(size, pygame.SRCALPHA)
-                self.collision_rect = self.collision_surface.get_rect()
-
-                # Draw the collision on the collision surface
-                pygame.draw.rect(self.collision_surface, self.collision_color,
-                                 self.collision_rect, self.collision_border)
-
-                # Align the collision rect
-                self.align_rect(self.collision_rect, self.align, (self.pos_x, self.pos_y))
 
     def update_hover(self, mouse_pos):
         """
@@ -372,7 +374,6 @@ class UIElement:
 
         self.update_rect()
         self.update_outline()
-        self.update_collision()
         self.update_hover(mouse_pos)
         self.update_drag(mouse_pos)
 
