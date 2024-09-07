@@ -7,7 +7,7 @@ DEFAULT_CONFIG = {
     'pos_x': 0,
     'pos_y': 0,
     'align': 'center',
-    'rect_enabled': True,
+    'rectangle_enabled': True,
     'image_enabled': True,
     'shadow_enabled': True,
     'shadow_color': (255, 255, 255),
@@ -49,13 +49,13 @@ class UIElement:
         self.pos_y = self.config.get('pos_y')
         self.align = self.config.get('align')
 
-        # Rect Attributes
-        self.rect_enabled = self.config.get('rect_enabled')
-        self.rect_width = self.config.get('rect_width')
-        self.rect_height = self.config.get('rect_height')
-        self.rect_color = self.config.get('rect_color')
-        self.rect = None
-        self.rect_surface = None
+        # Rectangle Attributes
+        self.rectangle_enabled = self.config.get('rectangle_enabled')
+        self.rectangle_width = self.config.get('rectangle_width')
+        self.rectangle_height = self.config.get('rectangle_height')
+        self.rectangle_color = self.config.get('rectangle_color')
+        self.rectangle_surface = None
+        self.rectangle_rect = None
 
         # Image Attributes
         self.image_enabled = self.config.get('image_enabled')
@@ -141,18 +141,18 @@ class UIElement:
         """
         Set up the rectangle surface and rect.
         """
-        if not self.rect_enabled:
+        if not self.rectangle_enabled:
             return
 
         # Create the rectangle surface and rect
-        self.rect_surface = pygame.Surface((self.rect_width, self.rect_height))
-        self.rect = pygame.Rect(self.pos_x, self.pos_y, self.rect_width, self.rect_height)
+        self.rectangle_surface = pygame.Surface((self.rectangle_width, self.rectangle_height))
+        self.rectangle_rect = pygame.Rect(self.pos_x, self.pos_y, self.rectangle_width, self.rectangle_height)
 
         # Fill the rectangle surface
-        self.rect_surface.fill(self.rect_color)
+        self.rectangle_surface.fill(self.rectangle_color)
 
         # Align the rectangle rect
-        self.align_rect(self.rect, self.align, (self.pos_x, self.pos_y))
+        self.align_rect(self.rectangle_rect, self.align, (self.pos_x, self.pos_y))
 
     def setup_image(self):
         """
@@ -185,7 +185,7 @@ class UIElement:
             return
 
         # Create the shadow surface and rect
-        self.shadow_surface = pygame.Surface((self.rect_width, self.rect_height), pygame.SRCALPHA)
+        self.shadow_surface = pygame.Surface((self.rectangle_width, self.rectangle_height), pygame.SRCALPHA)
         self.shadow_rect = self.shadow_surface.get_rect()
 
         # Fill the rectangle surface and apply blur
@@ -193,8 +193,8 @@ class UIElement:
         self.shadow_surface.set_alpha(self.shadow_blur)
 
         # Align the shadow rect
-        self.shadow_pos_x = self.rect.x + self.shadow_offset[0]
-        self.shadow_pos_y = self.rect.y + self.shadow_offset[1]
+        self.shadow_pos_x = self.rectangle_rect.x + self.shadow_offset[0]
+        self.shadow_pos_y = self.rectangle_rect.y + self.shadow_offset[1]
         self.align_rect(self.shadow_rect, 'nw', (self.shadow_pos_x, self.shadow_pos_y))
 
     def setup_text(self):
@@ -224,8 +224,8 @@ class UIElement:
         # Determine the size of the collision surface
         if self.collision_width and self.collision_height:
             size = (self.collision_width, self.collision_height)
-        elif self.rect_width and self.rect_height:
-            size = self.rect_surface.get_size()
+        elif self.rectangle_width and self.rectangle_height:
+            size = self.rectangle_surface.get_size()
         elif self.image_path:
             size = self.image_surface.get_size()
         else:
@@ -271,13 +271,13 @@ class UIElement:
         """
         Update the positions of the rects based on alignment and position.
         """
-        if self.rect:
-            self.align_rect(self.rect, self.align, (self.pos_x, self.pos_y))
+        if self.rectangle_rect:
+            self.align_rect(self.rectangle_rect, self.align, (self.pos_x, self.pos_y))
         if self.image_rect:
             self.align_rect(self.image_rect, self.align, (self.pos_x, self.pos_y))
         if self.shadow_rect:
-            self.shadow_pos_x = self.rect.x + self.shadow_offset[0]
-            self.shadow_pos_y = self.rect.y + self.shadow_offset[1]
+            self.shadow_pos_x = self.rectangle_rect.x + self.shadow_offset[0]
+            self.shadow_pos_y = self.rectangle_rect.y + self.shadow_offset[1]
             self.align_rect(self.shadow_rect, 'nw', (self.shadow_pos_x, self.shadow_pos_y))
         if self.text_rect:
             self.align_rect(self.text_rect, self.text_align, (self.pos_x, self.pos_y))
@@ -292,7 +292,7 @@ class UIElement:
             return
 
         # Initialize a list for all defined rectangles
-        rects = [self.rect, self.image_rect, self.shadow_rect, self.text_rect]
+        rects = [self.rectangle_rect, self.image_rect, self.shadow_rect, self.text_rect]
 
         # Remove None values from the list
         rects = [r for r in rects if r]
@@ -329,9 +329,9 @@ class UIElement:
         """
         # Determine if the mouse is hovering over the collision rect
         self.hovered_state = self.collision_rect.collidepoint(mouse_pos)
-        if self.rect_surface and self.hover_color:
+        if self.rectangle_surface and self.hover_color:
             # Change the rect color based on the hover state
-            self.rect_surface.fill(self.hover_color if self.hovered_state else self.rect_color)
+            self.rectangle_surface.fill(self.hover_color if self.hovered_state else self.rectangle_color)
 
     def update_drag(self, mouse_pos):
         """
@@ -364,22 +364,22 @@ class UIElement:
                 self.original_pos = (self.pos_x, self.pos_y)
 
                 # Calculate the drag offset differently based on the alignment
-                offset_x = mouse_pos[0] - self.rect.centerx
-                offset_y = mouse_pos[1] - self.rect.centery
+                offset_x = mouse_pos[0] - self.rectangle_rect.centerx
+                offset_y = mouse_pos[1] - self.rectangle_rect.centery
 
                 # Adjust the offset if the alignment is not centered
                 if self.align != 'center':
                     # Adjust the x-offset based on horizontal alignment
                     if 'w' in self.align:
-                        offset_x = mouse_pos[0] - self.rect.left
+                        offset_x = mouse_pos[0] - self.rectangle_rect.left
                     elif 'e' in self.align:
-                        offset_x = mouse_pos[0] - self.rect.right
+                        offset_x = mouse_pos[0] - self.rectangle_rect.right
 
                     # Adjust the y-offset based on vertical alignment
                     if 'n' in self.align:
-                        offset_y = mouse_pos[1] - self.rect.top
+                        offset_y = mouse_pos[1] - self.rectangle_rect.top
                     elif 's' in self.align:
-                        offset_y = mouse_pos[1] - self.rect.bottom
+                        offset_y = mouse_pos[1] - self.rectangle_rect.bottom
 
                 # Store the calculated drag offset
                 self.drag_offset = (offset_x, offset_y)
@@ -402,8 +402,8 @@ class UIElement:
 
         if self.shadow_surface:
             surface.blit(self.shadow_surface, self.shadow_rect)
-        if self.rect_surface:
-            surface.blit(self.rect_surface, self.rect)
+        if self.rectangle_surface:
+            surface.blit(self.rectangle_surface, self.rectangle_rect)
         if self.image_surface:
             surface.blit(self.image_surface, self.image_rect)
         if self.text_surface:
