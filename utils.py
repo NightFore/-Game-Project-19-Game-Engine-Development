@@ -15,4 +15,3 @@ def setup_managers(instance, managers):
         instance.window_manager = managers.get('window_manager')
         instance.ui_manager = managers.get('ui_manager')
         # Add more managers as needed
-

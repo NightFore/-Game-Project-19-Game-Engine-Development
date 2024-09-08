@@ -24,8 +24,8 @@ DEFAULT_CONFIG = {
     'collision_enabled': True,
     'collision_color': (255, 0, 0),
     'collision_border': 1,
-    'active': True,
-    'visible': True,
+    'state_active': True,
+    'state_visible': True,
     'layer': 0,
     'drag_enabled': True,
     'drag_exclusive': True
@@ -34,6 +34,16 @@ DEFAULT_CONFIG = {
 
 class UIElement:
     def __init__(self, element_type, element_id, config, managers, logger):
+        """
+        Initialize UIElement with its type, ID, config, and necessary managers.
+
+        Args:
+            element_type (str): The type of element.
+            element_id (str): The unique ID for the element.
+            config (dict): A configuration dictionary for element properties.
+            managers (dict): External managers for handling dependencies.
+            logger (Logger): Logger instance for logging warnings or info.
+        """
         # Core Attributes
         self.element_type = element_type
         self.element_id = element_id
@@ -110,25 +120,31 @@ class UIElement:
         self.hovered_state = False
 
         # State Attributes
-        self.active = self.config.get('active')
-        self.visible = self.config.get('visible')
+        self.state_active = self.config.get('state_active')
+        self.state_visible = self.config.get('state_visible')
+        
+        # TBD Attributes
         self.layer = self.config.get('layer')
 
         # Drag Attributes
         self.drag_enabled = self.config.get('drag_enabled')
         self.drag_exclusive = self.config.get('drag_exclusive')
-        self.drag_offset = None
         self.dragging = False
+        self.drag_offset = None
         self.original_pos = None
 
-        # Layout Attributes
-        # Scroll Attributes
-        # Tooltip Attributes
-        # Hierarchy Attributes
-
-        # Set up the graphical elements
+        # Initialize graphical components
         self.setup_graphics()
 
+    """
+    Setup Methods
+    - setup_graphics
+        - setup_rect
+        - setup_image
+        - setup_shadow
+        - setup_text
+        - setup_collision
+    """
     def setup_graphics(self):
         """Initialize and set up all graphical components."""
         self.setup_rect()
@@ -188,8 +204,10 @@ class UIElement:
         self.shadow_surface = pygame.Surface((self.rectangle_width, self.rectangle_height), pygame.SRCALPHA)
         self.shadow_rect = self.shadow_surface.get_rect()
 
-        # Fill the rectangle surface and apply blur
+        # Fill the rectangle surface
         self.shadow_surface.fill(self.shadow_color)
+
+        # Apply blur effect
         self.shadow_surface.set_alpha(self.shadow_blur)
 
         # Align the shadow rect
@@ -242,6 +260,10 @@ class UIElement:
         # Align the collision rect
         self.align_rect(self.collision_rect, self.align, (self.pos_x, self.pos_y))
 
+    """
+    Helper Methods
+    - align_rect
+    """
     def align_rect(self, rect, align, position):
         """
         Align the rectangle based on the provided alignment and position.
@@ -266,6 +288,25 @@ class UIElement:
             rect.midleft = position
         else:
             self.logger.log_warning(f"Unsupported alignment value '{align}' provided.")
+
+    """
+    Update Methods
+    - update_graphics
+        - update_rect
+        - update_outline
+    - update_events
+        - update_click
+        - update_scroll
+        - update_hover
+        - update_drag
+    """
+    def update_graphics(self):
+        self.update_rect()
+        self.update_outline()
+
+    def update_events(self, mouse_pos):
+        self.update_drag(mouse_pos)
+        self.update_hover(mouse_pos)
 
     def update_rect(self):
         """
@@ -320,9 +361,15 @@ class UIElement:
             # Align the outline rect
             self.align_rect(self.outline_rect, 'nw', (self.outline_pos_x, self.outline_pos_y))
 
+    def update_click(self):
+        pass
+
+    def update_scroll(self):
+        pass
+
     def update_hover(self, mouse_pos):
         """
-        Handle the hover logic.
+        Update the hover logic.
 
         Args:
             mouse_pos (tuple): The (x, y) position of the mouse cursor.
@@ -335,7 +382,7 @@ class UIElement:
 
     def update_drag(self, mouse_pos):
         """
-        Handle the drag logic.
+        Update the drag logic.
 
         Args:
             mouse_pos (tuple): The (x, y) position of the mouse cursor.
@@ -387,17 +434,20 @@ class UIElement:
             # Stop dragging when the mouse button is released
             self.dragging = False
 
+    """
+    Game Loop
+    - update
+    - draw
+    """
     def update(self, mouse_pos, mouse_clicks):
-        if not self.active:
+        if not self.state_active:
             return
 
-        self.update_rect()
-        self.update_outline()
-        self.update_hover(mouse_pos)
-        self.update_drag(mouse_pos)
+        self.update_graphics()
+        self.update_events(mouse_pos)
 
     def draw(self, surface):
-        if not self.visible:
+        if not self.state_visible:
             return
 
         if self.shadow_surface:
