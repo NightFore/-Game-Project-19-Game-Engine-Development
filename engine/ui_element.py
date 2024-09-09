@@ -137,6 +137,47 @@ class UIElement:
         self.setup_graphics()
 
     """
+    Helper Methods
+    - create_surface
+    - align_rect
+    """
+    @staticmethod
+    def create_surface_rect(width, height, color=None, alpha=None):
+        surface = pygame.Surface((width, height), pygame.SRCALPHA)
+        if color:
+            surface.fill(color)
+        if alpha:
+            surface.set_alpha(alpha)
+        rect = surface.get_rect()
+
+        return surface, rect
+
+    def align_rect(self, rect, align, position):
+        """
+        Align the rectangle based on the provided alignment and position.
+        """
+        if align == 'center':
+            rect.center = position
+        elif align == 'nw':
+            rect.topleft = position
+        elif align == 'n':
+            rect.midtop = position
+        elif align == 'ne':
+            rect.topright = position
+        elif align == 'e':
+            rect.midright = position
+        elif align == 'se':
+            rect.bottomright = position
+        elif align == 's':
+            rect.midbottom = position
+        elif align == 'sw':
+            rect.bottomleft = position
+        elif align == 'w':
+            rect.midleft = position
+        else:
+            self.logger.log_warning(f"Unsupported alignment value '{align}' provided.")
+
+    """
     Setup Methods
     - setup_graphics
         - setup_rect
@@ -160,12 +201,10 @@ class UIElement:
         if not self.rectangle_enabled:
             return
 
-        # Create the rectangle surface and rect
-        self.rectangle_surface = pygame.Surface((self.rectangle_width, self.rectangle_height))
-        self.rectangle_rect = pygame.Rect(self.pos_x, self.pos_y, self.rectangle_width, self.rectangle_height)
-
-        # Fill the rectangle surface
-        self.rectangle_surface.fill(self.rectangle_color)
+        # Create the rectangle surface and rect; fill the surface
+        self.rectangle_surface, self.rectangle_rect = self.create_surface_rect(
+            self.rectangle_width, self.rectangle_height, self.rectangle_color
+        )
 
         # Align the rectangle rect
         self.align_rect(self.rectangle_rect, self.align, (self.pos_x, self.pos_y))
@@ -259,35 +298,6 @@ class UIElement:
 
         # Align the collision rect
         self.align_rect(self.collision_rect, self.align, (self.pos_x, self.pos_y))
-
-    """
-    Helper Methods
-    - align_rect
-    """
-    def align_rect(self, rect, align, position):
-        """
-        Align the rectangle based on the provided alignment and position.
-        """
-        if align == 'center':
-            rect.center = position
-        elif align == 'nw':
-            rect.topleft = position
-        elif align == 'n':
-            rect.midtop = position
-        elif align == 'ne':
-            rect.topright = position
-        elif align == 'e':
-            rect.midright = position
-        elif align == 'se':
-            rect.bottomright = position
-        elif align == 's':
-            rect.midbottom = position
-        elif align == 'sw':
-            rect.bottomleft = position
-        elif align == 'w':
-            rect.midleft = position
-        else:
-            self.logger.log_warning(f"Unsupported alignment value '{align}' provided.")
 
     """
     Update Methods
