@@ -239,15 +239,10 @@ class UIElement:
         if not self.shadow_enabled:
             return
 
-        # Create the shadow surface and rect
-        self.shadow_surface = pygame.Surface((self.rectangle_width, self.rectangle_height), pygame.SRCALPHA)
-        self.shadow_rect = self.shadow_surface.get_rect()
-
-        # Fill the rectangle surface
-        self.shadow_surface.fill(self.shadow_color)
-
-        # Apply blur effect
-        self.shadow_surface.set_alpha(self.shadow_blur)
+        # Create the shadow surface and rect; fill the surface
+        self.shadow_surface, self.shadow_rect = self.create_surface_rect(
+            self.rectangle_width, self.rectangle_height, self.rectangle_color, self.shadow_blur
+        )
 
         # Align the shadow rect
         self.shadow_pos_x = self.rectangle_rect.x + self.shadow_offset[0]
@@ -280,18 +275,17 @@ class UIElement:
 
         # Determine the size of the collision surface
         if self.collision_width and self.collision_height:
-            size = (self.collision_width, self.collision_height)
+            width, height = (self.collision_width, self.collision_height)
         elif self.rectangle_width and self.rectangle_height:
-            size = self.rectangle_surface.get_size()
+            width, height = self.rectangle_surface.get_size()
         elif self.image_path:
-            size = self.image_surface.get_size()
+            width, height = self.image_surface.get_size()
         else:
-            size = (0, 0)
+            width, height = (0, 0)
             self.logger.log_warning(f"Collision rect for element '{self.element_id}' could not be initialized.")
 
         # Create the collision surface and rect
-        self.collision_surface = pygame.Surface(size, pygame.SRCALPHA)
-        self.collision_rect = self.collision_surface.get_rect()
+        self.collision_surface, self.collision_rect = self.create_surface_rect(width, height)
 
         # Draw the collision on the surface
         pygame.draw.rect(self.collision_surface, self.collision_color, self.collision_rect, self.collision_border)
