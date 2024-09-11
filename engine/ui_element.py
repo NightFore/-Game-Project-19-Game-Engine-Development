@@ -141,14 +141,23 @@ class UIElement:
     - create_surface
     - align_rect
     """
-    @staticmethod
-    def create_surface_rect(width, height, color=None, alpha=None):
-        surface = pygame.Surface((width, height), pygame.SRCALPHA)
+    def create_surface_rect(self, width, height, color=None, alpha=None, align=None, pos=None):
+        if alpha:
+            surface = pygame.Surface((width, height), pygame.SRCALPHA)
+        else:
+            surface = pygame.Surface((width, height))
+        rect = surface.get_rect()
         if color:
             surface.fill(color)
         if alpha:
             surface.set_alpha(alpha)
-        rect = surface.get_rect()
+
+        if not align:
+            align = self.align
+        if not pos:
+            pos = (self.pos_x, self.pos_y)
+
+        self.align_rect(rect, align, pos)
 
         return surface, rect
 
@@ -203,11 +212,10 @@ class UIElement:
 
         # Create the rectangle surface and rect; fill the surface
         self.rectangle_surface, self.rectangle_rect = self.create_surface_rect(
-            self.rectangle_width, self.rectangle_height, self.rectangle_color
+            self.rectangle_width, self.rectangle_height,
+            color=self.rectangle_color, alpha=False,
+            align=self.align, pos=(self.pos_x, self.pos_y)
         )
-
-        # Align the rectangle rect
-        self.align_rect(self.rectangle_rect, self.align, (self.pos_x, self.pos_y))
 
     def setup_image(self):
         """
@@ -239,15 +247,16 @@ class UIElement:
         if not self.shadow_enabled:
             return
 
-        # Create the shadow surface and rect; fill the surface
-        self.shadow_surface, self.shadow_rect = self.create_surface_rect(
-            self.rectangle_width, self.rectangle_height, self.rectangle_color, self.shadow_blur
-        )
-
-        # Align the shadow rect
+        #
         self.shadow_pos_x = self.rectangle_rect.x + self.shadow_offset[0]
         self.shadow_pos_y = self.rectangle_rect.y + self.shadow_offset[1]
-        self.align_rect(self.shadow_rect, 'nw', (self.shadow_pos_x, self.shadow_pos_y))
+
+        # Create the shadow surface and rect; fill the surface
+        self.shadow_surface, self.shadow_rect = self.create_surface_rect(
+            self.rectangle_width, self.rectangle_height,
+            color=self.rectangle_color, alpha=self.shadow_blur,
+            align='nw', pos=(self.shadow_pos_x, self.shadow_pos_y)
+        )
 
     def setup_text(self):
         """
@@ -285,12 +294,19 @@ class UIElement:
             self.logger.log_warning(f"Collision rect for element '{self.element_id}' could not be initialized.")
 
         # Create the collision surface and rect
-        self.collision_surface, self.collision_rect = self.create_surface_rect(width, height)
+        self.collision_surface, self.collision_rect = self.create_surface_rect(
+            width, height,
+            color=None, alpha=255,
+            align=self.align, pos=(self.pos_x, self.pos_y)
+        )
+
+        # WIP Bug Fix
+        self.collision_rect = self.collision_surface.get_rect()
 
         # Draw the collision on the surface
         pygame.draw.rect(self.collision_surface, self.collision_color, self.collision_rect, self.collision_border)
 
-        # Align the collision rect
+        # WIP Bug Fix
         self.align_rect(self.collision_rect, self.align, (self.pos_x, self.pos_y))
 
     """
