@@ -138,26 +138,42 @@ class UIElement:
 
     """
     Helper Methods
-    - create_surface
+    - create_surface_rect
     - align_rect
     """
-    def create_surface_rect(self, width, height, color=None, alpha=None, align=None, pos=None):
-        if alpha:
-            surface = pygame.Surface((width, height), pygame.SRCALPHA)
-        else:
-            surface = pygame.Surface((width, height))
+    def create_surface_rect(self, width, height,
+                            position=None, align=None,
+                            color=None, alpha=None,
+                            shape=None, border_thickness=None):
+        # Create the surface with or without alpha channel
+        surface_flags = pygame.SRCALPHA if alpha is not None else 0
+        surface = pygame.Surface((width, height), surface_flags)
+
+        # Create a rect from the surface
         rect = surface.get_rect()
+
+        # Handle color and shape drawing operations
         if color:
-            surface.fill(color)
+            if shape is None:
+                surface.fill(color)
+            elif shape == "rect":
+                pygame.draw.rect(surface, color, rect, border_thickness or 0)
+            elif shape == "circle":
+                radius = min(rect.width, rect.height) // 2
+                pygame.draw.circle(surface, color, rect.center, radius, border_thickness or 0)
+            else:
+                self.logger.log_warning(f"Unknown shape: {shape}")
+        elif shape:
+            self.logger.log_warning(f"Unknown color: {color}")
+
+        # Set surface transparency if alpha is provided
         if alpha:
             surface.set_alpha(alpha)
 
-        if not align:
-            align = self.align
-        if not pos:
-            pos = (self.pos_x, self.pos_y)
-
-        self.align_rect(rect, align, pos)
+        # Set alignment and position (default if not provided)
+        align = align or self.align
+        position = position or (self.pos_x, self.pos_y)
+        self.align_rect(rect, align, position)
 
         return surface, rect
 
@@ -189,33 +205,19 @@ class UIElement:
     """
     Setup Methods
     - setup_graphics
-        - setup_rect
         - setup_image
+        - setup_rect
         - setup_shadow
-        - setup_text
         - setup_collision
+        - setup_text
     """
     def setup_graphics(self):
         """Initialize and set up all graphical components."""
-        self.setup_rect()
         self.setup_image()
-        self.setup_text()
+        self.setup_rect()
         self.setup_shadow()
         self.setup_collision()
-
-    def setup_rect(self):
-        """
-        Set up the rectangle surface and rect.
-        """
-        if not self.rectangle_enabled:
-            return
-
-        # Create the rectangle surface and rect; fill the surface
-        self.rectangle_surface, self.rectangle_rect = self.create_surface_rect(
-            self.rectangle_width, self.rectangle_height,
-            color=self.rectangle_color, alpha=False,
-            align=self.align, pos=(self.pos_x, self.pos_y)
-        )
+        self.setup_text()
 
     def setup_image(self):
         """
@@ -240,6 +242,21 @@ class UIElement:
         # Align the image rect
         self.align_rect(self.image_rect, self.align, (self.pos_x, self.pos_y))
 
+    def setup_rect(self):
+        """
+        Set up the rectangle surface and rect.
+        """
+        if not self.rectangle_enabled:
+            return
+
+        # Create the rectangle surface and rect; fill the surface
+        self.rectangle_surface, self.rectangle_rect = self.create_surface_rect(
+            self.rectangle_width, self.rectangle_height,
+            position=(self.pos_x, self.pos_y), align=self.align,
+            color=self.rectangle_color, alpha=False,
+            shape=None, border_thickness=None
+        )
+
     def setup_shadow(self):
         """
         Set up the shadow surface and rect.
@@ -247,33 +264,17 @@ class UIElement:
         if not self.shadow_enabled:
             return
 
-        #
+        # Calculate shadow position based on rectangle position and offset
         self.shadow_pos_x = self.rectangle_rect.x + self.shadow_offset[0]
         self.shadow_pos_y = self.rectangle_rect.y + self.shadow_offset[1]
 
         # Create the shadow surface and rect; fill the surface
         self.shadow_surface, self.shadow_rect = self.create_surface_rect(
             self.rectangle_width, self.rectangle_height,
+            position=(self.shadow_pos_x, self.shadow_pos_y), align='nw',
             color=self.rectangle_color, alpha=self.shadow_blur,
-            align='nw', pos=(self.shadow_pos_x, self.shadow_pos_y)
+            shape=None, border_thickness=None,
         )
-
-    def setup_text(self):
-        """
-        Set up the text surface and rect.
-        """
-        if not self.text_enabled:
-            return
-
-        # Initialize the text_font
-        self.text_font = pygame.font.Font(self.text_font_name, self.text_font_size)
-
-        # Create the text surface and rect
-        self.text_surface = self.text_font.render(self.text_label, True, self.text_color)
-        self.text_rect = self.text_surface.get_rect()
-
-        # Align the text rect
-        self.align_rect(self.text_rect, self.text_align, (self.pos_x, self.pos_y))
 
     def setup_collision(self):
         """
@@ -296,18 +297,27 @@ class UIElement:
         # Create the collision surface and rect
         self.collision_surface, self.collision_rect = self.create_surface_rect(
             width, height,
-            color=None, alpha=255,
-            align=self.align, pos=(self.pos_x, self.pos_y)
+            position=(self.pos_x, self.pos_y), align=self.align,
+            color=self.collision_color, alpha=255,
+            shape="rect", border_thickness=self.collision_border,
         )
 
-        # WIP Bug Fix
-        self.collision_rect = self.collision_surface.get_rect()
+    def setup_text(self):
+        """
+        Set up the text surface and rect.
+        """
+        if not self.text_enabled:
+            return
 
-        # Draw the collision on the surface
-        pygame.draw.rect(self.collision_surface, self.collision_color, self.collision_rect, self.collision_border)
+        # Initialize the text_font
+        self.text_font = pygame.font.Font(self.text_font_name, self.text_font_size)
 
-        # WIP Bug Fix
-        self.align_rect(self.collision_rect, self.align, (self.pos_x, self.pos_y))
+        # Create the text surface and rect
+        self.text_surface = self.text_font.render(self.text_label, True, self.text_color)
+        self.text_rect = self.text_surface.get_rect()
+
+        # Align the text rect
+        self.align_rect(self.text_rect, self.text_align, (self.pos_x, self.pos_y))
 
     """
     Update Methods
